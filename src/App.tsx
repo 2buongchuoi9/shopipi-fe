@@ -1,4 +1,4 @@
-import Login from '@/pages/Login'
+import Login from '@/pages/auth/Login'
 import { Route, Routes } from 'react-router-dom'
 
 import ErrorPage from '@/pages/ErrorPage'

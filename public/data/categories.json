@@ -1,0 +1,47 @@
+[
+  {
+    "id": 0,
+    "name": "Deals",
+    "src": "https://salt.tikicdn.com/ts/upload/e0/4f/a4/2f79e4d3e8b4a71941fa7da279c994db.png"
+  },
+  {
+    "id": 1,
+    "name": "Amazon",
+    "src": "https://salt.tikicdn.com/ts/upload/84/e5/5a/ef4abf5ef55fe5db81ac7a900de40368.png"
+  },
+  {
+    "id": 2,
+    "name": "Fashion",
+    "src": "https://salt.tikicdn.com/ts/upload/b1/5f/5e/501a9b0ed0c1735d3e3872bad6e587df.png"
+  },
+  {
+    "id": 3,
+    "name": "Máy tính",
+    "src": "https://salt.tikicdn.com/ts/category/f6/22/46/7e2185d2cf1bca72d5aeac385a865b2b.png"
+  },
+  {
+    "id": 4,
+    "name": "Sân vườn",
+    "src": "https://salt.tikicdn.com/ts/category/ed/20/60/afa9b3b474bf7ad70f10dd6443211d5f.png"
+  },
+  {
+    "id": 5,
+    "name": "Tiêu dùng thực phẩm",
+    "src": "https://salt.tikicdn.com/ts/category/73/0e/89/d7ca146de7198a6808580239e381a0c8.png"
+  },
+  {
+    "id": 6,
+    "name": "Gia dụng",
+    "src": "https://salt.tikicdn.com/ts/upload/b1/5f/5e/501a9b0ed0c1735d3e3872bad6e587df.png"
+  },
+  {
+    "id": 7,
+    "name": "Điện máy",
+    "src": "https://salt.tikicdn.com/ts/upload/84/e5/5a/ef4abf5ef55fe5db81ac7a900de40368.png"
+  },
+  {
+    "id": 8,
+    "name": "Mobiles",
+    "src": "https://salt.tikicdn.com/ts/upload/e0/4f/a4/2f79e4d3e8b4a71941fa7da279c994db.png"
+  }
+]

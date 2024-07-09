@@ -1,0 +1,67 @@
+import authApi, { initialUser, User } from '@/http/authApi'
+import { accessToken, clientId, refreshTokenStorage } from '@/utils/localStorageUtils'
+import {
+    createContext,
+    ReactNode,
+    // useContext,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from 'react'
+
+export interface AuthContextType {
+    user: User
+    fetchUser: () => Promise<void>
+    isAuthenticated: boolean
+    setUser: (user: User) => void
+    logout: () => void
+}
+
+export const AuthContext = createContext<AuthContextType>({} as AuthContextType)
+
+export default function AuthProvider({ children }: { children: ReactNode }) {
+    const [user, setUser] = useState<User>(initialUser)
+    const isAuthenticated = useRef<boolean>(false)
+
+    const fetchUser = async () => {
+        try {
+            const user = await authApi.getProfile()
+            setUser(user)
+            isAuthenticated.current = true
+        } catch (error) {
+            isAuthenticated.current = false
+            setUser(initialUser)
+        }
+    }
+
+    const logout = () => {
+        setUser(initialUser)
+        isAuthenticated.current = false
+        clientId.remove()
+        accessToken.remove()
+        refreshTokenStorage.remove()
+    }
+
+    // useEffect(() => {
+    //     isAuthenticated.current = user?.email ? true : false
+    // }, [user?.email])
+
+    useLayoutEffect(() => {
+        fetchUser()
+    }, [])
+
+    return (
+        <AuthContext.Provider
+            value={{
+                user,
+                fetchUser,
+                setUser,
+                isAuthenticated: isAuthenticated.current,
+                logout,
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    )
+}

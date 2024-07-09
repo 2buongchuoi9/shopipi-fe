@@ -2,7 +2,7 @@
 import { message } from 'antd'
 import { createContext, ReactNode, useContext } from 'react'
 
-interface MessageContextType {
+export interface MessageContextType {
     loading: (content: string, key?: string) => void
     success: (content: string, key?: string) => void
     error: (content: string, key?: string) => void
@@ -10,8 +10,6 @@ interface MessageContextType {
 }
 
 export const MessageContext = createContext<MessageContextType>({} as MessageContextType)
-
-export const useMessage = () => useContext(MessageContext)
 
 export default function MessageProvider({ children }: { children: ReactNode }) {
     const [messageApi, contextHolder] = message.useMessage()

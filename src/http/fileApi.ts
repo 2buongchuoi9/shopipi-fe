@@ -1,4 +1,4 @@
-import http, { Page } from './http'
+import http, { Page, ParamsRequest } from './http'
 
 export type File = {
     id: string
@@ -29,7 +29,7 @@ const fileApi = {
         await http.post<File>('/file/upload-video', file, {
             headers: { 'Content-Type': 'multipart/form-data' },
         }),
-    get: async (params: any) => await http.get<Page<File>>(`/file`, { params }),
+    get: async (params?: ParamsRequest) => await http.get<Page<File>>(`/file`, { params }),
     // getDetail: (id: string) => {},
 
     update: async (id: string, data: Partial<File>) => await http.post<File>(`/file/${id}`, data),

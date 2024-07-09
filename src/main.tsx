@@ -1,22 +1,25 @@
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
-import './index.css'
-import MessageProvider from './contexts/MessageContext.tsx'
-import AuthProvider from './contexts/AuthContex.tsx'
-import { StrictMode } from 'react'
+import AuthProvider from './contexts/AuthContext.tsx'
 import CategoryProvider from './contexts/CategoryContex.tsx'
+import LoadingProvider from './contexts/LoadingContext.tsx'
+import MessageProvider from './contexts/MessageContext.tsx'
+import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <BrowserRouter>
-            <AuthProvider>
-                <CategoryProvider>
-                    <MessageProvider>
-                        <App />
-                    </MessageProvider>
-                </CategoryProvider>
-            </AuthProvider>
+            <LoadingProvider>
+                <AuthProvider>
+                    <CategoryProvider>
+                        <MessageProvider>
+                            <App />
+                        </MessageProvider>
+                    </CategoryProvider>
+                </AuthProvider>
+            </LoadingProvider>
         </BrowserRouter>
     </StrictMode>
 )

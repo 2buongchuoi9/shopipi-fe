@@ -8,14 +8,12 @@ type CategoryMenuType = Category & {
     value: string | number
 }
 
-interface CategoryContextType {
+export interface CategoryContextType {
     categories: CategoryMenuType[] | []
-    fetchCategory: () => void
+    fetchCategory: () => Promise<void>
 }
 
 export const CategoryContext = createContext<CategoryContextType>({} as CategoryContextType)
-
-export const useCategory = () => useContext(CategoryContext)
 
 export default function CategoryProvider({ children }: { children: ReactNode }) {
     const [categories, setCategories] = useState<CategoryMenuType[] | []>([] as CategoryMenuType[])
@@ -26,7 +24,7 @@ export default function CategoryProvider({ children }: { children: ReactNode }) 
             setCategories(cates)
             console.log('load categories', categories)
         } catch (error) {
-            console.log('Failed to fetch categories from context')
+            console.log('Failed to fetch categories from context', error)
             setCategories([])
         }
     }

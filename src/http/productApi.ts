@@ -1,6 +1,62 @@
+import { ProductState } from '@/utils/constants'
 import { Category } from './categoryApi'
-import http, { Page } from './http'
+import http, { Page, ParamsRequest } from './http'
 import { Shop } from './shopApi'
+import { removeNullParams } from '@/utils'
+
+export const initialProduct: Product = {
+    id: '',
+    name: '',
+    slug: '',
+    thumb: '',
+    video: '',
+    images: [''],
+    price: 0,
+    priceImport: 0,
+    type: 'CLOTHING',
+    description: '',
+    quantity: 0,
+    ratingAvg: 0.0,
+    totalRating: 0,
+    totalComment: 0,
+    state: 'HIDDEN',
+    isDeleted: false,
+    attribute: {
+        brand: '',
+        origin: '',
+        listVariant: [{ key: '', values: [''] }],
+    },
+    variants: [
+        {
+            id: '',
+            productId: '',
+            quantity: 0,
+            valueVariant: [{ key: '', value: '' }],
+        },
+    ],
+    category: {
+        id: '',
+        slug: '',
+        name: '',
+        parentId: null,
+        thumb: '',
+        parentName: null,
+    },
+    createAt: '',
+    shop: {
+        id: '',
+        name: '',
+        email: '',
+        image: null,
+        status: true,
+        verify: false,
+        authType: 'LOCAL',
+        roles: ['USER'],
+        addressShipping: null,
+        createAt: '',
+        oauth2Id: null,
+    },
+}
 
 export type Map = {
     key: string
@@ -25,21 +81,21 @@ export type ProductType = (typeof productType)[number]
 
 export type AttributeBase = {
     type?: string | null
-    brand: string | null
-    origin: string | null
+    brand?: string | null
+    origin?: string | null
     listVariant: ListMap[] | []
 }
 export type ElectronicAttr = AttributeBase & {
-    manufacturer: string | null // nha may san xuat
-    model: string | null
-    type: string | null
+    manufacturer?: string | null // nha may san xuat
+    model?: string | null
+    type?: string | null
 }
 
 export type ClothingAttr = AttributeBase & {
-    material: string | null
-    model: string | null
-    season: string | null
-    style: string | null
+    material?: string | null
+    model?: string | null
+    season?: string | null
+    style?: string | null
 }
 
 export type Attribute = ElectronicAttr | ClothingAttr
@@ -59,15 +115,17 @@ export type Product = {
     ratingAvg: number
     totalRating: number
     totalComment: number
-    status: boolean
+    state: keyof typeof ProductState
     attribute: Attribute
     variants: Variant[]
     category: Category
     createAt: string // Consider using Date if possible
     shop: Shop
+    isDeleted: boolean
 }
 
 export type ProductRequest = {
+    id?: string
     attribute: Attribute
     type: ProductType | null
     name: string | null
@@ -78,7 +136,7 @@ export type ProductRequest = {
     priceImport: number | 0
     description: string | null
     categoryId: string | null
-    status: boolean
+    state: keyof typeof ProductState
 }
 
 export const isElectronicAttr = (attr: Attribute): attr is ElectronicAttr => {
@@ -97,8 +155,14 @@ export const isClothingAttr = (attr: Attribute): attr is ClothingAttr => {
 }
 
 const productApi = {
-    getAll: async () => await http.get<Page<Product>>('/product'),
+    getAll: async (params?: ParamsRequest) =>
+        await http.get<Page<Product>>('/product', { params: params }),
+
     addProduct: async (data: ProductRequest) => await http.post<Product>('/product', data),
+
+    updateProduct: async (id: string, data: ProductRequest) =>
+        await http.post<Product>(`/product/${id}`, data),
+
     findBySlug: async (slug: string) => await http.get<Product>(`/product/slug/${slug}`),
 }
 export default productApi

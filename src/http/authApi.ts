@@ -1,5 +1,22 @@
 import http from './http'
 
+export const initialUser = {
+    id: '',
+    name: '',
+    email: '',
+    image: null,
+    status: false,
+    verify: false,
+    authType: '',
+    roles: [],
+    address: null,
+    createdAt: '',
+    updateAt: '',
+    oauth2Id: null,
+    addressShipping: '',
+    createAt: '',
+}
+
 export type User = {
     id: string
     name: string
@@ -23,9 +40,13 @@ export type Auth = {
 }
 
 const authApi = {
-    login: (body: any) => http.post<any>('/auth/login', body),
+    login: (body: any) => http.post<Auth>('/auth/login', body),
 
     getProfile: () => http.post<User>('/user/profile'),
+
+    registerUserMod: () => http.get<User>('/auth/create-user-mod'),
+
+    getShop: (shopId: string) => http.get<User>(`/user/${shopId}`),
 }
 
 export default authApi

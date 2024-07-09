@@ -1,11 +1,19 @@
 import { accessToken, clientId } from '@/utils/localStorageUtils'
 import axios, {
-    AxiosInstance,
-    AxiosRequestConfig,
     AxiosError,
     AxiosHeaders,
+    AxiosInstance,
+    AxiosRequestConfig,
     AxiosResponse,
 } from 'axios'
+
+export type ParamsRequest = {
+    page?: number | string | null
+    size?: number | string | null
+    sort?: string | null
+    keySearch?: string | null
+    [key: string]: any
+}
 
 export type Page<T> = {
     content: T[]
@@ -80,6 +88,8 @@ export class HttpClient {
                     response.request.responseURL,
                     response.statusText
                 )
+                console.log('response', response)
+
                 return response.data
             },
             (error: AxiosError) => {
@@ -124,6 +134,16 @@ export class HttpClient {
 
     public async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
         const response = await this.instance.post<T>(url, data, config)
+        // //neu url la login thi luu token vao localstorage
+        // if (url === '/auth/login' || url === '/auth/register') {
+        //     const auth: Auth = response.data as Auth
+        //     console.log('login ok', auth)
+
+        //     clientId.set(auth.user.id)
+        //     accessToken.set(auth.token.accessToken)
+        //     refreshTokenStorage.set(auth.token.refreshToken)
+        // }
+
         return response.data
     }
 

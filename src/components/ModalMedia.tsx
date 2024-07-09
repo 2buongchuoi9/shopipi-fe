@@ -25,7 +25,7 @@ import { UploadRequestOption, UploadRequestError } from 'rc-upload/lib/interface
 
 import dayjs from 'dayjs'
 import fileApi, { File, MediaType, mediaType } from '@/http/fileApi'
-import { useMessage } from '@/contexts/MessageContext'
+import { useMessage } from '@/hooks'
 
 dayjs().locale('vi')
 
