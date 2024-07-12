@@ -35,6 +35,9 @@ export type Order = {
 
 const orderApi = {
     checkoutReview: (data: OrderRequest) => http.post<Order>('/order/checkout-review', data),
+
+    checkoutReviewGuest: (userId: string, data: OrderRequest) =>
+        http.post<Order>(`/order/checkout-review-guest/${userId}`, data),
 }
 
 export default orderApi

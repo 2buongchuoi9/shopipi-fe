@@ -1,11 +1,11 @@
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
 // import Search from '../Search/Search'
-import { User } from '@/http/authApi'
-import { Avatar, Dropdown, MenuProps } from 'antd'
+import authApi, { User } from '@/http/authApi'
+import { Avatar, Button, Dropdown, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { MdOutlineCloudDownload } from 'react-icons/md'
-import { useAuth, useCart } from '@/hooks'
+import { useAuth, useCart, useMessage } from '@/hooks'
 
 type Props = {
     isAuthenticated: boolean
@@ -13,7 +13,8 @@ type Props = {
 }
 
 const Profile = ({ isAuthenticated, user }: Props) => {
-    const { logout } = useAuth()
+    const { logout, fetchUser } = useAuth()
+    const { success, error } = useMessage()
 
     return isAuthenticated ? (
         <Dropdown
@@ -29,6 +30,20 @@ const Profile = ({ isAuthenticated, user }: Props) => {
                                 Logout
                             </Link>
                         ),
+                    },
+                    {
+                        key: 3,
+                        label: 'đăng ký shop',
+                        onClick: async () => {
+                            try {
+                                await authApi.registerShop(user.id)
+                                await fetchUser()
+                                success('Đăng ký shop thành công')
+                            } catch (e) {
+                                console.log('error', e)
+                                error('Đăng ký shop thất bại')
+                            }
+                        },
                     },
                 ] as MenuProps['items'],
             }}

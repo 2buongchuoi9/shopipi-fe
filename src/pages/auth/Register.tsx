@@ -3,12 +3,11 @@ import authApi from '@/http/authApi'
 import { AlertType, ErrorInfoForm } from '@/types/customType'
 import { facebook_url_login, google_url_login } from '@/utils'
 import { accessToken, clientId, refreshTokenStorage } from '@/utils/localStorageUtils'
-import { Alert, AlertProps, Button, Form, Input } from 'antd'
+import { Alert, Button, Form, Input } from 'antd'
 import { useState } from 'react'
-
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
-const Login = () => {
+const Register = () => {
     const [searchParams] = useSearchParams()
     const redirect = searchParams.get('redirect') ?? '/'
     const navigate = useNavigate()
@@ -27,7 +26,7 @@ const Login = () => {
         try {
             console.log('values', values)
             // setSubmitting(true)
-            const data = await authApi.login(values)
+            const data = await authApi.register(values)
             console.log('aaaaa', data)
             success('Đăng nhập thành công')
 
@@ -69,7 +68,7 @@ const Login = () => {
             )}
 
             <div className="w-1/3 mx-auto pt-10">
-                <Form onFinish={handleSubmit} onFinishFailed={onFinishFailed} layout="vertical">
+                <Form onFinish={handleSubmit} onFinishFailed={onFinishFailed} layout="inline">
                     <div className="mb-10 flex justify-center text-base">
                         <img src="/logo.png" className="h-[50px]" alt="" />
                     </div>
@@ -85,7 +84,14 @@ const Login = () => {
                                 },
                             ]}
                         >
-                            <Input size="large" name="email" placeholder="Email"></Input>
+                            <Input size="large" placeholder="Email" />
+                        </Form.Item>
+                        <Form.Item
+                            name="name"
+                            label="Name"
+                            rules={[{ required: true, message: 'Name không được trống' }]}
+                        >
+                            <Input size="large" placeholder="Email" />
                         </Form.Item>
                         <Form.Item
                             name="password"
@@ -103,8 +109,48 @@ const Login = () => {
                                 size="large"
                                 name="password"
                                 placeholder="Password"
-                            ></Input.Password>
+                            />
                         </Form.Item>
+                        <Form.Item
+                            dependencies={['password']}
+                            name="ConfirmPassword"
+                            label="Confirm password"
+                            required
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Mật khẩu không được trống',
+                                },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('password') === value) {
+                                            return Promise.resolve()
+                                        }
+                                        return Promise.reject(
+                                            new Error(
+                                                'Mật khẩu không trùng khớp, vui lòng kiểm tra lại'
+                                            )
+                                        )
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password
+                                id="password"
+                                size="large"
+                                name="password"
+                                placeholder="Password"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="address"
+                            label="Address"
+                            rules={[{ required: true, message: 'Name không được trống' }]}
+                        >
+                            <Input size="large" placeholder="Email" />
+                        </Form.Item>
+
                         <Button
                             htmlType="submit"
                             loading={isSubmitting}
@@ -115,7 +161,7 @@ const Login = () => {
                             block
                             className="text-white-400  bg-blue-400"
                         >
-                            Đăng nhập
+                            Đăng ký
                         </Button>
                         <Link to={google_url_login}>đăng nhập bằng google</Link>
                         <Link to={facebook_url_login}>đăng nhập bằng facebook</Link>
@@ -125,4 +171,4 @@ const Login = () => {
         </div>
     )
 }
-export default Login
+export default Register

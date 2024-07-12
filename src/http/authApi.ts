@@ -42,6 +42,10 @@ export type Auth = {
 const authApi = {
     login: (body: any) => http.post<Auth>('/auth/login', body),
 
+    register: (body: any) => http.post<Auth>('/auth/register', body),
+
+    registerShop: (id: string) => http.post<Auth>(`/auth/register-shop/${id}`),
+
     getProfile: () => http.post<User>('/user/profile'),
 
     registerUserMod: () => http.get<User>('/auth/create-user-mod'),

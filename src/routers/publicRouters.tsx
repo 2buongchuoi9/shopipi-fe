@@ -1,10 +1,10 @@
 import { DefaultLayout } from '@/layouts'
-import Login from '@/pages/auth/Login'
 import { ProductDetail, ProductPage } from '@/pages/product'
-import Redirect from '@/pages/auth/Redirect'
 import { ComponentType, ReactNode } from 'react'
 import { CartPage } from '@/pages/cart'
 import { HomePage } from '@/pages/home'
+import { OrderPage } from '@/pages/order'
+import { Login, Redirect, Register } from '@/pages/auth'
 
 const route = (
     path: string,
@@ -23,11 +23,14 @@ const publicRouters = [
 
     route('/login-redirect', Redirect),
     route('/login', Login),
+    route('/register', Register),
 
     route('/product', ProductPage),
     route('/product/:slug', ProductDetail),
 
     route('/cart', CartPage),
+
+    route('/order', OrderPage),
 ]
 
 export default publicRouters

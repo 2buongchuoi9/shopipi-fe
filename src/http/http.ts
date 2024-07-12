@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import { accessToken, clientId } from '@/utils/localStorageUtils'
 import axios, {
     AxiosError,
@@ -83,27 +84,34 @@ export class HttpClient {
     private initializeResponseInterceptor() {
         this.instance.interceptors.response.use(
             (response) => {
-                console.log(
-                    `[${response.status}]`,
-                    response.request.responseURL,
-                    response.statusText
-                )
-                console.log('response', response)
+                const method = response.config.method?.toUpperCase() || 'UNKNOWN_METHOD'
+                const url = response.config.url
+                const params = response.config.params
+                    ? `?${new URLSearchParams(
+                          Object.fromEntries(
+                              Object.entries(response.config.params)
+                                  .filter(([_, v]) => v !== null && v !== undefined)
+                                  .map(([k, v]) => [k, String(v)])
+                          )
+                      ).toString()}`
+                    : ''
+                console.log(`${method} [${response.status}] ${url}${params}`, response)
 
                 return response.data
             },
-            (error: AxiosError) => {
+            (error: AxiosError<PayLoad<any>>) => {
                 console.error('error from axios', error)
 
                 if (error.response) {
                     // Server returned an error response (4xx or 5xx)
 
-                    const { data, status } = error.response.data as AxiosResponse<PayLoad<any>>
+                    const { status, code, message, data } = error.response.data
+
                     throw new ErrorPayload({
-                        code: status,
-                        status: 'error',
-                        message: data?.message ?? 'Unknown error occurred',
-                        data: data?.data || null,
+                        code: code,
+                        status: status,
+                        message: message ?? 'Unknown error occurred',
+                        data: data || null,
                     })
                 } else if (error.request) {
                     // Request was made but no response received (e.g., network error)

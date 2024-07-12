@@ -1,4 +1,7 @@
+import { useCart } from '@/hooks'
+import { ErrorPayload } from '@/http'
 import authApi, { initialUser, User } from '@/http/authApi'
+import ErrorPage from '@/pages/ErrorPage'
 import { accessToken, clientId, refreshTokenStorage } from '@/utils/localStorageUtils'
 import {
     createContext,
@@ -22,6 +25,7 @@ export const AuthContext = createContext<AuthContextType>({} as AuthContextType)
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User>(initialUser)
+    const { fetchCart } = useCart()
     const isAuthenticated = useRef<boolean>(false)
 
     const fetchUser = async () => {
@@ -30,8 +34,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             setUser(user)
             isAuthenticated.current = true
         } catch (error) {
-            isAuthenticated.current = false
-            setUser(initialUser)
+            if (error instanceof ErrorPayload) {
+                console.log('Failed to fetch user', error)
+
+                isAuthenticated.current = false
+                setUser(initialUser)
+            }
         }
     }
 
@@ -41,6 +49,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         clientId.remove()
         accessToken.remove()
         refreshTokenStorage.remove()
+        fetchCart()
     }
 
     // useEffect(() => {

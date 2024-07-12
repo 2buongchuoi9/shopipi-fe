@@ -37,14 +37,15 @@ export interface CartContextType {
     // checkout review
     resultCheckoutReview: Order | null
 
+    // orderRequest: OrderRequest | null
     // request checkout review -> order
-    setOrderRequest: (orderRequest: OrderRequest | null) => void
+    setOrderRequest: React.Dispatch<React.SetStateAction<OrderRequest | null>>
 }
 
 export const CartContext = createContext<CartContextType>({} as CartContextType)
 
 export default function CartProvider({ children }: { children: ReactNode }) {
-    const { isAuthenticated, fetchUser } = useAuth()
+    const { isAuthenticated, fetchUser, user, setUser } = useAuth()
     const [cart, setCart] = useState<Cart | null>(null)
     const [total, setTotal] = useState<Total>({ totalItem: 0, totalQuantity: 0 })
     const [resultCheckoutReview, setResultCheckoutReview] = useState<Order | null>(null)
@@ -52,7 +53,9 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
     const addToCart = async (data: CartRequest) => {
         try {
-            const res = await cartApi.addToCart(data)
+            const res = isAuthenticated
+                ? await cartApi.addToCart(data)
+                : await cartApi.addToCartGuest(data, user.id)
             setCart(res)
         } catch (error) {
             console.log('Failed to add to cart', error)
@@ -77,16 +80,14 @@ export default function CartProvider({ children }: { children: ReactNode }) {
             // console.log('load cart', cart)
         } catch (e) {
             if (e instanceof ErrorPayload && e.code === 401) {
-                console.log('Failed to fetch cart from context', e)
-                setCart(null)
-            } else {
                 const userMod = await authApi.registerUserMod()
-                console.log('register user mod', userMod)
-
+                setUser(userMod)
                 const res = await cartApi.getCartByUserId(userMod.id)
-                console.log('load cart by guest', res)
 
                 setCart(res)
+            } else {
+                console.log('ailed to fetch cart froFm context', e)
+                setCart(null)
             }
         }
     }
@@ -95,9 +96,13 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     // cập nhật resultCheckoutReview
     useEffect(() => {
         ;(async () => {
-            if (orderRequest) {
+            if (orderRequest && user.id) {
                 try {
-                    const res = await orderApi.checkoutReview(orderRequest)
+                    const res = isAuthenticated
+                        ? await orderApi.checkoutReview(orderRequest)
+                        : await orderApi.checkoutReviewGuest(user.id, orderRequest)
+                    console.log('res', res)
+
                     setResultCheckoutReview(res)
                 } catch (e) {
                     console.log('Failed to get checkout review', e)
@@ -122,6 +127,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
                 resultCheckoutReview,
 
+                // orderRequest,
                 setOrderRequest,
             }}
         >

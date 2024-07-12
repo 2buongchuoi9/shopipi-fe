@@ -85,6 +85,12 @@ const AllDiscount = () => {
             ),
         },
         {
+            dataIndex: 'minOrderValue',
+            title: 'Giảm tối thiểu',
+            key: 'minOrderValue',
+            render: (minOrderValue) => <p>{minOrderValue}đ</p>,
+        },
+        {
             dataIndex: 'totalCount',
             title: 'Số lượng',
             key: 'quantity',

@@ -1,5 +1,6 @@
+import ModalDiscount from '@/components/ModalDiscount'
 import QuantitySelector from '@/components/QuantitySelector'
-import { useCart, useDebounce, useMessage } from '@/hooks'
+import { useAuth, useCart, useDebounce, useMessage } from '@/hooks'
 import authApi, { User } from '@/http/authApi'
 import { CartItem, CartRequest, ShopOrderItem } from '@/http/cartApi'
 import { ShopOrderItemsRequest } from '@/http/OrderApi'
@@ -10,7 +11,7 @@ import { TableRowSelection } from 'antd/es/table/interface'
 import { useEffect, useState } from 'react'
 import { BsTicketPerforated } from 'react-icons/bs'
 import { HiChatBubbleLeftRight } from 'react-icons/hi2'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const StyleHiddenTableOnlyHeard = () => (
     <style>{`
@@ -19,6 +20,35 @@ const StyleHiddenTableOnlyHeard = () => (
     }
 `}</style>
 )
+
+const columns: ColumnsType<any> = [
+    {
+        title: 'Tên sản phẩm',
+        dataIndex: 'id',
+        key: 'name',
+        className: 'w-1/2',
+    },
+    {
+        title: 'Đơn giá',
+        dataIndex: 'name',
+        key: 'name',
+    },
+    {
+        title: 'Số lượng',
+        dataIndex: 'quantity',
+        key: 'quantity',
+    },
+    {
+        title: 'Thành tiền',
+        dataIndex: 'quantity',
+        key: 'quantity',
+    },
+    {
+        title: 'Thao tác',
+        dataIndex: 'quantity',
+        key: 'quantity',
+    },
+]
 
 const EmptyCart = () => {
     return (
@@ -48,7 +78,7 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
     const { addToCart } = useCart()
     const [cartRequest, setCartRequest] = useState<CartRequest | null>(null)
     const debounce = useDebounce<CartRequest | null>({ value: cartRequest, delay: 500 })
-
+    const [open, setOpen] = useState(false)
     const { shopId, items } = shopItem
     const [shop, setShop] = useState<User>()
 
@@ -160,12 +190,36 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
             title: 'Thao tác',
             dataIndex: 'quantity',
             key: 'variant.id',
-            render: () => <Button type="link">Xóa</Button>,
+            render: (_, { product, variant }) => (
+                <Button
+                    type="link"
+                    onClick={() => {
+                        const data = { productId: product.id, variantId: variant.id, quantity: 0 }
+                        console.log(data)
+                        setCartRequest(data)
+                    }}
+                >
+                    Xóa
+                </Button>
+            ),
         },
     ]
 
     return (
         <div className="bg-red-50 rounded-2xl border-[1px]">
+            {shop && (
+                <ModalDiscount
+                    isOpen={open}
+                    onCancel={() => setOpen(false)}
+                    shop={shop}
+                    onOk={(discount) => {
+                        console.log('discount', discount)
+                        setOpen(false)
+                    }}
+                    totalMinOrder={shopItem.total}
+                />
+            )}
+
             <div className="flex items-center space-x-3 pl-5">
                 <p>{shop?.name}</p>
                 <Button type="link" className="text-blue-500" icon={<HiChatBubbleLeftRight />}>
@@ -183,12 +237,15 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
                 pagination={false}
                 rowSelection={rowSelection} // Thêm rowSelection vào Table
                 footer={() => (
-                    <div className="pl-8 flex items-center space-x-2">
-                        <BsTicketPerforated />
-                        <span>{`Voucher của ${shop?.name} giảm đến 25%`}</span>
-                        <Button type="link" size="small">
-                            Xem thêm voucher (làm sau)
-                        </Button>
+                    <div className="flex justify-between items-center">
+                        <div className="pl-8 flex items-center space-x-2">
+                            <BsTicketPerforated />
+                            <span>{`Voucher của ${shop?.name} giảm đến 25%`}</span>
+                            <Button type="link" size="small" onClick={() => setOpen(true)}>
+                                Xem thêm voucher (làm sau)
+                            </Button>
+                        </div>
+                        {/* <div>Tổng: {shopItem.total}</div> */}
                     </div>
                 )}
             />
@@ -198,6 +255,8 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
 
 // luồng: call api update (create) cart -> fetch cart in context -> render cart page
 const CartPage = () => {
+    // const { isAuthenticated } = useAuth()
+    const navigate = useNavigate()
     const { cart, setOrderRequest, resultCheckoutReview: checkout } = useCart()
     const [shopOrderItemsRequest, setShopOrderItemsRequest] = useState<ShopOrderItemsRequest[]>([])
 
@@ -249,35 +308,6 @@ const CartPage = () => {
         }
     }
 
-    const columns: ColumnsType<any> = [
-        {
-            title: 'Tên sản phẩm',
-            dataIndex: 'id',
-            key: 'name',
-            className: 'w-1/2',
-        },
-        {
-            title: 'Đơn giá',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Số lượng',
-            dataIndex: 'quantity',
-            key: 'quantity',
-        },
-        {
-            title: 'Thành tiền',
-            dataIndex: 'quantity',
-            key: 'quantity',
-        },
-        {
-            title: 'Thao tác',
-            dataIndex: 'quantity',
-            key: 'quantity',
-        },
-    ]
-
     return !cart ? (
         <EmptyCart />
     ) : (
@@ -326,13 +356,14 @@ const CartPage = () => {
                     </div>
                     <div className="flex items-center space-x-2">
                         <div>
-                            <p>
-                                {`Tổng thanh toán (${
-                                    checkout?.items.flatMap((v) => v.items).length ?? 0
-                                } sản phầm): ${checkout?.totalCheckout ?? 0}đ`}
-                            </p>
+                            {`Tạm tính (${
+                                checkout?.items.flatMap((v) => v.items).length ?? 0
+                            } sản phầm): ${checkout?.totalCheckout ?? 0}đ`}
                         </div>
-                        <Button type="primary">Mua hàng</Button>
+
+                        <Button type="primary" onClick={() => navigate('/order')}>
+                            Mua hàng
+                        </Button>
                     </div>
                 </div>
             </div>
