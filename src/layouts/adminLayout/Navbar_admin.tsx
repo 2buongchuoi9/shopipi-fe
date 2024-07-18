@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
-const Navbar_ad = ({ ...rest }: Props) => {
+const Navbar_admin = ({ ...rest }: Props) => {
     const { user, logout } = useAuth()
     return (
         <div {...rest}>
@@ -50,4 +50,4 @@ const Navbar_ad = ({ ...rest }: Props) => {
         </div>
     )
 }
-export default Navbar_ad
+export default Navbar_admin

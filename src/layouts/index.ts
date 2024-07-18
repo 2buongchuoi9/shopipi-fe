@@ -1,2 +1,2 @@
-export { default as AdminLayout } from './adminLayout/AdminLayout'
+export { default as AdminLayout } from './sellerLayout/SellerLayout'
 export { default as DefaultLayout } from './defaultLayout/DefaultLayout'

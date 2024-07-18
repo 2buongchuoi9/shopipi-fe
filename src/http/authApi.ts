@@ -11,10 +11,9 @@ export const initialUser = {
     roles: [],
     address: null,
     createdAt: '',
-    updateAt: '',
+    updatedAt: '',
     oauth2Id: null,
     addressShipping: '',
-    createAt: '',
 }
 
 export type User = {
@@ -27,11 +26,10 @@ export type User = {
     authType: string
     roles: string[]
     address: string | null
-    createdAt: string
-    updateAt: string
+    updatedAt: string
     oauth2Id: string | null
     addressShipping: string
-    createAt: string
+    createdAt: string
 }
 
 export type Auth = {

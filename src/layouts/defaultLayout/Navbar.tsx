@@ -22,7 +22,7 @@ const Profile = ({ isAuthenticated, user }: Props) => {
             menu={{
                 items: [
                     { key: 1, label: <Link to="/login">Login</Link> },
-                    { key: 2, label: <Link to="/admin/product/all">dô admin</Link> },
+                    { key: 2, label: <Link to="/seller/product/all">dô admin</Link> },
                     {
                         key: 2,
                         label: (

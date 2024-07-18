@@ -37,7 +37,7 @@ export interface CartContextType {
     // checkout review
     resultCheckoutReview: Order | null
 
-    // orderRequest: OrderRequest | null
+    orderRequest: OrderRequest | null
     // request checkout review -> order
     setOrderRequest: React.Dispatch<React.SetStateAction<OrderRequest | null>>
 }
@@ -127,7 +127,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
                 resultCheckoutReview,
 
-                // orderRequest,
+                orderRequest,
                 setOrderRequest,
             }}
         >

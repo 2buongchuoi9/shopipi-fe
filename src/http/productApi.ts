@@ -2,7 +2,6 @@ import { ProductState } from '@/utils/constants'
 import { Category } from './categoryApi'
 import http, { Page, ParamsRequest } from './http'
 import { Shop } from './shopApi'
-import { removeNullParams } from '@/utils'
 
 export const initialProduct: Product = {
     id: '',
@@ -31,6 +30,9 @@ export const initialProduct: Product = {
             id: '',
             productId: '',
             quantity: 0,
+            price: 0,
+            priceImport: 0,
+            priceSale: 0,
             valueVariant: [{ key: '', value: '' }],
         },
     ],
@@ -42,7 +44,7 @@ export const initialProduct: Product = {
         thumb: '',
         parentName: null,
     },
-    createAt: '',
+    createdAt: '',
     shop: {
         id: '',
         name: '',
@@ -53,7 +55,7 @@ export const initialProduct: Product = {
         authType: 'LOCAL',
         roles: ['USER'],
         addressShipping: null,
-        createAt: '',
+        createdAt: '',
         oauth2Id: null,
     },
 }
@@ -72,6 +74,9 @@ export type Variant = {
     id: string
     productId: string
     quantity: number
+    price: number
+    priceImport: number
+    priceSale: number
     valueVariant: Map[]
 }
 
@@ -119,7 +124,7 @@ export type Product = {
     attribute: Attribute
     variants: Variant[]
     category: Category
-    createAt: string // Consider using Date if possible
+    createdAt: string // Consider using Date if possible
     shop: Shop
     isDeleted: boolean
 }
@@ -137,6 +142,9 @@ export type ProductRequest = {
     description: string | null
     categoryId: string | null
     state: keyof typeof ProductState
+
+    // thuộc tính này không cần gưi lên server
+    isHidden?: boolean
 }
 
 export const isElectronicAttr = (attr: Attribute): attr is ElectronicAttr => {
@@ -164,5 +172,12 @@ const productApi = {
         await http.post<Product>(`/product/${id}`, data),
 
     findBySlug: async (slug: string) => await http.get<Product>(`/product/slug/${slug}`),
+
+    findById: async (id: string) => await http.get<Product>(`/product/id/${id}`),
+
+    updateManyState: async (ids: string[], state: keyof typeof ProductState) =>
+        await http.post<boolean>(`/product/update-many-state`, { ids, value: state }),
+
+    deleteProduct: async (id: string) => await http.delete<boolean>(`/product/${id}`),
 }
 export default productApi

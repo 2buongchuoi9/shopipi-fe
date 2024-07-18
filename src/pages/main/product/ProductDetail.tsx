@@ -25,20 +25,13 @@ const ProductDetail = () => {
         thumb,
         name,
         price,
+        shop,
+        quantity: productQuantity,
     } = product
 
-    const handleClickVariant = (map: Map) => {
-        setSelectedValuesVariant((prev) => {
-            // Lọc các object có key khác với key của object mới
-            const filtered = prev.filter((item) => item.key !== map.key)
-            // Thêm object mới vào danh sách đã lọc
-            return [...filtered, map]
-        })
-    }
-
-    const handleAddToCart = async () => {
-        // Tìm variant khớp với các giá trị đã chọn
-        const matchedVariant = variants.find((variant) =>
+    // Tìm variant khớp với các giá trị đã chọn
+    const matchedVariant = () => {
+        return variants.find((variant) =>
             variant.valueVariant.every((valueVariant) =>
                 selectedValuesVariant.some(
                     (selectedValue) =>
@@ -47,10 +40,30 @@ const ProductDetail = () => {
                 )
             )
         )
+    }
 
-        if (matchedVariant) {
-            console.log('Matched Variant:', matchedVariant)
-            const data = { productId: product.id, variantId: matchedVariant.id, quantity }
+    const handleClickVariant = (map: Map) => {
+        setSelectedValuesVariant((prev) => {
+            // Lọc các object có key khác với key của object mới
+            const filtered = prev.filter((item) => item.key !== map.key)
+            // Thêm object mới vào danh sách đã lọc
+            return [...filtered, map]
+        })
+        console.log(matchedVariant())
+    }
+
+    const handleAddToCart = async () => {
+        const o = matchedVariant()
+        if (o) {
+            console.log('Matched Variant:', o)
+
+            // check quantity
+            if (quantity > o.quantity) {
+                error('kho hàng không đủ')
+                return
+            }
+
+            const data = { productId: product.id, variantId: o.id, quantity }
             let res
             if (!isAuthenticated) {
                 // đăng ký user Mod
@@ -85,7 +98,10 @@ const ProductDetail = () => {
                 <div className="w-3/5 bg-slate-300">
                     <div className="">{name}</div>
                     <div>price:{price}</div>
+                    <div>shop:{shop.name}</div>
                     <div>mã giảm giá:conc</div>
+                    <div>số luọng:{matchedVariant()?.quantity ?? productQuantity}</div>
+
                     <div>
                         {listVariant.map((item) => {
                             return (

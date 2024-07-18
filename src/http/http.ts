@@ -8,6 +8,12 @@ import axios, {
     AxiosResponse,
 } from 'axios'
 
+export type Pagination = {
+    total: number
+    current: number
+    pageSize: number
+}
+
 export type ParamsRequest = {
     page?: number | string | null
     size?: number | string | null

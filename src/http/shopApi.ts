@@ -1,4 +1,4 @@
-export type Role = "ADMIN" | "USER" | "SHOP"
+export type Role = 'ADMIN' | 'USER' | 'SHOP'
 
 export type Shop = {
     id: string
@@ -10,6 +10,6 @@ export type Shop = {
     authType: string
     roles: Role[]
     addressShipping: string | null
-    createAt: string // Consider using Date if possible
+    createdAt: string // Consider using Date if possible
     oauth2Id: string | null
 }

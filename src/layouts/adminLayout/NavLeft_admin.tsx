@@ -1,4 +1,4 @@
-import { adminPath } from '@/utils/constants'
+import { adminPath, sellerPath } from '@/utils/constants'
 import { Menu, MenuProps } from 'antd'
 import { MenuInfo } from 'rc-menu/lib/interface'
 import { useState } from 'react'
@@ -8,7 +8,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
 type MenuItem = Required<MenuProps>['items']
 
-const NavLeft_ad = ({ ...rest }: Props) => {
+const NavLeft_admin = ({ ...rest }: Props) => {
     const [currentKey, setCurrentKey] = useState<string>('')
     const navigate = useNavigate()
     console.log('currentKey', currentKey)
@@ -21,41 +21,8 @@ const NavLeft_ad = ({ ...rest }: Props) => {
 
     const items: MenuItem = [
         {
-            key: '/order',
-            label: 'Quản lý đơn hàng',
-            children: [
-                {
-                    key: '/order/all',
-                    label: 'Tất cả',
-                },
-                {
-                    key: '/order/alla',
-                    label: 'Đơn hủy',
-                },
-                {
-                    key: '/order/allv',
-                    label: 'Trả hàng/Hoàn tiền',
-                },
-                {
-                    key: '/add',
-                    label: 'Cài đặt vận chuyển',
-                },
-            ],
-        },
-        { type: 'divider' },
-        {
             key: '/product',
             label: 'Quản lý Sản phẩm',
-            children: [
-                {
-                    key: '/product/all',
-                    label: 'Tất cả sản phẩm',
-                },
-                {
-                    key: '/product/add',
-                    label: 'Thêm sản phẩm',
-                },
-            ],
         },
         { type: 'divider' },
         {
@@ -144,4 +111,4 @@ const NavLeft_ad = ({ ...rest }: Props) => {
         </div>
     )
 }
-export default NavLeft_ad
+export default NavLeft_admin

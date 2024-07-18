@@ -1,45 +1,50 @@
-import { ListMap, Variant } from '@/http'
-import { Table, Input, Form } from 'antd'
+import { Variant } from '@/http'
+import { Form, Input, Table } from 'antd'
 import { ColumnType } from 'antd/es/table'
 
-const rawData = [
-    {
-        key: 'color',
-        values: ['red', 'blue'],
-    },
-    {
-        key: 'size',
-        values: ['S', 'M'],
-    },
-]
+type Type = 'product' | 'inventory'
 
-type VariantRecord = {
+type VariantRecordBase = {
     key: any
     [key: string]: string | number
-    quantity: number
     id: string
     productId: string
+    price: number
+    priceImport: number
+    priceSale: number
+    quantity: number
 }
-
-type PropsCreateVariant = {
-    data: ListMap[]
-    index?: number
-    current?: any
-    result?: VariantRecord[]
+type VariantRecord = VariantRecordBase & {
+    quantity_old: number
+    priceImport_old: number
 }
 
 // Mở rộng kiểu ColumnType để bao gồm thuộc tính editable
 type CustomColumnType<T> = ColumnType<T> & {
     editable?: boolean
 }
+type EditableCellProps = {
+    title: React.ReactNode
+    editable: boolean
+    children: React.ReactNode
+    dataIndex: string
+    record: VariantRecord
+    handleSave: (record: VariantRecord) => void
+    type: Type
+}
 
-const flattenVariants = (variants: Variant[]): VariantRecord[] => {
+const flattenVariants = (variants: Variant[], type: Type): VariantRecord[] => {
     return variants.map((variant, index) => {
         const flatVariant: VariantRecord = {
             key: index,
-            quantity: variant.quantity,
+            price: variant.price,
             id: variant.id,
             productId: variant.productId,
+            priceImport: type === 'inventory' ? 0 : variant.priceImport,
+            priceSale: variant.priceSale,
+            quantity: type === 'inventory' ? 0 : variant.quantity,
+            quantity_old: variant.quantity,
+            priceImport_old: variant.priceImport,
         }
 
         variant.valueVariant.forEach((v) => {
@@ -49,21 +54,29 @@ const flattenVariants = (variants: Variant[]): VariantRecord[] => {
         return flatVariant
     })
 }
-const createColumns = (
-    // keys: string[],
-    data: VariantRecord[]
-): CustomColumnType<VariantRecord>[] => {
+
+const createColumns = (data: VariantRecord[]): CustomColumnType<VariantRecord>[] => {
     if (data.length === 0) return []
     const keys = Object.keys(data[0]).filter((key) => key !== 'key')
 
     return keys
-        .filter((k) => k !== 'id' && k !== 'productId' && k !== 'quantity')
+        .filter(
+            (k) =>
+                k !== 'id' &&
+                k !== 'productId' &&
+                k !== 'price' &&
+                k !== 'priceImport' &&
+                k !== 'priceSale' &&
+                k !== 'quantity' &&
+                k !== 'quantity_old' &&
+                k !== 'priceImport_old'
+        )
         .map((key) => ({
             title: key.charAt(0).toUpperCase() + key.slice(1),
             dataIndex: key,
             editable: false,
             key: key,
-            render: (text: any, record: VariantRecord, index: number) => {
+            render: (text: any, _: VariantRecord, index: number) => {
                 const previousRecord = index > 0 ? data[index - 1] : ({} as VariantRecord)
                 const currentRecord = data[index]
                 const previousValue = previousRecord[key]
@@ -92,15 +105,6 @@ const createColumns = (
         }))
 }
 
-type EditableCellProps = {
-    title: React.ReactNode
-    editable: boolean
-    children: React.ReactNode
-    dataIndex: string
-    record: VariantRecord
-    handleSave: (record: VariantRecord) => void
-}
-
 const EditableCell = ({
     title,
     editable,
@@ -120,14 +124,15 @@ const EditableCell = ({
                 <Form.Item
                     style={{ margin: 0 }}
                     // 'table' is important to make sure the name is unique
-                    name={record.key.toString()}
+                    name={record.key.toString() + dataIndex}
                     rules={[
                         {
                             validator: (_, value) => {
                                 if (!value) return Promise.reject(`${title} is required.`)
                                 if (parseInt(value) <= 0)
-                                    return Promise.reject(`${title} must be greater than 0.`)
-                                return Promise.resolve()
+                                    return Promise.reject(`${title} phải lớn hơn 0.`)
+                                if (dataIndex.startsWith('price') && parseInt(value) < 10000)
+                                    return Promise.reject(`${title} phải lớn hơn 10,000.`)
                             },
                         },
                     ]}
@@ -136,6 +141,7 @@ const EditableCell = ({
                         type="number"
                         defaultValue={record[dataIndex] as number}
                         onBlur={handleBlur}
+                        prefix={dataIndex.startsWith('price') ? '₫' : ''}
                     />
                 </Form.Item>
             ) : (
@@ -144,49 +150,63 @@ const EditableCell = ({
         </td>
     )
 }
-const VariantTable = ({
-    variants,
-    onQuantityChange,
-}: {
+
+type Props = {
     variants: Variant[]
-    onQuantityChange: (record: VariantRecord) => void
-}) => {
+    onRecordChange: (record: VariantRecord) => void
+    type: Type
+}
+
+const VariantTable = ({ variants, onRecordChange, type }: Props) => {
     const [form] = Form.useForm()
 
-    console.log('variants from variant table', JSON.stringify(variants))
-
-    // console.log('rawData', rawData)
-
-    const convertedData = flattenVariants(variants)
-    console.log('convertedData', convertedData)
+    const convertedData = flattenVariants(variants, type)
 
     const dynamicColumns: CustomColumnType<VariantRecord>[] = createColumns(convertedData)
 
-    console.log(dynamicColumns)
+    if (type === 'product') {
+        dynamicColumns.push({
+            title: 'Giá bán',
+            dataIndex: 'price',
+            key: 'price',
+            editable: true,
+        })
+    }
 
-    dynamicColumns.push({
-        title: 'Kho hàng',
-        dataIndex: 'quantity',
-        key: 'quantity',
-        editable: true,
-    })
-    // dynamicColumns.push({
-    //     title: 'conc',
-    //     dataIndex: 'key',
-    //     key: 'ạdhkasjd',
-    //     editable: false,
-    //     render: (text, record) => JSON.stringify(record),
-    // })
+    if (type === 'inventory') {
+        dynamicColumns.push({
+            title: 'Giá nhập cũ',
+            dataIndex: 'priceImport_old',
+            key: 'priceImport_old',
+            editable: false,
+        })
+        dynamicColumns.push({
+            title: 'Tồn kho',
+            dataIndex: 'quantity_old',
+            key: 'quantity_old',
+            editable: false,
+        })
+        dynamicColumns.push({
+            title: 'Giá nhập',
+            dataIndex: 'priceImport',
+            key: 'priceImport',
+            editable: true,
+        })
 
-    const handleSave = (record: VariantRecord) => {
-        console.log('record', record)
-        onQuantityChange(record)
+        dynamicColumns.push({
+            title: 'Số lượng',
+            dataIndex: 'quantity',
+            key: 'quantity',
+            editable: true,
+        })
+    }
+
+    const handleSave = (row: VariantRecord) => {
+        onRecordChange(row)
     }
 
     const mergedColumns = dynamicColumns.map((col) => {
-        if (!col.editable) {
-            return col
-        }
+        if (!col.editable) return col
 
         return {
             ...col,
@@ -201,14 +221,7 @@ const VariantTable = ({
     }) as ColumnType<VariantRecord>[]
 
     return (
-        <Form
-            form={form}
-            name="jlzksdhbfhuiosdbfbksljdhfbvbvksdhjfv"
-            // onValuesChange={(changedValues, allValues) => {
-            //     const { key } = changedValues
-            //     onQuantityChange('keyssss', key)
-            // }}
-        >
+        <Form form={form} name="jlzksdhbfhuiosdbfbksljdhfbvbvksdhjfv">
             <Table
                 bordered
                 dataSource={convertedData}

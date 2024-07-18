@@ -1,10 +1,10 @@
 import { DefaultLayout } from '@/layouts'
-import { ProductDetail, ProductPage } from '@/pages/product'
+import { ProductDetail, ProductPage } from '@/pages/main/product'
 import { ComponentType, ReactNode } from 'react'
-import { CartPage } from '@/pages/cart'
-import { HomePage } from '@/pages/home'
-import { OrderPage } from '@/pages/order'
-import { Login, Redirect, Register } from '@/pages/auth'
+import { CartPage } from '@/pages/main/cart'
+import { HomePage } from '@/pages/main/home'
+import { OrderPage } from '@/pages/main/order'
+import { Login, Redirect, Register } from '@/pages/main/auth'
 
 const route = (
     path: string,

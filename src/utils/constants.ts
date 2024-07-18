@@ -1,9 +1,10 @@
 export const adminPath = '/admin'
+export const sellerPath = '/seller'
 
 export enum UserRoles {
     ADMIN = 'ADMIN',
     USER = 'USER',
-    Shop = 'Shop',
+    Shop = 'SHOP',
 }
 
 export const DiscountPriceType = {
@@ -32,4 +33,17 @@ export const OrderState = {
     SHIPPING: 'Đang giao hàng',
     DELIVERED: 'Đã giao hàng',
     CANCELLED: 'Đơn hủy',
+}
+
+export const OrderPayment = {
+    CASH: 'Thanh toán khi nhận hàng',
+    MOMO: 'Thanh toán qua Momo',
+    VN_PAY: 'Thanh toán qua VNPay',
+}
+
+export const OrderShipping = {
+    FAST: { name: 'Giao hàng nhanh', price: 25000, time: '1-2 ngày' },
+    NORMAL: { name: 'Giao hàng tiêu chuẩn', price: 20000, time: '3-5 ngày' },
+    GHTK: { name: 'Giao hàng tiết kiệm', price: 15000, time: '3-5 ngày' },
+    HT: { name: 'Giao hàng hỏa tốc', price: 45000, time: 'trong ngày' },
 }

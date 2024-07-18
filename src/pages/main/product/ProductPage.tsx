@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks'
 import { Product } from '@/http'
 import cartApi from '@/http/cartApi'
 import productApi from '@/http/productApi'
+import { ProductState } from '@/utils/constants'
 import { useEffect, useState } from 'react'
 
 const ProductPage = () => {
@@ -12,7 +13,7 @@ const ProductPage = () => {
 
     useEffect(() => {
         ;(async () => {
-            const data = await productApi.getAll()
+            const data = await productApi.getAll({ state: 'ACTIVE' })
             setProducts(data.content)
             const res = await cartApi.getCart()
             console.log('cart', res)

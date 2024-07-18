@@ -1,8 +1,8 @@
-import { useAuth, useCategory } from '@/hooks'
+import { useAuth, useCategory, useMessage } from '@/hooks'
 import { ErrorPayload, ParamsRequest } from '@/http'
 import productApi, { Attribute, ListMap, Map, Product, Variant } from '@/http/productApi'
-import { ProductState, UserRoles } from '@/utils/constants'
-import { Button, Dropdown, Popconfirm, Tabs, Tooltip, TreeSelect } from 'antd'
+import { ProductState } from '@/utils/constants'
+import { Button, Dropdown, Popconfirm, Select, Tabs, Tooltip, TreeSelect } from 'antd'
 import Search from 'antd/es/input/Search'
 import Table, { ColumnsType } from 'antd/es/table'
 import { useEffect, useState } from 'react'
@@ -12,7 +12,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 const initialQuery = {
     page: 0,
-    size: 2,
+    size: 10,
     sort: null,
     keySearch: null,
     categoryId: null,
@@ -31,36 +31,34 @@ const AllProduct = () => {
     const [products, setProducts] = useState<Product[]>([])
     const { user } = useAuth()
     const { categories } = useCategory()
+    const { loading, error, success } = useMessage()
     const [query, setQuery] = useState<ParamsRequest>({ ...initialQuery })
     const [pagination, setPagination] = useState<Pagination>({ total: 0, current: 1, pageSize: 10 })
     const [loadingButton, setLoadingButton] = useState<boolean>(false)
 
-    useEffect(() => {
-        if (user.roles.includes(UserRoles.ADMIN)) {
-            setQuery((prev) => ({ ...prev, shopId: null }))
-        } else setQuery((prev) => ({ ...prev, shopId: user.id }))
-    }, [user.id])
+    const fetchProduct = async () => {
+        try {
+            const data = await productApi.getAll({ ...query })
+            setProducts(data.content.map((item) => ({ ...item, key: item.id })))
+            setPagination({
+                total: data.totalElement,
+                current: data.currentPage,
+                pageSize: data.pageSize,
+            })
+            console.log('data', data)
+        } catch (error) {
+            if (error instanceof ErrorPayload) {
+                console.error('ErrorPayload', error)
+            }
+        }
+    }
 
     useEffect(() => {
         ;(async () => {
-            if (user.id) {
-                try {
-                    const data = await productApi.getAll({ ...query })
-                    setProducts(data.content.map((item) => ({ ...item, key: item.id })))
-                    setPagination({
-                        total: data.totalElement,
-                        current: data.currentPage,
-                        pageSize: data.pageSize,
-                    })
-                    console.log('data', data)
-                } catch (error) {
-                    if (error instanceof ErrorPayload) {
-                        console.error('ErrorPayload', error)
-                    }
-                }
-            }
+            await fetchProduct()
         })()
     }, [
+        query.shopId,
         query.page,
         query.size,
         query.sort,
@@ -71,6 +69,22 @@ const AllProduct = () => {
         user.id,
     ])
 
+    const handleUpdateManyState = async (products: Product[], state: keyof typeof ProductState) => {
+        try {
+            const res = await productApi.updateManyState(
+                products.map((item) => item.id),
+                state
+            )
+            console.log('res', res)
+
+            await fetchProduct()
+            success('Cập nhật thành công')
+        } catch (e) {
+            console.error('error', e)
+            error(e + '')
+        }
+    }
+
     // console.log('products', products)
 
     const column: ColumnsType<Product> = [
@@ -79,7 +93,7 @@ const AllProduct = () => {
             dataIndex: 'type',
             key: 'type',
             render: (type, record) => {
-                const { name, thumb } = record
+                const { name, thumb, shop } = record
                 return (
                     <div className="flex justify-start items-center">
                         <img src={thumb} alt={name} className="w-10 h-10 object-cover" />
@@ -88,8 +102,28 @@ const AllProduct = () => {
                                 <p className="text-ellipsis line-clamp-2">{name}</p>
                             </Tooltip>
                             <p>{type}</p>
+                            <p>shop:{shop.name}</p>
                         </div>
                     </div>
+                )
+            },
+        },
+        {
+            title: 'trạng thái',
+            dataIndex: 'state',
+            key: 'state',
+            render: (state, product) => {
+                return (
+                    <Select
+                        options={Object.keys(ProductState).map((v) => ({
+                            key: v,
+                            value: v,
+                            label: ProductState[v as keyof typeof ProductState],
+                        }))}
+                        style={{ width: 180 }}
+                        value={state}
+                        onChange={async (value) => await handleUpdateManyState([product], value)}
+                    />
                 )
             },
         },

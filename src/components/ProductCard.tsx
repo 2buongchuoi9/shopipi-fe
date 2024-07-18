@@ -14,7 +14,7 @@ const badge = 'Deal có giới hạn'
 const discount = 'Giảm giá 10%'
 
 const Card = ({ product }: CardProps) => {
-    const { thumb, price, priceImport, name, slug } = product
+    const { thumb, price, priceImport, name, slug, shop } = product
 
     return (
         <div>
@@ -30,6 +30,9 @@ const Card = ({ product }: CardProps) => {
                 <div className="flex mt-2">
                     <span className="">{price} đ</span>
                     <span className="line-through">{priceImport} đ</span>
+                </div>
+                <div>
+                    <span>shop:{shop.name}</span>
                 </div>
                 <div className="mt-2 flex justify-center items-center w-full mb-5">
                     <span className="inline-block min-w-0 overflow-hidden overflow-ellipsis whitespace-nowrap">
@@ -48,6 +51,7 @@ const Detail = ({ product }: CardProps) => {
         priceImport,
         name,
         slug,
+        shop,
         attribute: { listVariant },
     } = product
 
@@ -57,6 +61,7 @@ const Detail = ({ product }: CardProps) => {
             <div className="w-3/5 bg-slate-300">
                 <div className="">{name}</div>
                 <div>price:{price}</div>
+                <div>shop:{shop.name}</div>
                 <div>mã giảm giá:conc</div>
                 <div>
                     {listVariant.map((item) => {

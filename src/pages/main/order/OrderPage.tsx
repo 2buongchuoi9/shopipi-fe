@@ -1,10 +1,11 @@
 import ModalDiscount from '@/components/ModalDiscount'
-import { useAuth, useCart } from '@/hooks'
+import { useAuth, useCart, useMessage } from '@/hooks'
 import authApi, { User } from '@/http/authApi'
 import { CartItem, ShopOrderItem } from '@/http/cartApi'
 import { Discount } from '@/http/discountApi'
-import { OrderRequest } from '@/http/OrderApi'
-import { Button, Form, Input, InputNumber, Table } from 'antd'
+import orderApi, { OrderRequest } from '@/http/OrderApi'
+import { OrderPayment, OrderShipping } from '@/utils/constants'
+import { Button, Form, Input, InputNumber, Radio, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { useEffect, useState } from 'react'
 import { BsTicketPerforated } from 'react-icons/bs'
@@ -159,7 +160,7 @@ const ShopOrder = ({ shopItem, onChangeDiscount }: Props) => {
                             </Form.Item>
                             <div className="flex items-center space-x-3 justify-end text-6sm">
                                 <span>{`Tổng số tiền (${
-                                    shopItem?.items.length ?? 0
+                                    shopItem.items.flatMap((v) => v).length ?? 0
                                 } sản phầm): `}</span>
                                 <p className="text-lg text-blue-500">{shopItem?.total ?? 0}đ</p>
                                 <span className="flex items-center space-x-3">
@@ -178,10 +179,89 @@ const ShopOrder = ({ shopItem, onChangeDiscount }: Props) => {
 }
 
 const OrderPage = () => {
-    const { resultCheckoutReview: checkout, setOrderRequest } = useCart()
+    const { success, error } = useMessage()
+    const { resultCheckoutReview: checkout, setOrderRequest, orderRequest } = useCart()
     const { user } = useAuth()
+    const [selectedPayment, setSelectedPayment] = useState<keyof typeof OrderPayment>('CASH')
+    const [selectedShipping, setSelectedShipping] = useState<keyof typeof OrderShipping>('NORMAL')
 
     // if (resultCheckoutReview?.items.length === 0) return 'nhu con c'
+
+    const handleChangeDiscount = (discount: Discount, shopId: string) => {
+        if (discount) {
+            setOrderRequest(
+                (prev) =>
+                    ({
+                        ...prev,
+                        shopOrderItems: prev?.shopOrderItems.map((item) => {
+                            if (item.shopId === shopId) {
+                                return {
+                                    ...item,
+                                    discountId: discount.id,
+                                }
+                            }
+                            return item
+                        }),
+                    } as OrderRequest)
+            )
+        }
+    }
+
+    useEffect(() => {
+        setOrderRequest((prev) => {
+            if (prev) {
+                return {
+                    ...prev,
+                    payment: selectedPayment,
+                }
+            }
+            return prev
+        })
+    }, [selectedPayment])
+
+    useEffect(() => {
+        setOrderRequest((prev) => {
+            if (prev) {
+                return {
+                    ...prev,
+                    shippingType: selectedShipping,
+                }
+            }
+            return prev
+        })
+    }, [selectedShipping])
+
+    const handleOrderByUser = async () => {
+        if (orderRequest) {
+            if (orderRequest.payment === 'CASH') {
+                try {
+                    const res = await orderApi.orderByUser(orderRequest)
+                    console.log('res', res)
+                    success('Đặt hàng thành công')
+                } catch (e) {
+                    console.log('Failed to order by user', e)
+                    error('Đặt hàng thất bại')
+                }
+            } else {
+                try {
+                    const res = await orderApi.orderByUser_redirectPayment(
+                        orderRequest,
+                        'http://localhost:5174/product'
+                    )
+                    console.log('res', res)
+                    const url = res.url
+                    console.log('url', url)
+                    if (url) {
+                        window.location.href = url
+                    }
+                    success('Đặt hàng thành công')
+                } catch (e) {
+                    console.log('Failed to order by user', e)
+                    error('Đặt hàng thất bại')
+                }
+            }
+        }
+    }
 
     return (
         <div className="py-5 space-y-5">
@@ -209,26 +289,9 @@ const OrderPage = () => {
                         <ShopOrder
                             shopItem={shopItem}
                             key={shopItem.shopId}
-                            onChangeDiscount={(discount) => {
-                                console.log('discount', discount)
-                                if (discount) {
-                                    setOrderRequest(
-                                        (prev) =>
-                                            ({
-                                                ...prev,
-                                                shopOrderItems: prev?.shopOrderItems.map((item) => {
-                                                    if (item.shopId === shopItem.shopId) {
-                                                        return {
-                                                            ...item,
-                                                            discountId: discount.id,
-                                                        }
-                                                    }
-                                                    return item
-                                                }),
-                                            } as OrderRequest)
-                                    )
-                                }
-                            }}
+                            onChangeDiscount={(discount) =>
+                                handleChangeDiscount(discount, shopItem.shopId)
+                            }
                         />
                     ))}
                 </div>
@@ -244,8 +307,49 @@ const OrderPage = () => {
                         </Button>
                     </div>
                 </div>
-                <div className="border-dashed border-b-[1px] p-3">
-                    <p>Phương thức thanh toán</p>
+                <div className="border-dashed border-b-[1px] p-3 flex items-center space-x-6">
+                    <h2 className="text-lg font-semibold mb-4">Phương thức thanh toán</h2>
+                    <Radio.Group
+                        onChange={(e) => setSelectedPayment(e.target.value)}
+                        value={selectedPayment}
+                        className="flex space-x-3"
+                    >
+                        {Object.entries(OrderPayment).map(([key, value]) => (
+                            <div className="space-y-4" key={key}>
+                                <div className="flex items-center justify-between p-4 border rounded-lg shadow-sm">
+                                    <Radio value={key} className="mr-4">
+                                        {value}
+                                    </Radio>
+                                    <span className="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full">
+                                        <i className="icon-truck"></i>{' '}
+                                        {/* Replace with appropriate icon */}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </Radio.Group>
+                </div>
+                <div className="border-dashed border-b-[1px] p-3 ">
+                    <h2 className="text-lg font-semibold mb-4">Phương thức Giao hàng</h2>
+                    <Radio.Group
+                        onChange={(e) => setSelectedShipping(e.target.value)}
+                        value={selectedShipping}
+                        className="flex space-x-3"
+                    >
+                        {Object.entries(OrderShipping).map(([key, { name, price, time }]) => (
+                            <div className="space-y-4" key={key}>
+                                <div className="flex items-center justify-between p-4 border rounded-lg shadow-sm">
+                                    <Radio value={key} className="mr-4">
+                                        <p>{name}</p>
+                                        <div className="flex justify-between">
+                                            <p className="text-[12px]">{`(${time})`}</p>
+                                            <p>{price / 1000}k</p>
+                                        </div>
+                                    </Radio>
+                                </div>
+                            </div>
+                        ))}
+                    </Radio.Group>
                 </div>
                 <div className="flex justify-end border-dashed border-b-[1px] p-3">
                     <div className="grid grid-cols-2 w-72">
@@ -261,7 +365,7 @@ const OrderPage = () => {
 
                         <p>Tổng voucher:</p>
                         <p className="flex justify-end text-blue-500 text-xl">
-                            {checkout?.totalDiscount}đ
+                            -{checkout?.totalDiscount}đ
                         </p>
 
                         <p>Tổng thanh toán:</p>
@@ -277,7 +381,12 @@ const OrderPage = () => {
                             Điều khoản Shopipi
                         </Button>
                     </p>
-                    <Button type="primary" size="large" className="rounded-lg">
+                    <Button
+                        type="primary"
+                        size="large"
+                        className="rounded-lg"
+                        onClick={handleOrderByUser}
+                    >
                         Đặt hàng
                     </Button>
                 </div>

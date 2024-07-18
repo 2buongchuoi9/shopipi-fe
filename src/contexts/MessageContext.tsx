@@ -7,6 +7,7 @@ export interface MessageContextType {
     success: (content: string, key?: string) => void
     error: (content: string, key?: string) => void
     warning: (content: string, key?: string) => void
+    close: (key?: string) => void
 }
 
 export const MessageContext = createContext<MessageContextType>({} as MessageContextType)
@@ -21,6 +22,7 @@ export default function MessageProvider({ children }: { children: ReactNode }) {
     const error = (content: string, key = '1') => messageApi.open({ key, type: 'error', content })
     const warning = (content: string, key = '1') =>
         messageApi.open({ key, type: 'warning', content })
+    const close = (key?: string) => messageApi.destroy(key ?? '1')
 
     return (
         <MessageContext.Provider
@@ -29,6 +31,7 @@ export default function MessageProvider({ children }: { children: ReactNode }) {
                 success,
                 error,
                 warning,
+                close,
             }}
         >
             {contextHolder}

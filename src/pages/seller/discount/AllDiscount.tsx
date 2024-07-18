@@ -1,4 +1,4 @@
-import { useDebounce } from '@/hooks'
+import { useAuth, useDebounce } from '@/hooks'
 import { ParamsRequest } from '@/http'
 import discountApi, { Discount } from '@/http/discountApi'
 import { randomGradient } from '@/utils'
@@ -14,11 +14,13 @@ const initQuery = {
     page: 0,
     size: 10,
     sort: 'createdAt',
+    shopId: null,
     // keySearch: '',
 }
 
 const AllDiscount = () => {
     const navigate = useNavigate()
+    const { user } = useAuth()
     const [discounts, setDiscounts] = useState<Discount[]>([])
     const [query, setQuery] = useState<ParamsRequest>(initQuery)
     const [keySearch, setKeySearch] = useState<string>('')
@@ -28,18 +30,24 @@ const AllDiscount = () => {
     console.log('discounts', discounts)
 
     useEffect(() => {
-        setQuery({ ...query, keySearch: debounce })
+        setQuery((prev) => ({ ...prev, shopId: user.id }))
+    }, [user.id])
+
+    useEffect(() => {
+        setQuery((prev) => ({ ...prev, keySearch: debounce }))
     }, [debounce])
 
     useEffect(() => {
         ;(async () => {
-            setLoading(true)
-            const data = await discountApi.get(query)
-            console.log(data)
-            setDiscounts(data.content)
-            setLoading(false)
+            if (query.shopId) {
+                setLoading(true)
+                const data = await discountApi.get(query)
+                console.log(data)
+                setDiscounts(data.content)
+                setLoading(false)
+            }
         })()
-    }, [query.page, query.state, query.keySearch, query.size, query.sort])
+    }, [query.page, query.state, query.keySearch, query.size, query.sort, query.shopId])
 
     const columns: TableColumnsType<Discount> = [
         {
@@ -117,7 +125,7 @@ const AllDiscount = () => {
             title: 'Hành động',
             key: 'action',
             render: (id) => (
-                <Button type="primary" onClick={() => navigate(`/admin/discount/detail/${id}`)}>
+                <Button type="primary" onClick={() => navigate(`/seller/discount/detail/${id}`)}>
                     Chi tiết
                 </Button>
             ),

@@ -1,6 +1,8 @@
+import { OrderPayment, OrderShipping } from '@/utils/constants'
 import { User } from './authApi'
 import { CartRequest, ShopOrderItem } from './cartApi'
-import http from './http'
+import http, { Page, ParamsRequest } from './http'
+import { orderBy } from 'lodash'
 
 export type ShopOrderItemsRequest = {
     shopId: string
@@ -11,13 +13,15 @@ export type ShopOrderItemsRequest = {
 export type OrderRequest = {
     shopOrderItems: ShopOrderItemsRequest[]
     address: string
-    payment: 'CASH' | 'MOMO' | 'CARD_BANK'
+    shippingType: keyof typeof OrderShipping
+    payment: keyof typeof OrderPayment
 }
 
 export type Order = {
     id: string
     user: User
     shippingAddress: string
+    shippingType: string
     totalOrder: number
     totalShipping: number
     totalDiscount: number
@@ -26,11 +30,11 @@ export type Order = {
     revenue: number
     profit: number
     items: ShopOrderItem[]
-    payment: string
+    payment: keyof typeof OrderPayment
     state: string
     note: string
-    createAt: string
-    updateAt: string
+    createdAt: string
+    updatedAt: string
 }
 
 const orderApi = {
@@ -38,6 +42,17 @@ const orderApi = {
 
     checkoutReviewGuest: (userId: string, data: OrderRequest) =>
         http.post<Order>(`/order/checkout-review-guest/${userId}`, data),
+
+    orderByUser: (data: OrderRequest) => http.post<Order[]>(`/order/order-by-user`, data),
+
+    orderByUser_redirectPayment: (data: OrderRequest, urlRedirect: string) =>
+        http.post<{ url: string }>(`/order/order-by-user?urlRedirect=${urlRedirect}`, data),
+
+    get: async (params?: ParamsRequest) =>
+        await http.get<Page<Order>>('/order', { params: params }),
+
+    updateStateByShop: async (orderId: string, state: string) =>
+        http.post<Order>(`/order/update-state-by-shop/${orderId}?state=${state}`),
 }
 
 export default orderApi

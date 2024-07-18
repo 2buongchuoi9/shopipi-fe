@@ -268,6 +268,7 @@ const CartPage = () => {
                       shopOrderItems: shopOrderItemsRequest,
                       address: '',
                       payment: 'CASH',
+                      shippingType: 'NORMAL',
                   }
                 : null
         )

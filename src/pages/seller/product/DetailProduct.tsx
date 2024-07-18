@@ -9,11 +9,11 @@ import _, { uniqueId } from 'lodash'
 import { cloneElement, useEffect, useState } from 'react'
 import { CiCircleRemove } from 'react-icons/ci'
 import { FaImage, FaPlay, FaPlus, FaRegImage, FaTrashCan } from 'react-icons/fa6'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import VariantTable from './VariantTable'
 import productApi from '@/http/productApi'
 import { ErrorInfoForm } from '@/types/customType'
-import { useCategory, useMessage } from '@/hooks'
+import { useCategory, useMessage, useProgress } from '@/hooks'
 const rawData = [
     {
         key: 'color',
@@ -45,6 +45,8 @@ const initProduct = {
     description: null,
     categoryId: null,
     status: false,
+    state: 'HIDDEN',
+    isHidden: true,
 }
 
 const formItemLayout = {
@@ -72,6 +74,9 @@ const combineVariants = (
             id,
             productId,
             quantity: 0,
+            price: 0,
+            priceImport: 0,
+            priceSale: 0,
             valueVariant: Object.keys(currentVariant).map((key) => ({
                 key,
                 value: currentVariant[key],
@@ -91,6 +96,7 @@ const combineVariants = (
 
 const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
     const { slug } = useParams<{ slug: string }>()
+    const navigate = useNavigate()
     const [form] = useForm<ProductRequest>()
     const { categories } = useCategory()
     const { loading, error, success } = useMessage()
@@ -141,13 +147,16 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
 
     const handleSubmit = async (values: ProductRequest) => {
         // Kiểm tra số lượng của các phân loại
-        const variantError = variants.find(({ quantity }) => quantity <= 0)
+        const variantError = variants.find(({ price }) => price <= 10000)
         if (variantError) {
             const name = variantError.valueVariant.map((v) => v.key + ':' + v.value).join(', ')
-            error(`Số lượng của phân loại ${name} không hợp lệ`)
+            error(`Giá bán của phân loại ${name} không hợp lệ`)
         }
 
-        const newData = { ...values, variants }
+        const newData = {
+            ...values,
+            variants: variants.map((v) => ({ ...v, price: Number(v.price) })),
+        }
         console.log('newData', newData)
         console.log('listVariant', values?.attribute?.listVariant)
 
@@ -158,18 +167,33 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
         // Cập nhật type của attribute important in backend
         newData.attribute.type = newData.type
 
+        const isHidden = newData.isHidden
+        delete newData.isHidden
+
         if (isAdd) {
             try {
-                const res = await productApi.addProduct(newData)
+                const res = await productApi.addProduct({
+                    ...newData,
+                    state: isHidden ? 'HIDDEN' : 'PENDING',
+                })
                 console.log('res', res)
 
                 success('quá oke')
+                navigate('/seller/product/all')
             } catch (e) {
                 console.log('error', e)
             }
         } else {
             try {
-                const res = await productApi.updateProduct(form.getFieldValue('id'), newData)
+                const res = await productApi.updateProduct(form.getFieldValue('id'), {
+                    ...newData,
+                    // important in backend
+                    state: isHidden
+                        ? 'HIDDEN'
+                        : newData.state === 'HIDDEN'
+                        ? 'PENDING'
+                        : newData.state,
+                })
                 console.log('res', res)
 
                 success('quá oke')
@@ -710,12 +734,13 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
                     {variants && variants.length !== 0 && (
                         <Form.Item label="Danh sách phân loại" name={'table'}>
                             <VariantTable
+                                type="product"
                                 variants={variants}
-                                onQuantityChange={(record) => {
+                                onRecordChange={(record) => {
                                     console.log('variantRecord', record)
-                                    if (record.quantity > 0) {
+                                    if (record.price > 0) {
                                         setVariants((prev) => {
-                                            prev[record.key].quantity = record.quantity
+                                            prev[record.key].price = record.price
                                             return prev
                                         })
                                     }
@@ -757,6 +782,10 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
                     <Form.Item label="ID" name="id" hidden>
                         <Input hidden />
                     </Form.Item>
+                    {/* ẩn id, để dùng khi update product */}
+                    <Form.Item label="ID" name="state" hidden>
+                        <Input hidden />
+                    </Form.Item>
 
                     <Collapse
                         defaultActiveKey={['itemsGeneral']}
@@ -764,7 +793,7 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
                         items={itemsGeneral}
                     />
                     <Collapse defaultActiveKey={['itemsSales']} size="small" items={itemsSales} />
-                    <Collapse
+                    {/* <Collapse
                         defaultActiveKey={['thong tin chi tiet']}
                         size="small"
                         items={[
@@ -783,13 +812,30 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
                                 ),
                             },
                         ]}
-                    />
+                    /> */}
                 </div>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
-                </Form.Item>
+                <div className="border-[1px] rounded-lg bg-white p-3 flex justify-end mt-5 sticky bottom-0 right-0">
+                    <div className="flex space-x-4">
+                        <Button>Hủy</Button>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            onClick={() => form.setFieldValue('isHidden', false)}
+                        >
+                            Lưu và hiển thị
+                        </Button>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            onClick={() => form.setFieldValue('isHidden', true)}
+                        >
+                            Lưu và ẩn
+                        </Button>
+                        <Form.Item name="isHidden" hidden>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                </div>
             </Form>
         </>
     )

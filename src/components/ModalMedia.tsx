@@ -136,6 +136,7 @@ function ModalMedia({
     return (
         <div>
             <Modal
+                title="Media"
                 open={isOpen}
                 onOk={() => {
                     onOk({ activeField, selectedFile: selectImage })

@@ -1,57 +1,152 @@
-import { useCategory } from '@/hooks'
+import { useAuth, useCategory, useMessage } from '@/hooks'
 import { ParamsRequest } from '@/http'
-import { OrderState } from '@/utils/constants'
-import { Button, Table, Tabs, TreeSelect } from 'antd'
+import { ShopOrderItem } from '@/http/cartApi'
+import orderApi, { Order } from '@/http/OrderApi'
+import { OrderPayment, OrderShipping, OrderState } from '@/utils/constants'
+import { Button, Select, Table, TableColumnType, Tabs, Tag, TreeSelect } from 'antd'
 import Search from 'antd/es/input/Search'
-import { useState } from 'react'
+import { ColumnsType } from 'antd/es/table'
+import { useEffect, useState } from 'react'
 const initialQuery = {
     page: 0,
-    size: 2,
-    sort: null,
+    size: 10,
+    sort: 'createdAt,desc',
     keySearch: null,
     categoryId: null,
-    isDeleted: null,
     state: null,
     shopId: null,
 }
 const OrderPage = () => {
-    const [query, setQuery] = useState<ParamsRequest>({ ...initialQuery })
+    const { user } = useAuth()
+    const { success, error } = useMessage()
+    const [orders, setOrders] = useState<Order[]>([])
+    const [query, setQuery] = useState<ParamsRequest>(initialQuery)
     const { categories } = useCategory()
 
-    const column = [
+    const fetchOrder = async () => {
+        try {
+            const res = await orderApi.get(query)
+            setOrders(res.content)
+            console.log('orders', orders)
+        } catch (e) {
+            console.log('error', e)
+        }
+    }
+
+    useEffect(() => {
+        setQuery((prev) => ({ ...prev, shopId: user.id }))
+    }, [user.id])
+
+    useEffect(() => {
+        ;(async () => {
+            if (query.shopId) await fetchOrder()
+        })()
+    }, [
+        query.keySearch,
+        query.categoryId,
+        query.state,
+        query.page,
+        query.size,
+        query.sort,
+        query.shopId,
+    ])
+
+    const handleUpdateStateByShop = async (id: string, state: string) => {
+        try {
+            await orderApi.updateStateByShop(id, state)
+            await fetchOrder()
+            success('Cập nhật trạng thái thành công')
+        } catch (e) {
+            console.log('error', e)
+            error('Cập nhật trạng thái thất bại')
+        }
+    }
+
+    const column: ColumnsType<Order> = [
         {
             title: 'Sản phẩm',
-            dataIndex: 'type',
-            key: 'type',
-            // render: (type, record) => {
-            //     const { name, thumb } = record
-            //     return (
-            //         <div className="flex justify-start items-center">
-            //             <img src={thumb} alt={name} className="w-10 h-10 object-cover" />
-            //             <div className="ml-2">
-            //                 <Tooltip title={name}>
-            //                     <p className="text-ellipsis line-clamp-2">{name}</p>
-            //                 </Tooltip>
-            //                 <p>{type}</p>
-            //             </div>
-            //         </div>
-            //     )
-            // },
+            dataIndex: 'items',
+            key: 'items',
+            render: (_, { id, items: shopItems }) => {
+                const c = shopItems[0]
+                const { items, shopId } = c
+                return (
+                    <>
+                        {items.map((item, i) => (
+                            <div key={shopId + i} className="flex">
+                                <img
+                                    className="w-10 h-10 object-cover"
+                                    src={item.product.thumb}
+                                    alt={item.product.name}
+                                />
+                                <div>
+                                    <p>{item.product.name}</p>
+                                    <p className="text-1sm">số lượng:{item.quantity}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </>
+                )
+            },
+        },
+        {
+            title: 'Người mua',
+            dataIndex: 'user',
+            key: 'user',
+            render: (user) => <p>{user.name}</p>,
+        },
+        {
+            title: 'Thanh toán/trạng thái',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            render: (_, { payment }) => (
+                <div>
+                    <Tag color={payment === 'CASH' ? 'red' : 'green'}>
+                        {payment === 'CASH' ? 'Chưa thanh toán' : 'Đã thanh toán'}
+                    </Tag>
+                    <p>{OrderPayment[payment as keyof typeof OrderPayment]}</p>
+                    <p>{_}</p>
+                </div>
+            ),
+        },
+        {
+            title: 'Voucher',
+            dataIndex: 'totalDiscount',
+            key: 'totalDiscount',
+            render: (_) => <p>{_}</p>,
         },
         {
             title: 'Tổng đơn hàng',
-            dataIndex: 'price',
-            key: 'price',
+            dataIndex: 'totalCheckout',
+            key: 'totalCheckout',
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'quantity',
-            key: 'quantity',
+            dataIndex: 'state',
+            key: 'state',
+            render: (state, { id }) => {
+                return (
+                    <Select
+                        options={Object.keys(OrderState).map((v, i) => ({
+                            key: v,
+                            value: v,
+                            label: OrderState[v as keyof typeof OrderState],
+                            disabled: Object.keys(OrderState).indexOf(state) > i,
+                        }))}
+                        style={{ width: 180 }}
+                        value={state}
+                        onChange={async (value) => await handleUpdateStateByShop(id, value)}
+                    />
+                )
+            },
         },
         {
             title: 'Đơn vị vận chuyển',
-            dataIndex: 'quantity',
-            key: 'quantity',
+            dataIndex: 'shippingType',
+            key: 'shippingType',
+            render: (shippingType) => (
+                <p>{OrderShipping[shippingType as keyof typeof OrderShipping].name}</p>
+            ),
         },
         {
             title: 'Thao tác',
@@ -141,7 +236,7 @@ const OrderPage = () => {
                 </div>
 
                 <Table
-                    // dataSource={products}
+                    dataSource={orders.map((order) => ({ ...order, key: order.id }))}
                     columns={column}
                     bordered
                     rowSelection={{

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
-import NavLeft from './NavLeft_ad'
-import Navbar from './Navbar_ad'
+import NavLeft from './NavLeft_admin'
+import Navbar from './Navbar_admin'
 
 type Props = {
     children: ReactNode
