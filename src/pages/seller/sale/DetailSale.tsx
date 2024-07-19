@@ -1,27 +1,30 @@
 import ExtraQuestion from '@/components/ExtraQuestion'
 import { useAuth, useMessage } from '@/hooks'
 import discountApi, { DiscountRequest } from '@/http/discountApi'
+import saleApi, { Sale, SaleRequest } from '@/http/saleApi'
 import { ErrorInfoForm } from '@/types/customType'
 import { dateFormat, DiscountPriceType } from '@/utils/constants'
-import { Button, Collapse, DatePicker, Form, Input, Radio, Select } from 'antd'
+import { Button, Collapse, DatePicker, Form, Input, Radio, Select, Table } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { FaShopify } from 'react-icons/fa6'
 import { useParams } from 'react-router-dom'
+import ModalSelectProduct from '../ModalSelectProduct'
+import { Product } from '@/http'
+import { ColumnsType } from 'antd/es/table'
+import productApi from '@/http/productApi'
+import { MdCancel } from 'react-icons/md'
 
-const initDiscount: DiscountRequest = {
+const initSale: SaleRequest = {
+    id: '',
     name: '',
-    code: '',
+    productIds: [],
     type: 'FIXED_AMOUNT',
     value: 0,
-    totalCount: 1,
-    minOrderValue: 0,
-    countUserUseDiscount: 1,
-    status: true,
-    isDeleted: false,
     dateStart: '',
     dateEnd: '',
+    shopId: '',
 }
 
 const formItemLayout = {
@@ -32,33 +35,52 @@ const formItemLayout = {
 
 const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
     const { id } = useParams()
-    const [form] = useForm<DiscountRequest>()
-    const {
-        user: { email },
-    } = useAuth()
+    const [form] = useForm<SaleRequest>()
+    const { user } = useAuth()
     const { success, loading, error } = useMessage()
-
-    const [code, setCode] = useState(form.getFieldValue('code') || '')
+    const [isAll, setIsAll] = useState(false)
+    const [open, setOpen] = useState(false)
     const [type, setType] = useState(form.getFieldValue('type') || 'FIXED_AMOUNT')
+    const [products, setProducts] = useState<Product[]>([])
 
     useEffect(() => {
         if (!isAdd && id) {
             ;(async () => {
-                const data = await discountApi.getDiscountById(id)
+                const data = await saleApi.getById(id)
+
+                const products = await Promise.all(
+                    data.productIds.map(async (id) => await productApi.findById(id))
+                )
+                console.log('products', products)
+
+                setProducts(products)
+
                 const discount = {
                     ...data,
-                    code: data.code.substring(4),
                     dateStart: moment(data.dateStart, dateFormat),
                     dateEnd: moment(data.dateEnd, dateFormat),
                 }
                 console.log('data', discount)
 
-                form.setFieldsValue(discount as DiscountRequest)
-                setCode(discount.code)
+                form.setFieldsValue(discount as SaleRequest)
                 setType(data.type)
             })()
         }
     }, [id])
+
+    useEffect(() => {
+        // call api to get list product
+        ;(async () => {
+            if (user.id && isAll) {
+                const data = await productApi.getAll({ limit: 1000, shopId: user.id })
+                const products = data.content
+                    .filter((item) => item.variants.length > 0 && item.state === 'ACTIVE')
+                    .map((item) => ({ ...item, key: item.id }))
+
+                setProducts(products)
+            }
+        })()
+    }, [user.id, isAll])
 
     const handleSubmitFailed = (errorInfo: ErrorInfoForm) => {
         console.log('errorInfo', errorInfo)
@@ -73,16 +95,21 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
         // error(errorFields[0].errors[0])
     }
 
-    const handleSubmit = async (values: DiscountRequest) => {
+    const handleSubmit = async (values: SaleRequest) => {
+        if (products.length === 0) return error('Vui lòng chọn sản phẩm')
+
         const dateStart = form.getFieldValue('dateStart')
         const dateEnd = form.getFieldValue('dateEnd')
+
+        if (!user.id) return error('Không tìm thấy shop id')
 
         const newData = {
             ...values,
             type,
-            code: email.substring(0, 4).toLocaleUpperCase() + code,
             dateStart: dateStart.format(dateFormat),
             dateEnd: dateEnd.format(dateFormat),
+            productIds: products.map((item) => item.id),
+            shopId: user.id,
         }
 
         console.log('values', newData)
@@ -90,7 +117,8 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
         if (isAdd) {
             try {
                 loading('Đang thêm mới voucher')
-                const res = await discountApi.addDiscount(newData)
+                delete newData.id
+                const res = await saleApi.addSale(newData)
                 console.log('res', res)
                 success('Thêm mới voucher thành công')
             } catch (e) {
@@ -98,25 +126,21 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
                 error(e as string)
             }
         } else {
-            const res = await discountApi.updateDiscount(newData)
-            console.log('res', res)
+            try {
+                loading('Đang thêm mới voucher')
+                const res = await saleApi.updateSale(form.getFieldValue('id'), newData)
+                console.log('res', res)
+                success('update voucher thành công')
+            } catch (e) {
+                console.log('error', e)
+                error(e as string)
+            }
         }
     }
 
-    const handleChangeValues = (
-        changedValues: Partial<DiscountRequest>,
-        allValues: DiscountRequest
-    ) => {
+    const handleChangeValues = (changedValues: Partial<SaleRequest>, allValues: SaleRequest) => {
         console.log('changedValues', changedValues)
         console.log('allValues', allValues)
-
-        const { code } = changedValues
-
-        if (code) {
-            const codeUpper = code.toUpperCase().slice(0, 4)
-            setCode(codeUpper)
-            form.setFieldsValue({ code: codeUpper })
-        }
     }
 
     const validate = {
@@ -141,6 +165,60 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
         },
     }
 
+    const columns: ColumnsType<Product> = [
+        {
+            title: 'Tên sản phẩm',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text, { thumb }) => (
+                <div className="flex items-center">
+                    <img src={thumb} alt="" className="w-10 h-10 object-cover" />
+                    <p className="ml-2">{text}</p>
+                </div>
+            ),
+        },
+        {
+            title: 'Biến thể',
+            dataIndex: 'quantity',
+            key: 'quantity',
+            hidden: type === 'sale',
+            render: (text, { variants }) => <div>{variants.length} </div>,
+        },
+        {
+            title: 'Giá',
+            dataIndex: 'price',
+            key: 'price',
+            hidden: type === 'inventory',
+            render: (_, { variants }) => (
+                <div>
+                    {Math.min(...variants.map((item) => item.price))}đ -{' '}
+                    {Math.max(...variants.map((item) => item.price))}đ
+                </div>
+            ),
+        },
+        {
+            title: 'kho hàng',
+            dataIndex: 'quantity',
+            key: 'quantity',
+        },
+        {
+            title: 'Giá nhập',
+            dataIndex: 'id',
+            key: 'id2',
+            render: (_) => (
+                <div
+                    className="hover:text-blue-500 cursor-pointer"
+                    onClick={() => {
+                        // xóa sản phẩm khỏi danh sách nhập hàng
+                        setProducts((prev) => prev.filter((p) => p.id !== _))
+                    }}
+                >
+                    <MdCancel />
+                </div>
+            ),
+        },
+    ]
+
     const itemsGeneral = [
         {
             key: 'itemsGeneral',
@@ -159,27 +237,14 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
                         <Input hidden />
                     </Form.Item>
                     <Form.Item
-                        label="Tên"
+                        label="Tên Khuyến mãi"
                         name="name"
                         rules={[{ required: true, message: 'Required' }]}
                         extra="Tên Voucher sẽ không được hiển thị cho Người mua"
                     >
                         <Input count={{ max: 100, show: true }} />
                     </Form.Item>
-                    <Form.Item
-                        label="Mã"
-                        name="code"
-                        rules={[{ required: true, message: 'Required' }]}
-                        extra={`Vui lòng chỉ nhập các kí tự chữ cái (A-Z), số (0-9); tối đa 5 kí tự. Mã giảm giá đầy đủ là: ${email
-                            .substring(0, 4)
-                            .toLocaleUpperCase()}${code}`}
-                    >
-                        <Input
-                            count={{ show: true, max: 5 }}
-                            addonBefore={email.substring(0, 4).toLocaleUpperCase()}
-                            disabled={!isAdd}
-                        />
-                    </Form.Item>
+
                     <Form.Item
                         label="Thời gian bắt đầu"
                         name="dateStart"
@@ -198,16 +263,6 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
                     >
                         <DatePicker format={dateFormat} showTime inputReadOnly />
                     </Form.Item>
-                </>
-            ),
-        },
-    ]
-    const itemsCodeDiscount = [
-        {
-            key: 'itemsCodeDiscount',
-            label: 'Thiết lập mã giảm giá',
-            children: (
-                <div className="">
                     <Form.Item
                         label="Loại giảm giá | Mức giảm"
                         name="value"
@@ -228,6 +283,7 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
                                     value={type}
                                     style={{ width: 120 }}
                                     onChange={(value) => setType(value as string)}
+                                    disabled={!isAdd}
                                 />
                                 // </Form.Item>
                             }
@@ -237,24 +293,7 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
                             disabled={!isAdd}
                         />
                     </Form.Item>
-                    <Form.Item label="Giá trị đơn hàng tối thiểu" name="minOrderValue">
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Tổng lượt sử dụng tối đa"
-                        name="totalCount"
-                        extra="Tổng số Mã giảm giá có thể sử dụng"
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Luợt sử dụng tối đa của 1 người"
-                        name="countUserUseDiscount"
-                        extra="1 người sử dụng được tối đa mã giảm giá"
-                    >
-                        <Input disabled={!isAdd} />
-                    </Form.Item>
-                </div>
+                </>
             ),
         },
     ]
@@ -265,34 +304,31 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
             label: 'Hiển thị mã giảm giá và các sản phẩm áp dụng',
             children: (
                 <div className="">
-                    <Form.Item label="Thiết lập hiển thị">
-                        <Radio.Group className="space-y-4" defaultValue={'a'}>
-                            <Radio value="a">
-                                <ExtraQuestion
-                                    title="Hiển thị nhiều nơi"
-                                    tooltip="Voucher sẽ được hiển thị tự động trên trang chủ của Shop, trang chi tiết sản phẩm, trang thông tin giỏ hàng, Shopee Live và Shopee Feed."
-                                />
-                            </Radio>
-                            <Radio value="b" className="flex">
-                                <ExtraQuestion
-                                    title="Chia sẽ thông qua mã voucher"
-                                    tooltip="Voucher toàn shop được lưu thông qua mã Voucher sẽ được ghi nhận là Voucher Riêng tư"
-                                />
+                    <Form.Item
+                        label="Sản phẩm được áp dụng"
+                        extra="sản phẩm phải đang hoạt động trạng thái cờ duyệt hoặc ẩn sẽ không được hiển thị"
+                    >
+                        <Radio.Group
+                            className=""
+                            value={isAll}
+                            onChange={(e) => setIsAll(e.target.value)}
+                        >
+                            <Radio value={true}>Tất cả sản phẩm của Shop</Radio>
+                            <Radio value={false} className="">
+                                Sản phẩm cụ thể
                             </Radio>
                         </Radio.Group>
                     </Form.Item>
-                    <Form.Item
-                        label="Sản phẩm được áp dụng"
-                        extra={
-                            <>
-                                Những sản phẩm bị hạn chế chạy khuyến mại theo quy định của Nhà nước
-                                sẽ không được hiển thị nếu nằm trong danh sách sản phẩm đã chọn.
-                                <Button type="link">Tìm hiểu thêm</Button>
-                            </>
-                        }
-                    >
-                        Tất cả sản phẩm
-                    </Form.Item>
+                    {!isAll && (
+                        <div>
+                            <Button type="primary" onClick={() => setOpen(true)} className="mb-3">
+                                chọn sản phẩm
+                            </Button>
+                        </div>
+                    )}
+                    {products.length > 0 && (
+                        <Table columns={columns} dataSource={products} pagination={false} />
+                    )}
                 </div>
             ),
         },
@@ -300,6 +336,21 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
 
     return (
         <>
+            <ModalSelectProduct
+                onCancel={() => setOpen(false)}
+                open={open}
+                type="sale"
+                onSelectedProduct={(selectedProducts) => {
+                    if (selectedProducts.length === 0) return
+                    setProducts((prev) => {
+                        const newProducts = selectedProducts.filter(
+                            (product) => !prev.find((item) => item.id === product.id)
+                        )
+                        return [...prev, ...newProducts]
+                    })
+                    setOpen(false)
+                }}
+            />
             <div className="w-full flex space-x-5">
                 <Form
                     {...formItemLayout}
@@ -307,22 +358,17 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
                     name="dynamic_form_item"
                     form={form}
                     variant="filled"
-                    initialValues={initDiscount}
+                    initialValues={initSale}
                     onFinish={handleSubmit}
                     onFinishFailed={handleSubmitFailed}
                     onValuesChange={handleChangeValues}
-                    // className="grid grid-cols-3 gap-5"
+                    className="w-3/4"
                 >
-                    <div className="space-y-8 w-full">
+                    <div className="space-y-8 ">
                         <Collapse
                             defaultActiveKey={['itemsGeneral']}
                             size="small"
                             items={itemsGeneral}
-                        />
-                        <Collapse
-                            defaultActiveKey={['itemsCodeDiscount']}
-                            size="small"
-                            items={itemsCodeDiscount}
                         />
                         <Collapse
                             defaultActiveKey={['itemsDetail']}
@@ -340,7 +386,7 @@ const DetailSale = ({ isAdd = false }: { isAdd: boolean }) => {
                         </div>
                     </div>
                 </Form>
-                <div className="sticky top-[3.5rem] right-0 w-2/5 h-[400px]">
+                <div className="sticky top-[3.5rem] right-0 w-1/4 h-[400px]">
                     <div className="border-[1px] rounded-lg space-y-3 bg-white py-5">
                         <p className="px-5">Xem trước</p>
                         <div className="h-[350px] overflow-hidden">

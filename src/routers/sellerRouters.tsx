@@ -1,4 +1,4 @@
-import { AdminLayout } from '@/layouts'
+import { SellerLayout } from '@/layouts'
 import { Dashboard } from '@/pages/seller/dashboard'
 import { AllDiscount, DetailDiscount } from '@/pages/seller/discount'
 import { AddInventory, AllInventory, StatisticInventory } from '@/pages/seller/inventory'
@@ -18,7 +18,7 @@ const route = (
     return {
         path: sellerPath + path,
         component,
-        layout: layout ?? AdminLayout,
+        layout: layout ?? SellerLayout,
     }
 }
 

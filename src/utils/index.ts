@@ -10,6 +10,9 @@ export const removeNullParams = (params?: ParamsRequest) => {
     return Object.fromEntries(Object.entries(params).filter(([_, value]) => !value))
 }
 
+export const VND = (price: number | string) =>
+    price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+
 export const convertVietNameseToSlug = (title: string) => {
     if (!title) return ''
     var slug = title.toLowerCase()

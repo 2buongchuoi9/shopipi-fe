@@ -9,9 +9,10 @@ type Props = {
     open: boolean
     onCancel: () => void
     onSelectedProduct: (products: Product[]) => void
+    type: 'inventory' | 'sale'
 }
 
-const ModalAddInventory = ({ open, onCancel, onSelectedProduct }: Props) => {
+const ModalSelectProduct = ({ open, onCancel, onSelectedProduct, type }: Props) => {
     const { user } = useAuth()
     const [products, setProducts] = useState<Product[]>([])
 
@@ -19,8 +20,18 @@ const ModalAddInventory = ({ open, onCancel, onSelectedProduct }: Props) => {
         // call api to get list product
         ;(async () => {
             if (user.id) {
-                const data = await productApi.getAll({ limit: 1000, shopId: user.id })
-                setProducts(data.content.map((item) => ({ ...item, key: item.id })))
+                const data = await productApi.getAll({
+                    limit: 1000,
+                    shopId: user.id,
+                    state: 'ACTIVE',
+                })
+
+                // nếu thêm vào khuyến mãi thì chỉ lấy sản phẩm có biến thể
+                const products = data.content
+                    .filter((item) => (type === 'sale' ? item.variants.length > 0 : true))
+                    .map((item) => ({ ...item, key: item.id }))
+
+                setProducts(products)
             }
         })()
     }, [user.id])
@@ -41,6 +52,7 @@ const ModalAddInventory = ({ open, onCancel, onSelectedProduct }: Props) => {
             title: 'Biến thể',
             dataIndex: 'quantity',
             key: 'quantity',
+            hidden: type === 'sale',
             render: (text, { variants }) => (
                 <div>
                     {variants.map((item) => (
@@ -51,6 +63,18 @@ const ModalAddInventory = ({ open, onCancel, onSelectedProduct }: Props) => {
                             <p>{item.quantity}sp</p>
                         </div>
                     ))}
+                </div>
+            ),
+        },
+        {
+            title: 'Giá',
+            dataIndex: 'price',
+            key: 'price',
+            hidden: type === 'inventory',
+            render: (_, { variants }) => (
+                <div>
+                    {Math.min(...variants.map((item) => item.price))}đ -{' '}
+                    {Math.max(...variants.map((item) => item.price))}đ
                 </div>
             ),
         },
@@ -96,4 +120,4 @@ const ModalAddInventory = ({ open, onCancel, onSelectedProduct }: Props) => {
         </>
     )
 }
-export default ModalAddInventory
+export default ModalSelectProduct

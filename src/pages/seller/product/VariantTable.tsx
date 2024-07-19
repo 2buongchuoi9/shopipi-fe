@@ -175,6 +175,12 @@ const VariantTable = ({ variants, onRecordChange, type }: Props) => {
 
     if (type === 'inventory') {
         dynamicColumns.push({
+            title: 'Giá bán',
+            dataIndex: 'price',
+            key: 'price',
+            editable: false,
+        })
+        dynamicColumns.push({
             title: 'Giá nhập cũ',
             dataIndex: 'priceImport_old',
             key: 'priceImport_old',

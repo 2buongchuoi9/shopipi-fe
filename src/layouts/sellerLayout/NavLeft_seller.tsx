@@ -36,17 +36,7 @@ const NavLeft_seller = ({ ...rest }: Props) => {
                 {
                     key: '/order/all',
                     icon: <HiArrowCircleRight />,
-                    label: 'Tất cả',
-                },
-                {
-                    key: '/order/alla',
-                    label: 'Đơn hủy',
-                    icon: <HiArrowCircleRight />,
-                },
-                {
-                    key: '/order/allv',
-                    label: 'Trả hàng/Hoàn tiền',
-                    icon: <HiArrowCircleRight />,
+                    label: 'Tất cả đơn hàng',
                 },
                 {
                     key: '/add',

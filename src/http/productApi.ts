@@ -2,6 +2,7 @@ import { ProductState } from '@/utils/constants'
 import { Category } from './categoryApi'
 import http, { Page, ParamsRequest } from './http'
 import { Shop } from './shopApi'
+import { Sale } from './saleApi'
 
 export const initialProduct: Product = {
     id: '',
@@ -10,9 +11,8 @@ export const initialProduct: Product = {
     thumb: '',
     video: '',
     images: [''],
-    price: 0,
-    priceImport: 0,
     type: 'CLOTHING',
+    sale: null,
     description: '',
     quantity: 0,
     ratingAvg: 0.0,
@@ -112,8 +112,12 @@ export type Product = {
     thumb: string
     video: string | null
     images: string[]
-    price: number
-    priceImport: number
+
+    price?: number // thêm vào
+    priceSale?: number // thêm vào
+    discount?: number | string // thêm vào
+    sale: Sale | null
+
     type: ProductType
     quantity: number
     description: string

@@ -2,6 +2,12 @@ import { adminPath, sellerPath } from '@/utils/constants'
 import { Menu, MenuProps } from 'antd'
 import { MenuInfo } from 'rc-menu/lib/interface'
 import { useState } from 'react'
+import { BsGlobe } from 'react-icons/bs'
+import { FaMoneyBillAlt, FaShopify, FaUserCircle } from 'react-icons/fa'
+import { FaTruckFast } from 'react-icons/fa6'
+import { HiArrowCircleRight } from 'react-icons/hi'
+import { IoSettings, IoTicketSharp } from 'react-icons/io5'
+import { MdFlagCircle, MdInventory } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {}
@@ -21,78 +27,97 @@ const NavLeft_admin = ({ ...rest }: Props) => {
 
     const items: MenuItem = [
         {
-            key: '/product',
-            label: 'Quản lý Sản phẩm',
+            key: '/order',
+            label: 'Đơn hàng',
+            icon: <FaTruckFast />,
+            children: [
+                {
+                    key: '/order/all',
+                    icon: <HiArrowCircleRight />,
+                    label: 'Tất cả đơn hàng',
+                },
+            ],
         },
-        { type: 'divider' },
+
+        {
+            key: '/product',
+            label: 'Sản phẩm',
+            icon: <FaShopify />,
+            children: [
+                {
+                    key: '/product',
+                    label: 'Tất cả sản phẩm',
+                    icon: <HiArrowCircleRight />,
+                },
+            ],
+        },
+        {
+            key: '/category',
+            label: 'Danh mục',
+            icon: <FaShopify />,
+            children: [
+                {
+                    key: '/category/all',
+                    label: 'Tất cả danh mục',
+                    icon: <HiArrowCircleRight />,
+                },
+                {
+                    key: '/category/add',
+                    label: 'Tạo danh mục',
+                    icon: <HiArrowCircleRight />,
+                },
+            ],
+        },
+
         {
             key: '/discount',
-            label: 'Kênh marketing',
+            label: 'Voucher & Quảng cáo',
+            icon: <MdFlagCircle />,
             children: [
+                {
+                    key: '/discount/all',
+                    label: 'Voucher',
+                    icon: <HiArrowCircleRight />,
+                },
+                {
+                    key: '/discount/add',
+                    label: 'Tạo voucher',
+                    icon: <HiArrowCircleRight />,
+                },
                 {
                     key: '31',
                     label: 'Quảng cáo shopipi',
-                },
-                {
-                    key: '/discount/all',
-                    label: 'Mã giảm giá của shop',
-                },
-                {
-                    key: '33',
-                    label: 'Mã giảm giá của shopipi',
+                    icon: <HiArrowCircleRight />,
                 },
             ],
         },
-        { type: 'divider' },
+
+        {
+            key: '/shop',
+            label: 'Cửa hàng',
+            icon: <FaUserCircle />,
+            children: [
+                {
+                    key: '43',
+                    label: 'Danh sách cửa hàng',
+                    icon: <HiArrowCircleRight />,
+                },
+            ],
+        },
         {
             key: '4',
-            label: 'Chăm sóc khách hàng',
+            label: 'Khách hàng',
+            icon: <FaUserCircle />,
             children: [
+                {
+                    key: '43',
+                    label: 'Danh sách khách hàng',
+                    icon: <HiArrowCircleRight />,
+                },
                 {
                     key: '41',
                     label: 'Quản lý chat',
-                },
-                {
-                    key: '42',
-                    label: 'Đánh giá',
-                },
-            ],
-        },
-        { type: 'divider' },
-        {
-            key: '5',
-            label: 'Tài chính',
-            children: [
-                {
-                    key: '51',
-                    label: 'Doanh thu',
-                },
-                {
-                    key: '52',
-                    label: 'Số dư TK shopipi',
-                },
-                {
-                    key: '53',
-                    label: 'Tài khoản ngân hàng',
-                },
-            ],
-        },
-        { type: 'divider' },
-        {
-            key: '6',
-            label: 'Quản lý shop',
-            children: [
-                {
-                    key: '61',
-                    label: 'Hồ sơ shop',
-                },
-                {
-                    key: '62',
-                    label: 'Trang trí shop',
-                },
-                {
-                    key: '63',
-                    label: 'Thiết lập shop',
+                    icon: <HiArrowCircleRight />,
                 },
             ],
         },

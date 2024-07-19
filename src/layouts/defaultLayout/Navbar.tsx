@@ -6,48 +6,51 @@ import { Avatar, Button, Dropdown, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { MdOutlineCloudDownload } from 'react-icons/md'
 import { useAuth, useCart, useMessage } from '@/hooks'
+import { UserRoles } from '@/utils/constants'
+import { ItemType } from 'antd/es/menu/interface'
 
 type Props = {
     isAuthenticated: boolean
     user: User
+    isAdmin: boolean
 }
 
-const Profile = ({ isAuthenticated, user }: Props) => {
+const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
     const { logout, fetchUser } = useAuth()
     const { success, error } = useMessage()
 
+    const items: MenuProps['items'] = [
+        { key: 1, label: <Link to="/login">Login</Link> },
+        {
+            key: 2,
+            label: <Link to={isAdmin ? '/admin/product' : '/seller/product/all'}>dô admin</Link>,
+        },
+        {
+            key: 3,
+            label: (
+                <Link to="/login" onClick={logout}>
+                    Logout
+                </Link>
+            ),
+        },
+        {
+            key: 4,
+            label: 'đăng ký shop',
+            onClick: async () => {
+                try {
+                    await authApi.registerShop(user.id)
+                    await fetchUser()
+                    success('Đăng ký shop thành công')
+                } catch (e) {
+                    console.log('error', e)
+                    error('Đăng ký shop thất bại')
+                }
+            },
+        },
+    ]
+
     return isAuthenticated ? (
-        <Dropdown
-            trigger={['click', 'hover']}
-            menu={{
-                items: [
-                    { key: 1, label: <Link to="/login">Login</Link> },
-                    { key: 2, label: <Link to="/seller/product/all">dô admin</Link> },
-                    {
-                        key: 2,
-                        label: (
-                            <Link to="/login" onClick={logout}>
-                                Logout
-                            </Link>
-                        ),
-                    },
-                    {
-                        key: 3,
-                        label: 'đăng ký shop',
-                        onClick: async () => {
-                            try {
-                                await authApi.registerShop(user.id)
-                                await fetchUser()
-                                success('Đăng ký shop thành công')
-                            } catch (e) {
-                                console.log('error', e)
-                                error('Đăng ký shop thất bại')
-                            }
-                        },
-                    },
-                ] as MenuProps['items'],
-            }}
-        >
+        <Dropdown trigger={['click', 'hover']} menu={{ items }}>
             <div className="flex">
                 <Avatar src={user.image} size={'small'} className="bg-red-500">
                     {user.image ? '' : user.name.substring(0, 1).toUpperCase()}
@@ -113,7 +116,11 @@ const Navbar = () => {
                 </div>
                 {/* Right */}
                 <div className="flex flex-col-3 md:flex-row items-center space-x-4 md:space-x-0 md:mx-1 mt-2 md:mt-0">
-                    <Profile isAuthenticated={isAuthenticated} user={user} />
+                    <Profile
+                        isAuthenticated={isAuthenticated}
+                        user={user}
+                        isAdmin={user?.roles?.includes(UserRoles.ADMIN) ?? false}
+                    />
                     <div className="hidden md:flex md:flex-col md:items-start md:space-y-1 mr-[2rem] hover:border hover:border-white focus:border-white">
                         <div className="text-1sm">Giỏ hàng</div>
                         <div className="text-1sm font-bold">& Thanh toán</div>

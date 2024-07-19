@@ -11,10 +11,9 @@ type CardProps = {
 }
 
 const badge = 'Deal có giới hạn'
-const discount = 'Giảm giá 10%'
 
 const Card = ({ product }: CardProps) => {
-    const { thumb, price, priceImport, name, slug, shop } = product
+    const { thumb, price, priceSale, name, slug, shop, discount } = product
 
     return (
         <div>
@@ -28,8 +27,8 @@ const Card = ({ product }: CardProps) => {
                     <span className="mt-1 text-1sm bg-yellow-300 rounded-md">{badge}</span>
                 </div>
                 <div className="flex mt-2">
-                    <span className="">{price} đ</span>
-                    <span className="line-through">{priceImport} đ</span>
+                    <span className="">{priceSale?.vnd()}</span>
+                    <span className="line-through">{price?.vnd()}</span>
                 </div>
                 <div>
                     <span>shop:{shop.name}</span>
@@ -48,7 +47,7 @@ const Detail = ({ product }: CardProps) => {
     const {
         thumb,
         price,
-        priceImport,
+        priceSale,
         name,
         slug,
         shop,

@@ -1,15 +1,14 @@
-import { useCategory, useMessage } from '@/hooks'
-import { Button, Table, TreeSelect } from 'antd'
-import Search from 'antd/es/input/Search'
-import { useEffect, useState } from 'react'
-import { FaPlus } from 'react-icons/fa6'
-import { useNavigate } from 'react-router-dom'
-import { Inventory, InventoryRequest, Product, VariantInventory } from '@/http'
-import { ColumnsType } from 'antd/es/table'
-import VariantTable from '../product/VariantTable'
+import { useMessage } from '@/hooks'
+import { InventoryRequest, Product, VariantInventory } from '@/http'
 import inventoryApi from '@/http/inventoryApi'
-import ModalAddInventory from './ModalAddInventory'
+import { Button, Table } from 'antd'
+import Search from 'antd/es/input/Search'
+import { ColumnsType } from 'antd/es/table'
+import { useState } from 'react'
 import { MdCancel } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
+import ModalSelectProduct from '../ModalSelectProduct'
+import VariantTable from '../product/VariantTable'
 
 const AddInventory = () => {
     const navigate = useNavigate()
@@ -123,10 +122,11 @@ const AddInventory = () => {
 
     return (
         <>
-            <ModalAddInventory
+            <ModalSelectProduct
                 open={openModal}
                 onCancel={() => setOpenModal(false)}
                 onSelectedProduct={handleSelectedProduct}
+                type="inventory"
             />
             <div className="">
                 <div className="flex justify-between">

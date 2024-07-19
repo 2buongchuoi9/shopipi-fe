@@ -1,7 +1,5 @@
 import { AdminLayout } from '@/layouts'
 import AllProduct from '@/pages/admin/AllProduct'
-import { Dashboard } from '@/pages/seller/dashboard'
-
 import { adminPath } from '@/utils/constants'
 
 import { ComponentType, ReactNode } from 'react'

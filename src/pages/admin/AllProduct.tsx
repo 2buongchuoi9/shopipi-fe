@@ -38,7 +38,7 @@ const AllProduct = () => {
 
     const fetchProduct = async () => {
         try {
-            const data = await productApi.getAll({ ...query })
+            const data = await productApi.getAll(query)
             setProducts(data.content.map((item) => ({ ...item, key: item.id })))
             setPagination({
                 total: data.totalElement,

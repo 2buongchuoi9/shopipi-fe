@@ -1,1 +1,1 @@
-export { default as SellerLayout } from './AdminLayout'
+export { default as AdminLayoutLayout } from './AdminLayout'

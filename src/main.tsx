@@ -7,6 +7,7 @@ import CategoryProvider from './contexts/CategoryContex.tsx'
 import LoadingProvider from './contexts/LoadingContext.tsx'
 import MessageProvider from './contexts/MessageContext.tsx'
 import './index.css'
+import './utils/extensions.ts'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <StrictMode>
