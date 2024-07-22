@@ -45,8 +45,7 @@ const ProductPage = () => {
             })
 
             setProducts(products)
-            const res = await cartApi.getCart()
-            console.log('cart', res)
+            console.log('products', products)
         })()
     }, [])
 
