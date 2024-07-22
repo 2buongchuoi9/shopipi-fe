@@ -42,7 +42,8 @@ export const convertVietNameseToSlug = (title: string) => {
 
     return slug
 }
-export const randomPriceDiscount = (price: number, valueDifference: number): number => {
+export const randomPriceDiscount = (price: number | undefined, valueDifference: number): number => {
+    if (!price) return 0
     // Tính toán một giá trị giảm giá ngẫu nhiên từ 0 đến valueDifference
     const discount = Math.random() * valueDifference * 1000
     // Trừ giá trị giảm giá từ giá gốc

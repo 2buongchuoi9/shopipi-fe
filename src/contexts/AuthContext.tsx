@@ -1,17 +1,8 @@
 import { useCart } from '@/hooks'
 import { ErrorPayload } from '@/http'
 import authApi, { initialUser, User } from '@/http/authApi'
-import ErrorPage from '@/pages/ErrorPage'
 import { accessToken, clientId, refreshTokenStorage } from '@/utils/localStorageUtils'
-import {
-    createContext,
-    ReactNode,
-    // useContext,
-    useEffect,
-    useLayoutEffect,
-    useRef,
-    useState,
-} from 'react'
+import { createContext, ReactNode, useLayoutEffect, useRef, useState } from 'react'
 
 export interface AuthContextType {
     user: User

@@ -2,7 +2,6 @@ import { OrderPayment, OrderShipping } from '@/utils/constants'
 import { User } from './authApi'
 import { CartRequest, ShopOrderItem } from './cartApi'
 import http, { Page, ParamsRequest } from './http'
-import { orderBy } from 'lodash'
 
 export type ShopOrderItemsRequest = {
     shopId: string

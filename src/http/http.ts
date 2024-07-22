@@ -1,12 +1,5 @@
-import { message } from 'antd'
 import { accessToken, clientId } from '@/utils/localStorageUtils'
-import axios, {
-    AxiosError,
-    AxiosHeaders,
-    AxiosInstance,
-    AxiosRequestConfig,
-    AxiosResponse,
-} from 'axios'
+import axios, { AxiosError, AxiosHeaders, AxiosInstance, AxiosRequestConfig } from 'axios'
 
 export type Pagination = {
     total: number

@@ -232,6 +232,8 @@ const OrderPage = () => {
     }, [selectedShipping])
 
     const handleOrderByUser = async () => {
+        console.log('cccc')
+
         if (orderRequest) {
             if (orderRequest.payment === 'CASH') {
                 try {
@@ -336,19 +338,21 @@ const OrderPage = () => {
                         value={selectedShipping}
                         className="flex space-x-3"
                     >
-                        {Object.entries(OrderShipping).map(([key, { name, price, time }]) => (
-                            <div className="space-y-4" key={key}>
-                                <div className="flex items-center justify-between p-4 border rounded-lg shadow-sm">
-                                    <Radio value={key} className="mr-4">
-                                        <p>{name}</p>
-                                        <div className="flex justify-between">
-                                            <p className="text-[12px]">{`(${time})`}</p>
-                                            <p>{price / 1000}k</p>
-                                        </div>
-                                    </Radio>
+                        {Object.entries(OrderShipping)
+                            .filter(([key]) => key !== 'NONE')
+                            .map(([key, { name, price, time }]) => (
+                                <div className="space-y-4" key={key}>
+                                    <div className="flex items-center justify-between p-4 border rounded-lg shadow-sm">
+                                        <Radio value={key} className="mr-4">
+                                            <p>{name}</p>
+                                            <div className="flex justify-between">
+                                                <p className="text-[12px]">{`(${time})`}</p>
+                                                <p>{price / 1000}k</p>
+                                            </div>
+                                        </Radio>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
                     </Radio.Group>
                 </div>
                 <div className="flex justify-end border-dashed border-b-[1px] p-3">

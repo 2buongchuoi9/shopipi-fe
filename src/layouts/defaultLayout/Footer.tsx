@@ -1,9 +1,8 @@
-import React from 'react'
-import './footer.css'
-import { Link } from 'react-router-dom'
-import { TbWorld } from 'react-icons/tb'
 import { FaLandmarkFlag } from 'react-icons/fa6'
 import { PiCurrencyDollarFill } from 'react-icons/pi'
+import { TbWorld } from 'react-icons/tb'
+import { Link } from 'react-router-dom'
+import './footer.css'
 
 const Footer = () => {
     return (

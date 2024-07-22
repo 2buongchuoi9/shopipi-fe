@@ -1,15 +1,13 @@
-import { adminPath, sellerPath } from '@/utils/constants'
+import { sellerPath } from '@/utils/constants'
 import { Menu, MenuProps } from 'antd'
 import { MenuInfo } from 'rc-menu/lib/interface'
 import { useState } from 'react'
-import { BsGlobe, BsGlobeEuropeAfrica } from 'react-icons/bs'
+import { BsGlobe } from 'react-icons/bs'
 import { FaMoneyBillAlt, FaUserCircle } from 'react-icons/fa'
 import { FaShopify, FaTruckFast } from 'react-icons/fa6'
-import { GiTicket } from 'react-icons/gi'
 import { HiArrowCircleRight } from 'react-icons/hi'
 import { IoSettings, IoTicketSharp } from 'react-icons/io5'
 import { MdFlagCircle, MdInventory } from 'react-icons/md'
-import { TiArrowRight } from 'react-icons/ti'
 import { useNavigate } from 'react-router-dom'
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {}
