@@ -1,3 +1,4 @@
+import Comment from '@/components/comment/Rating'
 import ProductCard from '@/components/ProductCard'
 import QuantitySelector from '@/components/QuantitySelector'
 import { useAuth, useCart, useMessage } from '@/hooks'
@@ -5,7 +6,8 @@ import { Product } from '@/http'
 import authApi from '@/http/authApi'
 import cartApi from '@/http/cartApi'
 import productApi, { initialProduct, Map, Variant } from '@/http/productApi'
-import { Button, Input, Radio } from 'antd'
+import ratingApi from '@/http/ratingApi'
+import { Button, Input, Radio, Tabs, TabsProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 
@@ -27,6 +29,7 @@ const ProductDetail = () => {
         price,
         shop,
         quantity: productQuantity,
+        id,
     } = product
 
     // Tìm variant khớp với các giá trị đã chọn
@@ -92,46 +95,80 @@ const ProductDetail = () => {
     }, [slug])
 
     return (
-        <div>
-            <div className="flex items-center text-sm font-normal p-1.5">
-                <img className="object-cover w-2/5 h-80 rounded-lg" src={thumb} alt="HomeCard" />
-                <div className="w-3/5 bg-slate-300">
-                    <div className="">{name}</div>
-                    <div>price:{price}</div>
-                    <div>shop:{shop.name}</div>
-                    <div>mã giảm giá:conc</div>
-                    <div>số luọng:{matchedVariant()?.quantity ?? productQuantity}</div>
+        <>
+            <div>
+                <div className="flex items-center text-sm font-normal p-1.5">
+                    <img
+                        className="object-cover w-2/5 h-80 rounded-lg"
+                        src={thumb}
+                        alt="HomeCard"
+                    />
+                    <div className="w-3/5 bg-slate-300">
+                        <div className="">{name}</div>
+                        <div>price:{price}</div>
+                        <div>shop:{shop.name}</div>
+                        <div>mã giảm giá:conc</div>
+                        <div>số luọng:{matchedVariant()?.quantity ?? productQuantity}</div>
 
-                    <div>
-                        {listVariant.map((item) => {
-                            return (
-                                <div key={item.key} className="flex">
-                                    <div>{item.key}:</div>
-                                    <Radio.Group>
-                                        {item.values.map((v) => (
-                                            <Radio.Button
-                                                value={v}
-                                                onClick={() =>
-                                                    handleClickVariant({ key: item.key, value: v })
-                                                }
-                                            >
-                                                {v}
-                                            </Radio.Button>
-                                        ))}
-                                    </Radio.Group>
-                                </div>
-                            )
-                        })}
+                        <div>
+                            {listVariant.map((item) => {
+                                return (
+                                    <div key={item.key} className="flex">
+                                        <div>{item.key}:</div>
+                                        <Radio.Group>
+                                            {item.values.map((v) => (
+                                                <Radio.Button
+                                                    value={v}
+                                                    onClick={() =>
+                                                        handleClickVariant({
+                                                            key: item.key,
+                                                            value: v,
+                                                        })
+                                                    }
+                                                >
+                                                    {v}
+                                                </Radio.Button>
+                                            ))}
+                                        </Radio.Group>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div>
+                            Số lượng:
+                            <QuantitySelector initialQuantity={quantity} onChange={setQuantity} />
+                        </div>
+                        <Button onClick={handleAddToCart}>add cart</Button>
+                        <Button>buy now</Button>
                     </div>
-                    <div>
-                        Số lượng:
-                        <QuantitySelector initialQuantity={quantity} onChange={setQuantity} />
-                    </div>
-                    <Button onClick={handleAddToCart}>add cart</Button>
-                    <Button>buy now</Button>
                 </div>
             </div>
-        </div>
+            <div>
+                <Button
+                    type="primary"
+                    className="mb-4"
+                    onClick={async () => {
+                        const res = await ratingApi.addRating({
+                            comment:
+                                'Sản phẩm k giống hình, dáng quần thực sự quá xấu, k có túi bên, khoá giả, túm lại la thất vọng',
+                            isComment: false,
+                            images: [
+                                'http://res.cloudinary.com/anhdaden/image/upload/v1719726212/shopipi_fpt/mz8ipsummrpstz3rrmol.jpg',
+                            ],
+                            parentId: null,
+                            productId: id,
+                            value: 1,
+                            variantId: variants[0].id,
+                        })
+                        console.log('Rating:', res)
+                        success('Rating success')
+                    }}
+                >
+                    test rate
+                </Button>
+                <Comment product={product} />
+            </div>
+        </>
     )
 }
 export default ProductDetail

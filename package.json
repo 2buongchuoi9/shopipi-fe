@@ -16,6 +16,8 @@
         "antd": "^5.18.3",
         "axios": "^1.7.2",
         "crypto-js": "^4.2.0",
+        "dayjs": "^1.11.12",
+        "dayjs-plugin-utc": "^0.1.2",
         "heroicons": "^2.1.4",
         "lodash": "^4.17.21",
         "moment": "^2.30.1",

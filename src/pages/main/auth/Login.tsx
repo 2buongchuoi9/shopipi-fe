@@ -3,7 +3,7 @@ import authApi from '@/http/authApi'
 import { AlertType, ErrorInfoForm } from '@/types/customType'
 import { facebook_url_login, google_url_login } from '@/utils'
 import { accessToken, clientId, refreshTokenStorage } from '@/utils/localStorageUtils'
-import { Alert, AlertProps, Button, Form, Input } from 'antd'
+import { Alert, Button, Form, Input } from 'antd'
 import { useState } from 'react'
 
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'

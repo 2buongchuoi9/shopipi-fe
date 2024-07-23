@@ -1,6 +1,5 @@
-'use client'
 import { message } from 'antd'
-import { createContext, ReactNode, useContext } from 'react'
+import { createContext, ReactNode } from 'react'
 
 export interface MessageContextType {
     loading: (content: string, key?: string) => void

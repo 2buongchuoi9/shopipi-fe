@@ -14,6 +14,8 @@ export const DiscountPriceType = {
 
 export const dateFormat = 'DD-MM-YYYY HH:mm:ss'
 
+export const REDIRECT_RESULT_ORDER = import.meta.env.VITE_URL + '/order/result'
+
 export const DiscountState = {
     ACTIVE: 'Đang diễn ra',
     NOT_YET_ACTIVE: 'Sắp diễn ra',
@@ -46,4 +48,5 @@ export const OrderShipping = {
     NORMAL: { name: 'Giao hàng tiêu chuẩn', price: 20000, time: '3-5 ngày' },
     GHTK: { name: 'Giao hàng tiết kiệm', price: 15000, time: '3-5 ngày' },
     HT: { name: 'Giao hàng hỏa tốc', price: 45000, time: 'trong ngày' },
+    NONE: { name: 'Test', price: 0, time: 'test' },
 }

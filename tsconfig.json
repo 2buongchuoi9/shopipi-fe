@@ -1,17 +1,45 @@
 {
-    "files": [],
-    "references": [
-        {
-            "path": "./tsconfig.app.json"
-        },
-        {
-            "path": "./tsconfig.node.json"
-        }
-    ],
+    // "files": [],
+    // "references": [
+    //     {
+    //         "path": "./tsconfig.app.json"
+    //     },
+    //     {
+    //         "path": "./tsconfig.node.json"
+    //     }
+    // ],
+    "include": ["src"],
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*", "./dist/*", ""]
-        }
+        },
+
+        "composite": true,
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+        "target": "ES2020",
+        "useDefineForClassFields": true,
+        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "skipLibCheck": true,
+
+        /* Bundler mode */
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "moduleDetection": "force",
+        "noEmit": true,
+        "jsx": "react-jsx",
+        "allowSyntheticDefaultImports": true,
+
+        /* Linting */
+        "strict": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": false, // Thay đổi dòng này
+        "noUnusedParameters": false,
+
+        /* Type checking */
+        "incremental": true
     }
 }

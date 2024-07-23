@@ -1,3 +1,4 @@
+import { REDIRECT_RESULT_ORDER } from '@/utils/constants'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from './Header'
@@ -8,9 +9,7 @@ import ProductPageHome from './ProductPageHome'
 const HomePage = () => {
     const navigate = useNavigate()
 
-    useEffect(() => {
-        navigate('/')
-    }, [])
+
 
     return (
         <div className="w-full h-full flex relative">

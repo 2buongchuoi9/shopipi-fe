@@ -1,5 +1,6 @@
 import { AdminLayout } from '@/layouts'
 import AllProduct from '@/pages/admin/AllProduct'
+import { AllCategory, DetailCategory } from '@/pages/admin/category'
 import { adminPath } from '@/utils/constants'
 
 import { ComponentType, ReactNode } from 'react'
@@ -18,9 +19,12 @@ const route = (
 
 const adminRouters = [
     route('/product', AllProduct),
+
+    route('/category/all', AllCategory),
+    route('/category/add', () => DetailCategory({ isAdd: true })),
+    route('/category/detail/:slug', () => DetailCategory({ isAdd: false })),
+
     // route('/', Dashboard),
-    // route('/product/all', AllProduct),
-    // route('/product/add', () => DetailProduct({ isAdd: true })),
     // route('/product/detail/:slug', () => DetailProduct({ isAdd: false })),
     // route('/discount/all', AllDiscount),
     // route('/discount/add', () => DetailDiscount({ isAdd: true })),

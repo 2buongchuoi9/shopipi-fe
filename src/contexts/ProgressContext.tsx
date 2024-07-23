@@ -1,7 +1,7 @@
 // src/ProgressContext.tsx
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react'
+import { createContext, ReactNode, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 // Cấu hình NProgress

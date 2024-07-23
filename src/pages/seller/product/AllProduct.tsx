@@ -330,7 +330,6 @@ const AllProduct = () => {
                                 attribute,
                                 category,
                                 price,
-                                priceImport,
                                 totalComment,
                                 totalRating,
                             } = record
@@ -377,7 +376,6 @@ const AllProduct = () => {
                                         <h2>chi tiết</h2>
                                         <ul className="list-disc list-inside">
                                             <li>Giá: {price}</li>
-                                            <li>Giá nhập: {priceImport}</li>
                                             <li>Số bình luận: {totalComment}</li>
                                             <li>Số đánh giá: {totalRating}</li>
                                         </ul>

@@ -1,11 +1,14 @@
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
+// import Search from '../Search/Search'
+import { useAuth, useCart, useMessage } from '@/hooks'
 import authApi, { User } from '@/http/authApi'
+import { UserRoles } from '@/utils/constants'
 import { Avatar, Dropdown, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { MdOutlineCloudDownload } from 'react-icons/md'
-import { useAuth, useCart, useMessage } from '@/hooks'
-import { UserRoles } from '@/utils/constants'
+
+
 import Search from 'antd/es/transfer/search'
 import './footer.css'
 

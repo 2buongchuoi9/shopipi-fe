@@ -1,5 +1,5 @@
 import http from './http'
-import { Map, Product, Variant } from './productApi'
+import { Product, Variant } from './productApi'
 
 export type CartItem = {
     product: Product
