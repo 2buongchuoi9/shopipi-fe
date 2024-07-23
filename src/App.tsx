@@ -8,7 +8,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { useEffect } from 'react'
 import { ProgressProvider } from './contexts/ProgressContext'
-import { useCategory, useProgress } from './hooks'
+import { useAuth, useCategory, useProgress } from './hooks'
 
 NProgress.configure({ showSpinner: false, trickleSpeed: 300 })
 
@@ -25,6 +25,18 @@ const ProgressBar = () => {
 }
 
 function App() {
+    // const { isAuthenticated } = useAuth()
+
+    // useEffect(() => {
+    //     if (isAuthenticated) {
+    //         socketService.connect()
+    //     } else {
+    //         socketService.disconnect()
+    //     }
+    //     return () => {
+    //         socketService.disconnect()
+    //     }
+    // }, [isAuthenticated])
     return (
         <>
             <ProgressProvider>

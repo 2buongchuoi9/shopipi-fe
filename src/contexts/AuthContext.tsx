@@ -1,8 +1,9 @@
 import { useCart } from '@/hooks'
 import { ErrorPayload } from '@/http'
 import authApi, { initialUser, User } from '@/http/authApi'
+import socketService from '@/socketService'
 import { accessToken, clientId, refreshTokenStorage } from '@/utils/localStorageUtils'
-import { createContext, ReactNode, useLayoutEffect, useRef, useState } from 'react'
+import { createContext, ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 export interface AuthContextType {
     user: User
@@ -43,13 +44,17 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         fetchCart()
     }
 
-    // useEffect(() => {
-    //     isAuthenticated.current = user?.email ? true : false
-    // }, [user?.email])
-
     useLayoutEffect(() => {
         fetchUser()
     }, [])
+
+    useEffect(() => {
+        if (!isAuthenticated.current) socketService.connect()
+
+        return () => {
+            if (!isAuthenticated.current && socketService.isConnected()) socketService.disconnect()
+        }
+    }, [isAuthenticated.current])
 
     return (
         <AuthContext.Provider

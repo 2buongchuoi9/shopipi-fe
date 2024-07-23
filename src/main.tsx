@@ -8,6 +8,7 @@ import LoadingProvider from './contexts/LoadingContext.tsx'
 import MessageProvider from './contexts/MessageContext.tsx'
 import './index.css'
 import './utils/extensions.ts'
+;(window as any).global = window
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <StrictMode>

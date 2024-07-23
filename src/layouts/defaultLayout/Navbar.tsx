@@ -98,6 +98,9 @@ const Navbar = () => {
                             alt="Amazon logo"
                         />
                     </Link>
+                    <Link to={'/'} className="hidden md:flex md:items-start mb-2">
+                        hôm
+                    </Link>
                     <div className="hidden md:flex md:items-start mb-2">
                         <span className="ml-8 mt-4">
                             <MdOutlineCloudDownload size={25} />
