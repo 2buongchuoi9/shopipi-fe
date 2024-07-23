@@ -16,25 +16,27 @@ const Card = ({ product }: CardProps) => {
     const { thumb, price, priceSale, name, slug, shop, discount } = product
 
     return (
-        <div>
+        <div className="shadow-lg w-[60%] h-full hover:shadow-xl transition-shadow duration-300 ease-in-out">
             <Link
                 to={`/product/${slug}`}
-                className="flex flex-col items-center text-sm font-normal p-1.5"
+                className="flex flex-col items-center text-sm font-normal p-2 bg-white rounded-lg hover:bg-gray-50"
             >
-                <img className="object-cover w-full h-80 rounded-lg" src={thumb} alt="HomeCard" />
-                <div className="mt-2 flex justify-center items-center w-full gap-1">
-                    <span className="mt-1 bg-red-500 text-white rounded-md">{discount}</span>
-                    <span className="mt-1 text-1sm bg-yellow-300 rounded-md">{badge}</span>
+                <img className="object-cover w-full h-[12rem] rounded-sm" src={thumb} alt={name} />
+                <div className="mt-2 flex justify-center items-center w-full gap-2">
+                    <span className="px-2 py-1 bg-red-500 text-white rounded-md text-xs">
+                        {discount}
+                    </span>
+                    <span className="px-2 py-1 text-xs bg-yellow-300 rounded-md">{badge}</span>
                 </div>
-                <div className="flex mt-2">
-                    <span className="">{priceSale?.vnd()}</span>
-                    <span className="line-through">{price?.vnd()}</span>
+                <div className="flex mt-2 justify-between w-full">
+                    <span className="text-green-600 font-semibold">{priceSale?.vnd()}</span>
+                    <span className="line-through text-gray-400">{price?.vnd()}</span>
                 </div>
-                <div>
-                    <span>shop:{shop.name}</span>
+                <div className="text-gray-800 mt-1">
+                    <span>shop: {shop.name}</span>
                 </div>
                 <div className="mt-2 flex justify-center items-center w-full mb-5">
-                    <span className="inline-block min-w-0 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                    <span className="inline-block min-w-0 overflow-hidden overflow-ellipsis whitespace-nowrap text-center">
                         {name}
                     </span>
                 </div>

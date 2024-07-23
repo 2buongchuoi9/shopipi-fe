@@ -8,6 +8,9 @@ import { Avatar, Dropdown, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { MdOutlineCloudDownload } from 'react-icons/md'
 
+import Search from 'antd/es/transfer/search'
+import './footer.css'
+
 type Props = {
     isAuthenticated: boolean
     user: User
@@ -61,10 +64,10 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
         <Link
             to="/login?redirect=/product"
             title="Login"
-            className="hidden md:flex md:flex-col md:items-start md:space-y-1 mr-[2rem] hover:border hover:border-white focus:border-white"
+            className="hidden md:flex md:flex-col md:items-start md:space-y-1 mr-[2rem] hover:shadow-2xl rounded-md link-hover-effect"
         >
-            <div className="text-1sm">Hello, đăng nhập</div>
-            <div className="text-1sm font-bold">Tài khoản & Lựa chọn</div>
+            <div className="text-1sm px-1">Hello, đăng nhập</div>
+            <div className="text-1sm font-bold px-1">Tài khoản & Lựa chọn</div>
         </Link>
     )
 }
@@ -87,16 +90,17 @@ const Navbar = () => {
     }, [])
 
     return (
-        <header className="w-full bg-black">
-            <div className="flex flex-col md:flex-row flex-wrap justify-between bg-amazonclone text-white h-[60px] px-5">
+        <header className="w-full bg-white">
+            <div className="flex flex-col md:flex-row flex-wrap justify-between bg-amazonclone text-black h-[60px] px-10 py-2">
                 {/* Left */}
                 <div className="flex items-center space-x-4 md:space-x-0 md:mx-4">
-                    <Link to={'/product'} className="focus:outline-white">
+                    <Link to={'/'} className="focus:outline-white">
                         <img
                             className="h-[35px] w-[100px]"
-                            src={'../images/amazon.png'}
+                            src="https://salt.tikicdn.com/ts/upload/0e/07/78/ee828743c9afa9792cf20d75995e134e.png"
                             alt="Amazon logo"
                         />
+                        <span className="font-bold text-sm text-sky-800 ml-2">Tốt & Nhanh</span>
                     </Link>
                     <Link to={'/'} className="hidden md:flex md:items-start mb-2">
                         hôm
@@ -105,17 +109,17 @@ const Navbar = () => {
                         <span className="ml-8 mt-4">
                             <MdOutlineCloudDownload size={25} />
                         </span>
-                        <div className="text-1sm">
-                            <span className="mt-1 flex ml-3">Tải ứng dụng</span>
-                            <div className="text-1sm font-bold ml-3">Việt Nam</div>
+                        <div className="ml-3">
+                            <span className="block text-sm font-semibold">Tải ứng dụng</span>
+                            <div className="text-xs font-bold">Việt Nam</div>
                         </div>
                     </div>
                 </div>
                 {/* Middle */}
-                <div className="flex-1 md:flex-none md:w-1/2 md:mt-0 m-3">
-                    search
-                    {/* <Search /> */}
+                <div className="flex-1 md:flex-none md:w-1/2 md:mt-4 m-3">
+                    <Search />
                 </div>
+
                 {/* Right */}
                 <div className="flex flex-col-3 md:flex-row items-center space-x-4 md:space-x-0 md:mx-1 mt-2 md:mt-0">
                     <Profile
@@ -123,28 +127,32 @@ const Navbar = () => {
                         user={user}
                         isAdmin={user?.roles?.includes(UserRoles.ADMIN) ?? false}
                     />
-                    <div className="hidden md:flex md:flex-col md:items-start md:space-y-1 mr-[2rem] hover:border hover:border-white focus:border-white">
-                        <div className="text-1sm">Giỏ hàng</div>
-                        <div className="text-1sm font-bold">& Thanh toán</div>
+                    <div className="hidden md:flex md:flex-col md:items-start md:space-y-1 mr-[2rem] hover:shadow-2xl rounded-md link-hover-effect">
+                        <div className="text-1sm px-3">Giỏ hàng</div>
+                        <div className="text-1sm font-bold px-1">& Thanh toán</div>
                     </div>
                     <div className="mr-[1rem]">
                         <Link to={'/cart'}>
-                            <div className="flex items-center mr-3 ml-4 m-1 hover:border hover:border-white">
+                            <div className="flex items-center mr-3 ml-4 m-1">
                                 <ShoppingCartIcon className="size-10" />
                                 <div className="relative mb-[3rem]">
                                     <div className="absolute right-[12px] font-bold mt-2 text-orange-400">
                                         {totalItem}
                                     </div>
                                 </div>
-                                <div className="mt-5 text-1sm font-bold hover:text-white">Cart</div>
+                                <div className="mt-5 text-1sm font-bold hover:text-black hover:shadow-2xl">
+                                    Giỏ hàng
+                                </div>
                             </div>
                         </Link>
                     </div>
                 </div>
             </div>
-            <div className="flex flex-wrap w-full mt-1 bg-slate-900 text-white space-x-3 text-xs xl:text-sm p-1 pl-6 cursor-pointer">
+            <div className="flex flex-wrap mt-4 bg-white text-black space-x-3 text-xs xl:text-sm ml-11 p-2 cursor-pointer px-5">
                 {categories.map((category) => (
-                    <div key={category.id}>{category.name}</div>
+                    <div key={category.id} className="hover:text-sky-700">
+                        {category.name}
+                    </div>
                 ))}
             </div>
         </header>
