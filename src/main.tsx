@@ -8,6 +8,7 @@ import LoadingProvider from './contexts/LoadingContext.tsx'
 import MessageProvider from './contexts/MessageContext.tsx'
 import './index.css'
 import './utils/extensions.ts'
+import { ChatProvider } from './contexts/ChatContext.tsx'
 ;(window as any).global = window
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -15,11 +16,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
             <LoadingProvider>
                 <AuthProvider>
-                    <CategoryProvider>
-                        <MessageProvider>
-                            <App />
-                        </MessageProvider>
-                    </CategoryProvider>
+                    <ChatProvider>
+                        <CategoryProvider>
+                            <MessageProvider>
+                                <App />
+                            </MessageProvider>
+                        </CategoryProvider>
+                    </ChatProvider>
                 </AuthProvider>
             </LoadingProvider>
         </BrowserRouter>

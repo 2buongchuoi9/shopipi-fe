@@ -1,0 +1,13 @@
+/* src/components/Chat.css */
+.chat-messages {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+.chat-input {
+    display: flex;
+    align-items: center;
+}

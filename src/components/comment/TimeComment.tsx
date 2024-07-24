@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/vi'
-import { useEffect, useState } from 'react'
+import { HTMLAttributes, useEffect, useState } from 'react'
 // import duration from "dayjs/plugin/duration"
 // import relativeTime from "dayjs/plugin/relativeTime"
 import utc from 'dayjs/plugin/utc'
@@ -35,7 +35,11 @@ function timeAgo(time: string) {
     }
 }
 
-const TimeComment = ({ createdAt }: { createdAt: string }) => {
+type Props = HTMLAttributes<HTMLSpanElement> & {
+    createdAt: string
+}
+
+const TimeComment = ({ createdAt, ...rest }: Props) => {
     // const a = dayjs(createdAt, 'DD-MM-YYYY HH:mm:ss')
     const [time, setTime] = useState(() => timeAgo(createdAt))
 
@@ -52,7 +56,7 @@ const TimeComment = ({ createdAt }: { createdAt: string }) => {
     return (
         <>
             {/* các thông tin khác của comment */}
-            <span>{time === 'Invalid Date' ? createdAt : time}</span>
+            <span {...rest}>{time === 'Invalid Date' ? createdAt : time}</span>
         </>
     )
 }

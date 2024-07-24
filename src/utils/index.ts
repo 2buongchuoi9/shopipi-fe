@@ -1,4 +1,6 @@
 import { ParamsRequest } from '@/http'
+import { ChatGroup } from '@/http/chatApi'
+import { ChatPayload } from '@/socketService'
 
 const routeRedirect = `${window.location.origin}/login-redirect`
 const apiUrl = import.meta.env.VITE_API_URL
@@ -9,9 +11,6 @@ export const removeNullParams = (params?: ParamsRequest) => {
     if (!params) return {}
     return Object.fromEntries(Object.entries(params).filter(([_, value]) => !value))
 }
-
-export const VND = (price: number | string) =>
-    price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
 
 export const convertVietNameseToSlug = (title: string) => {
     if (!title) return ''
@@ -65,4 +64,28 @@ export const randomGradient = () => {
     const color1 = getRandomColor()
     const color2 = getRandomColor()
     return `linear-gradient(45deg, ${color1}, ${color2})`
+}
+
+export function groupChatsBySender(chats: ChatPayload[]): ChatGroup[] {
+    if (chats.length === 0) return []
+
+    const groupedChats: ChatGroup[] = []
+    let currentGroup: ChatGroup | null = null
+
+    for (const chat of chats) {
+        if (currentGroup === null || currentGroup.senderId !== chat.senderId) {
+            // Start a new group if sender changes
+            currentGroup = {
+                senderId: chat.senderId,
+                chats: [chat],
+                createdAt: chat.createdAt,
+            }
+            groupedChats.push(currentGroup)
+        } else {
+            // Add chat to the current group
+            currentGroup.chats.push(chat)
+        }
+    }
+
+    return groupedChats
 }

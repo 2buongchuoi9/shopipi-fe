@@ -8,7 +8,6 @@ import cartApi from '@/http/cartApi'
 const ProductPageHome = () => {
     const [products, setProducts] = useState<Product[]>([])
     const { user } = useAuth()
-    console.log('user', user)
 
     useEffect(() => {
         ;(async () => {

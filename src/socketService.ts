@@ -9,25 +9,46 @@ const header = {
     'x-client-id': clientId.get() ?? '',
 }
 
+export type ChatPayload = {
+    id: string
+    senderId: string
+    receiverId: string
+    message: string
+    type: 'TEXT' | 'IMAGE' | 'FILE'
+    isRead: boolean
+    createdAt: string
+    error?: string
+}
+
+type ChatRequest = {
+    message: string
+    senderId: string
+    receiverId: string
+}
+
 class SocketService {
     private static instance: SocketService
     private client: Stomp.Client
-    private subscribers: Map<string, (message: any) => void> = new Map()
+    private subscribers: Map<string, Set<(message: ChatPayload) => void>> = new Map()
     private onConnectCallbacks: (() => void)[] = []
     private onDisconnectCallbacks: (() => void)[] = []
+    private reconnectDelay = 5000 // 5 seconds
 
-    constructor() {
+    private constructor() {
         const sockJS = new SockJS(SOCKET_URL)
 
         this.client = Stomp.over(sockJS)
 
-        // this.connect() // Connect when the service is initialized
+        sockJS.onclose = () => {
+            console.warn('WebSocket connection closed, trying to reconnect...')
+            this.onDisconnectCallbacks.forEach((callback) => callback())
+            setTimeout(() => this.connect(), this.reconnectDelay)
+        }
     }
 
     static getInstance() {
         if (!this.instance) {
             this.instance = new SocketService()
-            // this.instance.connect()
         }
         return this.instance
     }
@@ -39,16 +60,15 @@ class SocketService {
                 () => {
                     console.log('Connected to WebSocket')
                     this.onConnectCallbacks.forEach((callback) => callback())
-                    this.subscribers.forEach((callback, destination) => {
+                    this.subscribers.forEach((callbacks, destination) => {
                         this.client.subscribe(destination, (message) => {
                             console.log(`Received message on ${destination}:`, message)
-                            callback(JSON.parse(message.body))
+                            callbacks.forEach((callback) => callback(JSON.parse(message.body)))
                         })
                     })
                 },
                 (error) => {
                     console.error('Failed to connect to WebSocket', error)
-                    // setTimeout(() => this.connect(), 5000) // Retry after 5 seconds
                 }
             )
         }
@@ -65,7 +85,7 @@ class SocketService {
         }
     }
 
-    public sendMessage(destination: string, body: any) {
+    public sendMessage(destination: string, body: ChatRequest) {
         if (this.client.connected) {
             this.client.send(destination, {}, JSON.stringify(body))
         } else {
@@ -73,19 +93,27 @@ class SocketService {
         }
     }
 
-    public subscribe(destination: string, callback: (message: any) => void) {
+    public subscribe(
+        destination: string,
+        callback: (message: ChatPayload) => void,
+        callbackFail?: (error: string) => void
+    ) {
         if (!this.subscribers.has(destination)) {
-            if (this.client.connected) {
-                this.client.subscribe(destination, (message) => {
-                    console.log(`Received message on ${destination}:`, message)
-                    callback(JSON.parse(message.body))
-                })
-            } else {
-                console.warn(`Not connected. Cannot subscribe to ${destination}.`)
-            }
-            this.subscribers.set(destination, callback)
+            this.subscribers.set(destination, new Set())
+        }
+        const callbacks = this.subscribers.get(destination)!
+        callbacks.add(callback)
+
+        if (this.client.connected) {
+            this.client.subscribe(destination, (message) => {
+                console.log(`Received message on ${destination}:`, message)
+                if (message.body.includes('error')) {
+                    callbackFail && callbackFail(message.body)
+                }
+                callbacks.forEach((cb) => cb(JSON.parse(message.body)))
+            })
         } else {
-            console.log(`Already subscribed to ${destination}`)
+            console.warn(`Not connected. Cannot subscribe to ${destination}.`)
         }
     }
 
@@ -93,6 +121,16 @@ class SocketService {
         if (this.subscribers.has(destination)) {
             this.client.unsubscribe(destination)
             this.subscribers.delete(destination)
+        }
+    }
+
+    public removeCallback(destination: string, callback: (message: ChatPayload) => void) {
+        if (this.subscribers.has(destination)) {
+            const callbacks = this.subscribers.get(destination)!
+            callbacks.delete(callback)
+            if (callbacks.size === 0) {
+                this.unsubscribe(destination)
+            }
         }
     }
 

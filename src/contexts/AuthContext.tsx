@@ -3,6 +3,7 @@ import { ErrorPayload } from '@/http'
 import authApi, { initialUser, User } from '@/http/authApi'
 import socketService from '@/socketService'
 import { accessToken, clientId, refreshTokenStorage } from '@/utils/localStorageUtils'
+import { message } from 'antd'
 import { createContext, ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 export interface AuthContextType {
@@ -49,7 +50,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }, [])
 
     useEffect(() => {
-        if (!isAuthenticated.current) socketService.connect()
+        if (!isAuthenticated.current) {
+            socketService.connect()
+        }
 
         return () => {
             if (!isAuthenticated.current && socketService.isConnected()) socketService.disconnect()

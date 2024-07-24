@@ -1,3 +1,5 @@
+import http, { Page, ParamsRequest } from './http'
+
 export type Role = 'ADMIN' | 'USER' | 'SHOP'
 
 export type Shop = {
@@ -13,3 +15,9 @@ export type Shop = {
     createdAt: string // Consider using Date if possible
     oauth2Id: string | null
 }
+
+const shopApi = {
+    findShop: async (params: ParamsRequest) => await http.get<Page<Shop>>('/user', { params }),
+}
+
+export default shopApi

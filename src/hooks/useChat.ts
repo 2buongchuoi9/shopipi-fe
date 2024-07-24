@@ -1,36 +1,60 @@
-import socketService from '@/socketService'
-import { useEffect, useState } from 'react'
-import useAuth from './useAuth'
+// // src/hooks/useChat.ts
+// import socketService, { ChatPayload } from '@/socketService'
+// import { useEffect, useState } from 'react'
+// import useAuth from './useAuth'
 
-const useChat = (destination: string) => {
-    const [messages, setMessages] = useState<string[]>([])
-    const { user } = useAuth()
+import { ChatContext } from '@/contexts/ChatContext'
+import { useContext } from 'react'
 
-    useEffect(() => {
-        // Kết nối đến WebSocket khi component mount
-        socketService.connect()
+// const useChat = (receiverId: string | null) => {
+//     const [messages, setMessages] = useState<ChatPayload[]>([])
+//     const [error, setError] = useState<string | null>(null)
+//     const { user, isAuthenticated } = useAuth()
+//     const destination = receiverId ? `/user/${receiverId}/private` : ''
 
-        // Đăng ký nhận tin nhắn cho destination
-        const handleMessage = (message: any) => {
-            setMessages((prevMessages) => [...prevMessages, message])
-        }
+//     useEffect(() => {
+//         if (!receiverId || !isAuthenticated) return
 
-        socketService.subscribe('/message', handleMessage)
-    }, [destination])
+//         // Kết nối đến WebSocket khi component mount
+//         socketService.connect()
 
-    const sendMessage = (body: string) => {
-        if (socketService.isConnected()) {
-            socketService.sendMessage('/message', {
-                sender: user.id, //
-                content: body,
-                type: 'CHAT',
-            })
-        } else {
-            console.error('WebSocket is not connected')
-        }
+//         // Đăng ký nhận tin nhắn cho destination
+//         const handleMessage = (message: ChatPayload) => {
+//             setMessages((prevMessages) => [...prevMessages, message])
+//         }
+
+//         socketService.subscribe(destination, handleMessage, (e) => setError(e))
+
+//         return () => {
+//             socketService.unsubscribe(destination)
+//         }
+//     }, [receiverId, isAuthenticated])
+
+//     const sendMessage = (body: string) => {
+//         if (socketService.isConnected() && user?.id && receiverId) {
+//             socketService.sendMessage('/app/chat.send', {
+//                 message: body,
+//                 senderId: user.id,
+//                 receiverId: receiverId,
+//             })
+//         } else {
+//             console.error(
+//                 'WebSocket is not connected or user is not authenticated or receiverId is null'
+//             )
+//         }
+//     }
+
+//     return { messages, sendMessage, error }
+// }
+
+// export default useChat
+
+const useChat = () => {
+    const context = useContext(ChatContext)
+    if (context === undefined) {
+        throw new Error('useChat must be used within a ChatProvider')
     }
-
-    return { messages, sendMessage }
+    return context
 }
 
 export default useChat

@@ -84,8 +84,6 @@ const Detail = ({ product }: CardProps) => {
 }
 
 const ProductCard = ({ product, type = 'any' }: Props) => {
-    console.log('product', product)
-
     return (
         <div>
             {type === 'any' && <Card product={product} />}

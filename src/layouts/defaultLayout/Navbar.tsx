@@ -77,8 +77,6 @@ const Navbar = () => {
     const { user, isAuthenticated } = useAuth()
     const { totalItem, totalQuantity } = useCart()
 
-    console.log('user', user)
-
     useEffect(() => {
         fetch('/data/categories.json')
             .then((response) => response.json())
