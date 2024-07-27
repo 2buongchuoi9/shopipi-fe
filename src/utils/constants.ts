@@ -1,5 +1,10 @@
 export const adminPath = '/admin'
 export const sellerPath = '/seller'
+export const userPath = '/user'
+
+export const dateFormat = 'DD-MM-YYYY HH:mm:ss'
+
+export const REDIRECT_RESULT_ORDER = import.meta.env.VITE_URL + '/order/result'
 
 export enum UserRoles {
     ADMIN = 'ADMIN',
@@ -11,10 +16,6 @@ export const DiscountPriceType = {
     FIXED_AMOUNT: 'Số tiền',
     PERCENTAGE_AMOUNT: 'Phần trăm',
 } as const
-
-export const dateFormat = 'DD-MM-YYYY HH:mm:ss'
-
-export const REDIRECT_RESULT_ORDER = import.meta.env.VITE_URL + '/order/result'
 
 export const DiscountState = {
     ACTIVE: 'Đang diễn ra',

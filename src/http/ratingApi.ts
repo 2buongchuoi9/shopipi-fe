@@ -1,3 +1,4 @@
+import { count } from 'console'
 import http, { Page, ParamsRequest } from './http'
 import { Variant } from './productApi'
 import { Shop } from './shopApi'
@@ -61,6 +62,16 @@ const ratingApi = {
     addRating: async (data: RatingRequest) => await http.post<Rating>('/rating', data),
 
     like: async (id: string) => await http.post<Rating>(`/rating/like/${id}`),
+
+    addRatingWithFile: async (data: FormData) =>
+        await http.post<Shop>(`/rating/file`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }),
+
+    countRatingByShop: async (shopId: string) =>
+        await http.get<number>(`/rating/countRating/shop/${shopId}`),
 }
 
 export default ratingApi

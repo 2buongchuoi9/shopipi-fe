@@ -13,7 +13,7 @@ type CardProps = {
 const badge = 'Deal có giới hạn'
 
 const Card = ({ product }: CardProps) => {
-    const { thumb, price, priceSale, name, slug, shop, discount } = product
+    const { thumb, price, priceSale, name, slug, shop, discount, variants } = product
 
     return (
         <div className="shadow-lg w-[60%] h-full hover:shadow-xl transition-shadow duration-300 ease-in-out">
@@ -34,6 +34,10 @@ const Card = ({ product }: CardProps) => {
                 </div>
                 <div className="text-gray-800 mt-1">
                     <span>shop: {shop.name}</span>
+                    <span>
+                        Đã bán:{' '}
+                        {variants.map((v) => v.sold).reduce((sold, current) => sold + current, 0)}
+                    </span>
                 </div>
                 <div className="mt-2 flex justify-center items-center w-full mb-5">
                     <span className="inline-block min-w-0 overflow-hidden overflow-ellipsis whitespace-nowrap text-center">

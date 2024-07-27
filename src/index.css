@@ -35,3 +35,8 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
     -moz-appearance: textfield;
 }
+
+#nprogress .bar {
+    height: 4px;
+    background: linear-gradient(to right, #b65eba, #2e8de1);
+}

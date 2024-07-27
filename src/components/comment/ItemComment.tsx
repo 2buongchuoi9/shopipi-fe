@@ -6,7 +6,7 @@ import { LuReply } from 'react-icons/lu'
 
 import { useAuth, useMessage } from '@/hooks'
 import InputComment from './InputComment'
-import TimeComment from './TimeComment'
+import TimeComment from '../TimeCount'
 import ratingApi, { Rating } from '@/http/ratingApi'
 
 type Props = {
@@ -26,7 +26,7 @@ const ItemComment = ({ comment, handleReload }: Props) => {
 
     const handleLikeComment = async () => {
         if (!isAuthenticated) {
-            success('Please login to like comment')
+            error('vui lòng đăng nhập để thích bình luận')
             return
         }
         console.log('comment', comment)
@@ -58,7 +58,7 @@ const ItemComment = ({ comment, handleReload }: Props) => {
                                 </div>
                             ) : (
                                 <>
-                                    <Rate defaultValue={comment.value} disabled className="" />
+                                    <Rate value={comment.value} disabled className="" />
                                     <div className="flex items-center text-green-500">
                                         <AiOutlineCheckCircle className="mr-2" />
                                         <span>Đã mua hàng</span>

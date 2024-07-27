@@ -59,6 +59,7 @@ class SocketService {
                 header,
                 () => {
                     console.log('Connected to WebSocket')
+
                     this.onConnectCallbacks.forEach((callback) => callback())
                     this.subscribers.forEach((callbacks, destination) => {
                         this.client.subscribe(destination, (message) => {
@@ -88,6 +89,14 @@ class SocketService {
     public sendMessage(destination: string, body: ChatRequest) {
         if (this.client.connected) {
             this.client.send(destination, {}, JSON.stringify(body))
+        } else {
+            console.error('WebSocket is not connected')
+        }
+    }
+
+    public pingUser(userId: string, type: 'online' | 'offline' = 'online') {
+        if (this.client.connected) {
+            this.client.send(`/app/${type}`, {}, userId)
         } else {
             console.error('WebSocket is not connected')
         }

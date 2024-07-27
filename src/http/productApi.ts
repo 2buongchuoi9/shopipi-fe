@@ -33,6 +33,7 @@ export const initialProduct: Product = {
             price: 0,
             priceImport: 0,
             priceSale: 0,
+            sold: 0,
             valueVariant: [{ key: '', value: '' }],
         },
     ],
@@ -60,6 +61,9 @@ export const initialProduct: Product = {
         addressShipping: null,
         createdAt: '',
         oauth2Id: null,
+        phone: '',
+        followers: [],
+        slug: '',
     },
 }
 
@@ -81,6 +85,7 @@ export type Variant = {
     priceImport: number
     priceSale: number
     valueVariant: Map[]
+    sold: number
 }
 
 export const productType = ['CLOTHING', 'ELECTRONIC', 'OTHER'] as const

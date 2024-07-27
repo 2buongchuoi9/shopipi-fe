@@ -74,6 +74,7 @@ type Props = {
 }
 
 const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
+    const { isAuthenticated } = useAuth()
     const { loading, success, error } = useMessage()
     const { addToCart } = useCart()
     const [cartRequest, setCartRequest] = useState<CartRequest | null>(null)
@@ -157,10 +158,10 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
             title: 'Đơn giá',
             dataIndex: 'name',
             key: 'product.price',
-            render: (_, { product: { price } }) => (
-                <div>
-                    <p className="line-through">{price}đ</p>
-                    <p>{randomPriceDiscount(price, 30)}đ</p>
+            render: (_, { variant: { price, priceSale } }) => (
+                <div className="space-x-1">
+                    <span className="line-through text-gray-400">{price?.vnd()}</span>
+                    <span className="text-green-600 font-semibold">{priceSale?.vnd()}</span>
                 </div>
             ),
         },
@@ -184,7 +185,7 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
             title: 'Thành tiền',
             dataIndex: 'quantity',
             key: 'product.price * quantity',
-            render: (_, { price, quantity }) => price * quantity,
+            render: (_, { variant: { priceSale }, quantity }) => (priceSale * quantity).vnd(),
         },
         {
             title: 'Thao tác',
@@ -255,10 +256,21 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
 
 // luồng: call api update (create) cart -> fetch cart in context -> render cart page
 const CartPage = () => {
-    // const { isAuthenticated } = useAuth()
+    const { isAuthenticated } = useAuth()
     const navigate = useNavigate()
     const { cart, setOrderRequest, resultCheckoutReview: checkout } = useCart()
     const [shopOrderItemsRequest, setShopOrderItemsRequest] = useState<ShopOrderItemsRequest[]>([])
+    const { warning } = useMessage()
+
+    const handleOrder = () => {
+        if (isAuthenticated) {
+            navigate('/order')
+            return
+        } else {
+            warning('Vui lòng đăng nhập để mua hàng')
+            navigate('/login?redirect=/cart')
+        }
+    }
 
     // set orderRequest khi shopOrderItemsRequest thay đổi (cập nhật orderRequest) -> resultCheckoutReview thay đổi
     useEffect(() => {
@@ -268,7 +280,7 @@ const CartPage = () => {
                       shopOrderItems: shopOrderItemsRequest,
                       address: '',
                       payment: 'CASH',
-                      shippingType: 'NORMAL',
+                      shippingType: 'NONE',
                   }
                 : null
         )
@@ -359,10 +371,10 @@ const CartPage = () => {
                         <div>
                             {`Tạm tính (${
                                 checkout?.items.flatMap((v) => v.items).length ?? 0
-                            } sản phầm): ${checkout?.totalCheckout ?? 0}đ`}
+                            } sản phầm): ${(checkout?.totalCheckout ?? 0).vnd()}`}
                         </div>
 
-                        <Button type="primary" onClick={() => navigate('/order')}>
+                        <Button type="primary" onClick={handleOrder}>
                             Mua hàng
                         </Button>
                     </div>

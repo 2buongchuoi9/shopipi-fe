@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { List, Typography, Divider } from 'antd'
 import { ChatPayload } from '@/socketService'
 import { useAuth } from '@/hooks'
 import { groupChatsBySender } from '@/utils'
-import TimeComment from '../comment/TimeComment'
+import TimeComment from '../TimeCount'
 
 const { Text } = Typography
 
@@ -15,11 +15,23 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chats }) => {
     const {
         user: { id: currentUserId },
     } = useAuth()
+    const chatEndRef = useRef<HTMLDivElement>(null)
+
     // Group messages by sender and time
     const groupedChats = groupChatsBySender(chats)
 
+    const scrollToBottom = () => {
+        if (chatEndRef.current) {
+            chatEndRef.current.scrollIntoView({ behavior: 'smooth' })
+        }
+    }
+
+    useEffect(() => {
+        scrollToBottom()
+    }, [chats])
+
     return (
-        <div className="max-h-[500px] overflow-y-auto p-4 bg-gray-100">
+        <div className="h-[20rem] overflow-y-auto p-4 bg-gray-100">
             {groupedChats.map((group, index) => (
                 <div key={index}>
                     <div className="text-center my-4 text-gray-500 text-sm font-semibold">
@@ -65,7 +77,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chats }) => {
                         )}
                     />
                     {/* Optional: Add a divider between groups */}
-                    {index < groupedChats.length - 1 && <Divider />}
+                    {/* {index < groupedChats.length - 1 && <Divider />} */}
+                    <div ref={chatEndRef} />
                 </div>
             ))}
         </div>

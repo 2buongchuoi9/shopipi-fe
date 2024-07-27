@@ -1,10 +1,10 @@
 // src/components/ChatComponent.tsx
 import { Avatar, Button, Input } from 'antd'
 import 'antd/dist/reset.css'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { HTMLAttributes, useCallback, useEffect, useState } from 'react'
 import { BsThreeDots } from 'react-icons/bs'
 import { IoCloseSharp } from 'react-icons/io5'
-import TimeComment from '../comment/TimeComment'
+import TimeCount from '../TimeCount'
 import ChatBox from './ChatBox'
 import chatApi from '@/http/chatApi'
 import socketService, { ChatPayload } from '@/socketService'
@@ -13,15 +13,20 @@ import useAuth from '@/hooks/useAuth'
 import useChat from '@/hooks/useChat'
 import { useDebounce, useMessage } from '@/hooks'
 import { BiSearch } from 'react-icons/bi'
-import shopApi from '@/http/shopApi'
+import shopApi, { Online } from '@/http/shopApi'
 import { CgClose } from 'react-icons/cg'
 import moment, { now } from 'moment'
 import { dateFormat } from '@/utils/constants'
 
-const ChatComponent: React.FC = () => {
+type Props = HTMLAttributes<HTMLDivElement> & {
+    // onClose: () => void
+    // selectedUserDefault: Shop | null
+}
+
+const ChatComponent = ({ ...rest }: Props) => {
     const { user, isAuthenticated } = useAuth()
-    const [selectedUser, setSelectedUser] = useState<Shop | null>(null)
-    const [users, setUsers] = useState<Shop[]>([])
+    // const [selectedUser, setSelectedUser] = useState<Shop | null>(null)
+    const [users, setUsers] = useState<(Shop & Online)[]>([])
     const [messages, setMessages] = useState<ChatPayload[]>([])
     const [input, setInput] = useState('')
     const [error, setError] = useState<string | null>(null)
@@ -30,6 +35,7 @@ const ChatComponent: React.FC = () => {
     const [resultSearch, setResultSearch] = useState<Shop[]>([])
     const [showResult, setShowResult] = useState(false)
     const { success } = useMessage()
+    const { selectedUser, setSelectedUser, setVisible } = useChat()
 
     useEffect(() => {
         if (!keySearch.trim()) {
@@ -73,12 +79,13 @@ const ChatComponent: React.FC = () => {
                 if (!isChatted) {
                     ;(async () => {
                         const res = await chatApi.getUserChattedWithUser(user.id)
-                        setUsers(res)
+                        const res2 = await shopApi.onlineMany(res.map((u) => u.id))
 
-                        // thông báo có tin nhắn mới
-                        // const notification = new Notification('Có tin nhắn mới', {
-                        //     body: 'Bạn có tin nhắn mới từ ' + message.senderId,
-                        // })
+                        setUsers(
+                            Array(res.length)
+                                .fill(null)
+                                .map((_, i) => ({ ...res[i], ...res2[i] }))
+                        )
                     })()
                 }
             }
@@ -102,7 +109,22 @@ const ChatComponent: React.FC = () => {
         if (isAuthenticated && user.id) {
             ;(async () => {
                 const res = await chatApi.getUserChattedWithUser(user.id)
-                setUsers(res)
+                const res2 = await shopApi.onlineMany(res.map((u) => u.id))
+
+                setUsers(
+                    Array(res.length)
+                        .fill(null)
+                        .map((_, i) => ({ ...res[i], ...res2[i] }))
+                )
+                // setUsers(res)
+                // Check if selectedUserDefault is provided and not in the list
+                // if (selectedUserDefault) {
+                //     const userExists = res.some((u) => u.id === selectedUserDefault.id)
+                //     if (!userExists) {
+                //         setUsers((prevUsers) => [...prevUsers, selectedUserDefault])
+                //     }
+                //     setSelectedUser(selectedUserDefault)
+                // }
             })()
 
             const destination = `/user/${user.id}/private`
@@ -150,118 +172,134 @@ const ChatComponent: React.FC = () => {
     }
 
     return (
-        <div className="bg-white border-[1px] rounded-lg w-[50rem]">
-            {/* header */}
-            <div className="p-4 flex justify-between border-b-[1px]">
-                <div className="flex">
-                    <Avatar src={user?.image} />
-                    <p>{user?.name}</p>
-                </div>
-                <div>
-                    <Button icon={<IoCloseSharp />}></Button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-5">
-                {/* list user */}
-                <div className="col-span-2 border-r-[1px]">
+        <div {...rest}>
+            <div className="bg-white border-[1px] rounded-lg w-[50rem]">
+                {/* header */}
+                <div className="p-4 flex justify-between border-b-[1px]">
                     <div className="flex">
-                        <Input
-                            placeholder="tìm kiếm"
-                            prefix={<BiSearch />}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                        <Button
-                            icon={<CgClose />}
-                            onClick={() => {
-                                setSearch('')
-                                setShowResult(false)
-                                setResultSearch([])
-                            }}
-                        ></Button>
+                        <Avatar src={user?.image} />
+                        <p>{user?.name}</p>
                     </div>
-                    <div className="h-full overflow-y-scroll">
-                        {/* hiển thị search */}
-
-                        {showResult && resultSearch.length === 0 && <p>Không tìm thấy kết quả</p>}
-                        {showResult &&
-                            resultSearch.length > 0 &&
-                            resultSearch.map((user) => (
-                                <div
-                                    key={user.id}
-                                    className="p-1 px-3 hover:bg-blue-400 flex justify-between cursor-pointer"
-                                    onClick={() => {
-                                        setSelectedUser(user)
-                                        setShowResult(false)
-                                        setResultSearch([])
-                                    }}
-                                >
-                                    <div className="flex items-center">
-                                        <Avatar src={user.image} />
-                                        <div className="ml-2">
-                                            <p>{user.name}</p>
-                                            <p className="text-sm text-gray-500">text chat demo</p>
-                                        </div>
-                                    </div>
-                                    <TimeComment
-                                        createdAt="23-07-2024 05:00:16"
-                                        className="text-sm"
-                                    />
-                                </div>
-                            ))}
-
-                        {/* không search */}
-                        {!showResult &&
-                            users &&
-                            users.map((user) => (
-                                <div
-                                    key={user.id}
-                                    className="p-1 px-3 hover:bg-blue-400 flex justify-between cursor-pointer"
-                                    onClick={() => setSelectedUser(user)}
-                                >
-                                    <div className="flex items-center">
-                                        <Avatar src={user.image} />
-                                        <div className="ml-2">
-                                            <p>{user.name}</p>
-                                            <p className="text-sm text-gray-500">text chat demo</p>
-                                        </div>
-                                    </div>
-                                    <TimeComment
-                                        createdAt="23-07-2024 05:00:16"
-                                        className="text-sm"
-                                    />
-                                </div>
-                            ))}
+                    <div>
+                        <Button icon={<IoCloseSharp />} onClick={() => setVisible(false)}></Button>
                     </div>
                 </div>
 
-                {/* chat box */}
-                {selectedUser && (
-                    <div className="col-span-3 flex flex-col">
-                        <div className="p-1 px-3 flex justify-between border-b-[1px]">
-                            <div className="flex items-center">
-                                <Avatar src={selectedUser?.image} />
-                                <div className="ml-2">
-                                    <p>{selectedUser?.name}</p>
-                                    <p className="text-sm text-gray-500">text chat demo</p>
-                                </div>
-                            </div>
-                            <Button type="link" icon={<BsThreeDots />}></Button>
-                        </div>
-                        <div className="flex-grow overflow-y-scroll p-4">
-                            <ChatBox chats={messages} />
-                        </div>
-                        <div className="flex p-4 border-t-[1px]">
+                <div className="grid grid-cols-5 h-[30rem]">
+                    {/* list user */}
+                    <div className="col-span-2 border-r-[1px]">
+                        <div className="flex">
                             <Input
-                                placeholder="Nhập nội dung chat"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                className="flex-grow mr-2"
+                                placeholder="tìm kiếm"
+                                prefix={<BiSearch />}
+                                onChange={(e) => setSearch(e.target.value)}
                             />
-                            <Button onClick={handleSendMessage}>Gửi</Button>
+                            <Button
+                                icon={<CgClose />}
+                                onClick={() => {
+                                    setSearch('')
+                                    setShowResult(false)
+                                    setResultSearch([])
+                                }}
+                            ></Button>
+                        </div>
+                        <div className="h-full overflow-y-scroll">
+                            {/* hiển thị search */}
+
+                            {showResult && resultSearch.length === 0 && (
+                                <p>Không tìm thấy kết quả</p>
+                            )}
+                            {showResult &&
+                                resultSearch.length > 0 &&
+                                resultSearch.map((user) => (
+                                    <div
+                                        key={user.id}
+                                        className="p-1 px-3 hover:bg-blue-400 flex justify-between cursor-pointer"
+                                        onClick={() => {
+                                            setSelectedUser(user)
+                                            setShowResult(false)
+                                            setResultSearch([])
+                                        }}
+                                    >
+                                        <div className="flex items-center">
+                                            <Avatar src={user.image} />
+                                            <div className="ml-2">
+                                                <p>{user.name}</p>
+                                                <p className="text-sm text-gray-500">
+                                                    text chat demo
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <TimeCount
+                                            createdAt="23-07-2024 05:00:16"
+                                            className="text-sm"
+                                        />
+                                    </div>
+                                ))}
+
+                            {/* không search */}
+                            {!showResult &&
+                                users &&
+                                users.map((user) => (
+                                    <div
+                                        key={user.id}
+                                        className="p-1 px-3 hover:bg-blue-400 flex justify-between cursor-pointer"
+                                        onClick={() => setSelectedUser(user)}
+                                    >
+                                        <div className="flex items-center">
+                                            <Avatar src={user.image} />
+                                            <div className="ml-2">
+                                                <p>{user.name}</p>
+                                                <p className="text-sm text-gray-500">
+                                                    text chat demo
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            {user.isOnline ? (
+                                                'Đang online'
+                                            ) : (
+                                                <TimeCount
+                                                    createdAt={user.time}
+                                                    className="text-sm"
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
                         </div>
                     </div>
-                )}
+
+                    {/* chat box */}
+                    {selectedUser ? (
+                        <div className="col-span-3 flex flex-col">
+                            <div className="p-1 px-3 flex justify-between border-b-[1px]">
+                                <div className="flex items-center">
+                                    <Avatar src={selectedUser?.image} />
+                                    <div className="ml-2">
+                                        <p>{selectedUser?.name}</p>
+                                        <p className="text-sm text-gray-500">text chat demo</p>
+                                    </div>
+                                </div>
+                                <Button type="link" icon={<BsThreeDots />}></Button>
+                            </div>
+                            <div className="flex-grow overflow-y-scroll p-4">
+                                <ChatBox chats={messages} />
+                            </div>
+                            <div className="flex p-4 border-t-[1px]">
+                                <Input
+                                    placeholder="Nhập nội dung chat"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    className="flex-grow mr-2"
+                                />
+                                <Button onClick={handleSendMessage}>Gửi</Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="h-full">-</div>
+                    )}
+                </div>
             </div>
         </div>
     )

@@ -1,13 +1,16 @@
 import ModalDiscount from '@/components/ModalDiscount'
+import ModalSelectedAddress from '@/components/ModalSelectedAddress'
 import { useAuth, useCart, useMessage } from '@/hooks'
+import { Address } from '@/http'
 import authApi, { User } from '@/http/authApi'
 import { CartItem, ShopOrderItem } from '@/http/cartApi'
 import { Discount } from '@/http/discountApi'
 import orderApi, { OrderRequest } from '@/http/OrderApi'
-import { OrderPayment, OrderShipping } from '@/utils/constants'
-import { Button, Form, Input, InputNumber, Radio, Table } from 'antd'
+import { OrderPayment, OrderShipping, REDIRECT_RESULT_ORDER } from '@/utils/constants'
+import { Button, Form, Input, InputNumber, Radio, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { useEffect, useState } from 'react'
+import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { BsTicketPerforated } from 'react-icons/bs'
 import { HiChatBubbleLeftRight } from 'react-icons/hi2'
 import { IoLocationSharp } from 'react-icons/io5'
@@ -77,9 +80,10 @@ const columnsShopOrder: ColumnsType<CartItem> = [
         title: 'Đơn giá',
         dataIndex: 'name',
         key: 'product.price',
-        render: (_, { product: { price } }) => (
+        render: (_, { variant: { price, priceSale } }) => (
             <div>
-                <p className="line-through">{price}đ</p>
+                <span className="text-green-600 font-semibold">{priceSale?.vnd()}</span>
+                <span className="line-through text-gray-400">{price?.vnd()}</span>
             </div>
         ),
     },
@@ -92,7 +96,7 @@ const columnsShopOrder: ColumnsType<CartItem> = [
         title: 'Thành tiền',
         dataIndex: 'quantity',
         key: 'product.price * quantity',
-        render: (_, { price, quantity }) => price * quantity,
+        render: (_, { variant: { priceSale }, quantity }) => (priceSale * quantity).vnd(),
     },
 ]
 
@@ -162,11 +166,13 @@ const ShopOrder = ({ shopItem, onChangeDiscount }: Props) => {
                                 <span>{`Tổng số tiền (${
                                     shopItem.items.flatMap((v) => v).length ?? 0
                                 } sản phầm): `}</span>
-                                <p className="text-lg text-blue-500">{shopItem?.total ?? 0}đ</p>
+                                <p className="text-lg text-blue-500">
+                                    {(shopItem?.total ?? 0).vnd()}
+                                </p>
                                 <span className="flex items-center space-x-3">
                                     Tiết kiệm:
                                     <p className="text-lg text-blue-500">
-                                        {shopItem.totalDiscount}đ
+                                        {shopItem.totalDiscount.vnd()}
                                     </p>
                                 </span>
                             </div>
@@ -182,8 +188,12 @@ const OrderPage = () => {
     const { success, error } = useMessage()
     const { resultCheckoutReview: checkout, setOrderRequest, orderRequest } = useCart()
     const { user } = useAuth()
+    const [address, setAddress] = useState<Address | null>(
+        user.address?.find((v) => v.isDefault) || null
+    )
     const [selectedPayment, setSelectedPayment] = useState<keyof typeof OrderPayment>('CASH')
     const [selectedShipping, setSelectedShipping] = useState<keyof typeof OrderShipping>('NORMAL')
+    const [open, setOpen] = useState(false)
 
     // if (resultCheckoutReview?.items.length === 0) return 'nhu con c'
 
@@ -248,7 +258,7 @@ const OrderPage = () => {
                 try {
                     const res = await orderApi.orderByUser_redirectPayment(
                         orderRequest,
-                        'http://localhost:5174/product'
+                        REDIRECT_RESULT_ORDER
                     )
                     console.log('res', res)
                     const url = res.url
@@ -267,15 +277,39 @@ const OrderPage = () => {
 
     return (
         <div className="py-5 space-y-5">
+            <ModalSelectedAddress
+                onCancel={() => setOpen(false)}
+                onOk={(address) => setAddress(address)}
+                open={open}
+            />
+
             <div className="border-[1px] rounded-lg p-4 space-y-2 bg-white">
                 <div className="flex items-center space-x-2 text-blue-500 text-xl">
                     <IoLocationSharp />
                     <p>Địa chỉ nhận hàng</p>
                 </div>
-                <div className=" pr-80">
-                    <Form.Item label={`${user.name} (${user.email})`}>
-                        <Input />
-                    </Form.Item>
+                <div className="">
+                    <div className="flex items-center space-x-2">
+                        <p>{address?.name}</p>
+                        <p>{address?.phone}</p>
+                    </div>
+                    <div className="flex items-center space-x-2 justify-between">
+                        <p>
+                            {Array.from([
+                                address?.province,
+                                address?.district,
+                                address?.address,
+                            ]).join(', ')}
+                        </p>
+                        <div className="flex items-center">
+                            <span>
+                                <Tag color="green">Mặc định</Tag>
+                            </span>
+                            <Button type="link" onClick={() => setOpen(true)}>
+                                Thay đổi
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -359,22 +393,22 @@ const OrderPage = () => {
                     <div className="grid grid-cols-2 w-72">
                         <p>Tổng tiền hàng:</p>
                         <p className="flex justify-end text-blue-500 text-xl">
-                            {checkout?.totalOrder}đ
+                            {checkout?.totalOrder.vnd()}
                         </p>
 
                         <p>Phí vận chuyển:</p>
                         <p className="flex justify-end text-blue-500 text-xl">
-                            {checkout?.totalShipping}đ
+                            {checkout?.totalShipping.vnd()}
                         </p>
 
                         <p>Tổng voucher:</p>
                         <p className="flex justify-end text-blue-500 text-xl">
-                            -{checkout?.totalDiscount}đ
+                            -{checkout?.totalDiscount.vnd()}
                         </p>
 
                         <p>Tổng thanh toán:</p>
                         <p className="flex justify-end text-blue-500 text-xl">
-                            {checkout?.totalCheckout}đ
+                            {checkout?.totalCheckout.vnd()}
                         </p>
                     </div>
                 </div>

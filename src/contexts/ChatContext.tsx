@@ -1,63 +1,50 @@
-// src/context/ChatContext.tsx
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import socketService, { ChatPayload } from '@/socketService'
-import useAuth from '@/hooks/useAuth'
+// ChatContext.tsx
+import React, {
+    createContext,
+    useContext,
+    useState,
+    ReactNode,
+    Dispatch,
+    SetStateAction,
+} from 'react'
+import { Shop } from '@/http'
 
 export interface ChatContextProps {
-    onNewMessage: (callback: (message: ChatPayload) => void) => void
-    // removeMessageCallback: (callback: (message: ChatPayload) => void) => void
-    sendMessage: (message: string, receiverId: string) => void
+    visible: boolean
+    setVisible: Dispatch<SetStateAction<boolean>>
+    selectedUser: Shop | null
+    setSelectedUser: Dispatch<SetStateAction<Shop | null>>
+    count: number
+    setCount: Dispatch<SetStateAction<number>>
 }
 
-export const ChatContext = createContext<ChatContextProps | undefined>(undefined)
+export const ChatContext = createContext<ChatContextProps | undefined>({
+    visible: false,
+    setVisible: () => {},
+    selectedUser: null,
+    setSelectedUser: () => {},
+    count: 0,
+    setCount: () => {},
+})
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
-    const { user, isAuthenticated } = useAuth()
-    const [callbacks, setCallbacks] = useState<((message: ChatPayload) => void)[]>([])
-
-    useEffect(() => {
-        if (isAuthenticated && user.id) {
-            socketService.connect()
-            socketService.subscribe(`/user/${user.id}/private`, handleReceiverNewMessage, (e) => {
-                console.error(e)
-            })
-
-            return () => {
-                if (isAuthenticated && user.id) {
-                    socketService.unsubscribe(`/user/${user.id}/private`)
-                    socketService.disconnect()
-                }
-            }
-        }
-    }, [isAuthenticated, user.id])
-
-    const handleReceiverNewMessage = (message: ChatPayload) => {
-        callbacks.forEach((callback) => callback(message))
-    }
-
-    const onNewMessage = (callback: (message: ChatPayload) => void) => {
-        setCallbacks((prev) => [...prev, callback])
-    }
-
-    // const removeMessageCallback = (callback: (message: ChatPayload) => void) => {
-    //     setCallbacks((prev) => prev.filter((cb) => cb !== callback))
-    // }
-
-    const sendMessage = (message: string, receiverId: string) => {
-        if (user.id && isAuthenticated) {
-            socketService.sendMessage('/app/chat.send', {
-                message,
-                senderId: user.id,
-                receiverId,
-            })
-        } else {
-            console.error('User is not authenticated')
-        }
-    }
+    const [visible, setVisible] = useState(false)
+    const [selectedUser, setSelectedUser] = useState<Shop | null>(null)
+    const [count, setCount] = useState<number>(0)
 
     return (
-        <ChatContext.Provider value={{ onNewMessage, sendMessage }}>
+        <ChatContext.Provider
+            value={{ visible, setVisible, selectedUser, setSelectedUser, count, setCount }}
+        >
             {children}
         </ChatContext.Provider>
     )
 }
+
+// export const useChatContext = () => {
+//     const context = useContext(ChatContext)
+//     if (!context) {
+//         throw new Error('useChatContext must be used within a ChatProvider')
+//     }
+//     return context
+// }

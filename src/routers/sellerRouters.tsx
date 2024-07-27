@@ -22,7 +22,7 @@ const route = (
     }
 }
 
-const sellerRouters = [
+const SellerRouters = [
     route('', Dashboard),
     route('/', Dashboard),
 
@@ -46,4 +46,4 @@ const sellerRouters = [
     route('/sale/add', () => DetailSale({ isAdd: true })),
 ]
 
-export default sellerRouters
+export default SellerRouters

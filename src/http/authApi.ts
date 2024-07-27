@@ -1,6 +1,7 @@
 import http from './http'
+import { Address } from './shopApi'
 
-export const initialUser = {
+export const initialUser: User = {
     id: '',
     name: '',
     email: '',
@@ -9,11 +10,14 @@ export const initialUser = {
     verify: false,
     authType: '',
     roles: [],
-    address: null,
     createdAt: '',
     updatedAt: '',
     oauth2Id: null,
     addressShipping: '',
+    slug: '',
+
+    followers: [],
+    phone: '',
 }
 
 export type User = {
@@ -25,11 +29,15 @@ export type User = {
     verify: boolean
     authType: string
     roles: string[]
-    address: string | null
     updatedAt: string
     oauth2Id: string | null
     addressShipping: string
     createdAt: string
+    slug: string
+
+    followers?: string[]
+    address?: Address[]
+    phone?: string
 }
 
 export type Auth = {

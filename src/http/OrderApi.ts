@@ -31,7 +31,7 @@ export type Order = {
     items: ShopOrderItem[]
     payment: keyof typeof OrderPayment
     state: string
-    note: string
+    notes: string[]
     createdAt: string
     updatedAt: string
 }

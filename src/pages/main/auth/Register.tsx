@@ -151,18 +151,28 @@ const Register = () => {
                             <Input size="large" placeholder="Email" />
                         </Form.Item>
 
-                        <Button
-                            htmlType="submit"
-                            loading={isSubmitting}
-                            disabled={isSubmitting}
-                            typeof="submit"
-                            size="large"
-                            type="primary"
-                            block
-                            className="text-white-400  bg-blue-400"
-                        >
-                            Đăng ký
-                        </Button>
+                        <div className="flex w-full">
+                            <Button
+                                htmlType="submit"
+                                loading={isSubmitting}
+                                disabled={isSubmitting}
+                                typeof="submit"
+                                size="large"
+                                type="primary"
+                                block
+                                className="text-white-400  bg-blue-400 w-1/2"
+                            >
+                                Đăng ký
+                            </Button>
+                            <Button
+                                className="w-1/2"
+                                onClick={() => {
+                                    navigate(`/login` + (redirect ? '?redirect=' + redirect : ''))
+                                }}
+                            >
+                                Đăng nhập
+                            </Button>
+                        </div>
                         <Link to={google_url_login}>đăng nhập bằng google</Link>
                         <Link to={facebook_url_login}>đăng nhập bằng facebook</Link>
                     </div>

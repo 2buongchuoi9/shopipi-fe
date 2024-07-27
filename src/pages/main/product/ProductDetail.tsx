@@ -1,15 +1,13 @@
-import Comment from '@/components/comment/Rating'
-import ProductCard from '@/components/ProductCard'
+import { Comment } from '@/components/comment'
 import QuantitySelector from '@/components/QuantitySelector'
 import { useAuth, useCart, useMessage } from '@/hooks'
 import { Product } from '@/http'
 import authApi from '@/http/authApi'
 import cartApi from '@/http/cartApi'
-import productApi, { initialProduct, Map, Variant } from '@/http/productApi'
-import ratingApi from '@/http/ratingApi'
-import { Button, Input, Radio, Tabs, TabsProps } from 'antd'
+import productApi, { initialProduct, Map } from '@/http/productApi'
+import { Button, Radio } from 'antd'
 import { useEffect, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 const ProductDetail = () => {
     const { slug } = useParams<{ slug: string }>()
@@ -106,7 +104,9 @@ const ProductDetail = () => {
                     <div className="w-3/5 bg-slate-300">
                         <div className="">{name}</div>
                         <div>price:{price}</div>
-                        <div>shop:{shop.name}</div>
+                        <Link to={`/shop/${shop.slug}`} className="text-blue-500">
+                            shop:{shop.name}
+                        </Link>
                         <div>mã giảm giá:conc</div>
                         <div>số luọng:{matchedVariant()?.quantity ?? productQuantity}</div>
 
@@ -118,6 +118,7 @@ const ProductDetail = () => {
                                         <Radio.Group>
                                             {item.values.map((v) => (
                                                 <Radio.Button
+                                                    key={v}
                                                     value={v}
                                                     onClick={() =>
                                                         handleClickVariant({
@@ -143,31 +144,8 @@ const ProductDetail = () => {
                     </div>
                 </div>
             </div>
-            <div>
-                <Button
-                    type="primary"
-                    className="mb-4"
-                    onClick={async () => {
-                        const res = await ratingApi.addRating({
-                            comment:
-                                'Sản phẩm k giống hình, dáng quần thực sự quá xấu, k có túi bên, khoá giả, túm lại la thất vọng',
-                            isComment: false,
-                            images: [
-                                'http://res.cloudinary.com/anhdaden/image/upload/v1719726212/shopipi_fpt/mz8ipsummrpstz3rrmol.jpg',
-                            ],
-                            parentId: null,
-                            productId: id,
-                            value: 1,
-                            variantId: variants[0].id,
-                        })
-                        console.log('Rating:', res)
-                        success('Rating success')
-                    }}
-                >
-                    test rate
-                </Button>
-                <Comment product={product} />
-            </div>
+
+            {product && <Comment product={product} />}
         </>
     )
 }

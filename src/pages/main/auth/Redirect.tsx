@@ -17,6 +17,7 @@ const Redirect = () => {
                 userId: urlParams.get('userId'),
                 accessToken: urlParams.get('accessToken'),
                 refreshToken: urlParams.get('refreshToken'),
+                redirect: urlParams.get('redirect'),
             }
             // Xử lý thông tin token hoặc thực hiện các thao tác khác.
             console.log('Data from URL:', data)
@@ -28,11 +29,13 @@ const Redirect = () => {
             refreshTokenStorage.set(data.refreshToken)
 
             await fetchUser()
+            if (data.redirect) baseUrl = data.redirect
+
             window.location.href = baseUrl
         }
-        // Gọi hàm xử lý redirect khi component được mount.
+
         handleRedirect()
-    }, []) // Thêm [] để đảm bảo useEffect chỉ chạy một lần sau khi component mount.
+    }, [])
 
     return (
         <div>

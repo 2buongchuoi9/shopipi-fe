@@ -5,7 +5,7 @@ import { useAuth, useCart, useMessage } from '@/hooks'
 import authApi, { User } from '@/http/authApi'
 import { UserRoles } from '@/utils/constants'
 import { Avatar, Dropdown, MenuProps } from 'antd'
-import { useEffect, useState } from 'react'
+import { HTMLAttributes, useEffect, useState } from 'react'
 import { MdOutlineCloudDownload } from 'react-icons/md'
 
 import Search from 'antd/es/transfer/search'
@@ -49,6 +49,14 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
                 }
             },
         },
+        {
+            key: 5,
+            label: <Link to={'/user/account'}>Thông tin tài khoản</Link>,
+        },
+        {
+            key: 6,
+            label: <Link to={'/user/order'}>Đơn hàng của tôi</Link>,
+        },
     ]
 
     return isAuthenticated ? (
@@ -72,7 +80,7 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
     )
 }
 
-const Navbar = () => {
+const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
     const [categories, setCategories] = useState<any[]>([])
     const { user, isAuthenticated } = useAuth()
     const { totalItem, totalQuantity } = useCart()
@@ -88,7 +96,7 @@ const Navbar = () => {
     }, [])
 
     return (
-        <header className="w-full bg-white">
+        <header {...rest}>
             <div className="flex flex-col md:flex-row flex-wrap justify-between bg-amazonclone text-black h-[60px] px-10 py-2">
                 {/* Left */}
                 <div className="flex items-center space-x-4 md:space-x-0 md:mx-4">
