@@ -11,7 +11,7 @@ export interface CategoryContextType {
 
 export const CategoryContext = createContext<CategoryContextType>({} as CategoryContextType)
 
-const buildCategoryTree = (categories: Category[], parentId: string | null): Category[] => {
+export const buildCategoryTree = (categories: Category[], parentId: string | null): Category[] => {
     const filteredCategories = categories.filter((category) =>
         parentId === null ? category.parentIds.length === 0 : category.parentIds[0] === parentId
     )

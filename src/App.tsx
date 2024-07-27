@@ -61,6 +61,7 @@ function App() {
 
             window.addEventListener('offline', () => updateOnlineStatus('offline'))
             window.addEventListener('online', () => updateOnlineStatus('online'))
+            window.addEventListener('beforeunload', () => updateOnlineStatus('online'))
         }
 
         return () => {
@@ -73,6 +74,7 @@ function App() {
 
                 window.removeEventListener('offline', () => updateOnlineStatus('offline'))
                 window.removeEventListener('online', () => updateOnlineStatus('online'))
+                window.removeEventListener('beforeunload', () => updateOnlineStatus('offline'))
             }
         }
     }, [isAuthenticated, user.id])

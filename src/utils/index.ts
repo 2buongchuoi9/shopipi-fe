@@ -1,4 +1,4 @@
-import { ParamsRequest } from '@/http'
+import { Category, ParamsRequest } from '@/http'
 import { ChatGroup } from '@/http/chatApi'
 import { ChatPayload } from '@/socketService'
 
@@ -88,4 +88,27 @@ export function groupChatsBySender(chats: ChatPayload[]): ChatGroup[] {
     }
 
     return groupedChats
+}
+
+export function findCategoryTree(categories: Category[], ids: String[]): Category[] {
+    const result: Category[] = []
+
+    function traverse(categories: Category[], ids: String[]): Category[] {
+        for (const category of categories) {
+            if (ids.includes(category.id)) {
+                result.push(category)
+            } else if (category.children && category.children.length > 0) {
+                const children = traverse(category.children, ids)
+                if (children.length > 0) {
+                    result.push({
+                        ...category,
+                        children,
+                    })
+                }
+            }
+        }
+        return result
+    }
+
+    return traverse(categories, ids)
 }
