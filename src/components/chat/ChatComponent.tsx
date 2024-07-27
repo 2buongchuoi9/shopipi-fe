@@ -81,11 +81,11 @@ const ChatComponent = ({ ...rest }: Props) => {
                         const res = await chatApi.getUserChattedWithUser(user.id)
                         const res2 = await shopApi.onlineMany(res.map((u) => u.id))
 
-                        setUsers(
-                            Array(res.length)
-                                .fill(null)
-                                .map((_, i) => ({ ...res[i], ...res2[i] }))
-                        )
+                        const users = Array(res.length)
+                            .fill(null)
+                            .map((_, i) => ({ ...res2[i], ...res[i] })) as (Shop & Online)[]
+
+                        setUsers(users)
                     })()
                 }
             }
@@ -98,6 +98,8 @@ const ChatComponent = ({ ...rest }: Props) => {
         if (selectedUser && isAuthenticated && user) {
             try {
                 const res = await chatApi.getChatList(user.id, selectedUser.id, { size: 100 })
+                console.log('mess', res)
+
                 setMessages(res.content)
             } catch (e) {
                 console.error('Failed to fetch chat history', e)
@@ -110,12 +112,12 @@ const ChatComponent = ({ ...rest }: Props) => {
             ;(async () => {
                 const res = await chatApi.getUserChattedWithUser(user.id)
                 const res2 = await shopApi.onlineMany(res.map((u) => u.id))
+                const users = Array(res.length)
+                    .fill(null)
+                    .map((_, i) => ({ ...res2[i], ...res[i] }))
 
-                setUsers(
-                    Array(res.length)
-                        .fill(null)
-                        .map((_, i) => ({ ...res[i], ...res2[i] }))
-                )
+                setUsers(users)
+
                 // setUsers(res)
                 // Check if selectedUserDefault is provided and not in the list
                 // if (selectedUserDefault) {
@@ -292,6 +294,9 @@ const ChatComponent = ({ ...rest }: Props) => {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     className="flex-grow mr-2"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleSendMessage()
+                                    }}
                                 />
                                 <Button onClick={handleSendMessage}>Gửi</Button>
                             </div>

@@ -12,7 +12,6 @@ export type Address = {
 }
 
 export type Online = {
-    id: string
     userId: string
     isOnline: boolean
     time: string
