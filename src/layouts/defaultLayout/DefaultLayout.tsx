@@ -18,7 +18,7 @@ const DefaultLayout = ({ children }: Props) => {
             <CartProvider>
                 <Navbar className="h-[7rem] bg-white" />
                 <main className=" bg-[#f5f5f5]">
-                    <div className="mx-[9rem]">{children}</div>
+                    <div className="mx-[5rem]">{children}</div>
                 </main>
                 <Footer />
             </CartProvider>
