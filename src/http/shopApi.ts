@@ -1,6 +1,6 @@
 import http, { Page, ParamsRequest } from './http'
 
-export type Role = 'ADMIN' | 'USER' | 'SHOP'
+export type Role = 'ADMIN' | 'USER' | 'SHOP' | 'MOD'
 
 export type Address = {
     phone?: string
@@ -33,7 +33,7 @@ export type Shop = {
 
     followers: string[]
     address: Address[]
-    phone?: string
+    phone: string
 }
 
 const shopApi = {
@@ -68,6 +68,18 @@ const shopApi = {
         // Gọi API với query parameters
         return await http.get<Online[]>(`/user/online/many?${params.toString()}`)
     },
+
+    countProduct: async (ids: string[]) => {
+        const params = new URLSearchParams()
+        ids.forEach((id) => params.append('ids', id))
+        const res = await http.get<any>(`/user/many/count-product?ids=${params.toString()}`)
+        return new Map<string, number>(Object.entries(res))
+    },
+
+    changeStatus: async (id: string) => await http.post<boolean>(`/user/change-status/${id}`),
+
+    getUserFollow: async (id: string, params?: ParamsRequest) =>
+        await http.get<Page<Shop>>(`/user/follow/user/${id}`, { params }),
 }
 
 export default shopApi

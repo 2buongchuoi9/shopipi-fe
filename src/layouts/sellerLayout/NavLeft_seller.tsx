@@ -27,6 +27,11 @@ const NavLeft_seller = ({ ...rest }: Props) => {
 
     const items: MenuItem = [
         {
+            key: '/',
+            label: 'Tổng quan',
+            icon: <FaMoneyBillAlt />,
+        },
+        {
             key: '/order',
             label: 'Đơn hàng',
             icon: <FaTruckFast />,
@@ -132,22 +137,17 @@ const NavLeft_seller = ({ ...rest }: Props) => {
         },
 
         {
-            key: '4',
+            key: '/customer',
             label: 'Khách hàng',
             icon: <FaUserCircle />,
             children: [
-                {
-                    key: '41',
-                    label: 'Quản lý chat',
-                    icon: <HiArrowCircleRight />,
-                },
                 {
                     key: '42',
                     label: 'Đánh giá',
                     icon: <HiArrowCircleRight />,
                 },
                 {
-                    key: '43',
+                    key: '/customer',
                     label: 'Khách hàng đăng ký',
                     icon: <HiArrowCircleRight />,
                 },

@@ -11,23 +11,9 @@ import { CiCircleRemove } from 'react-icons/ci'
 import { FaImage, FaPlay, FaPlus, FaRegImage, FaTrashCan } from 'react-icons/fa6'
 import { useNavigate, useParams } from 'react-router-dom'
 import VariantTable from './VariantTable'
-import productApi from '@/http/productApi'
+import productApi, { ProductType } from '@/http/productApi'
 import { ErrorInfoForm } from '@/types/customType'
 import { useCategory, useMessage, useProgress } from '@/hooks'
-const rawData = [
-    {
-        key: 'color',
-        values: ['red', 'blue'],
-    },
-    {
-        key: 'size',
-        values: ['S', 'M'],
-    },
-    // {
-    //     key: 'material',
-    //     values: ['cotton', 'polyester'],
-    // },
-]
 
 const initProduct = {
     attribute: {
@@ -61,6 +47,118 @@ const formItemLayoutDetailed = {
     formItemLayout: 'vertical',
 }
 
+const itemsDetailed_Clothing = [
+    <Form.Item label="Chất liệu" name={['attribute', 'material']} {...formItemLayoutDetailed}>
+        <Input />
+    </Form.Item>,
+    <Form.Item label="Mùa" name={['attribute', 'season']} {...formItemLayoutDetailed}>
+        <Input />
+    </Form.Item>,
+    <Form.Item label="Phong cách" name={['attribute', 'style']} {...formItemLayoutDetailed}>
+        <Input />
+    </Form.Item>,
+]
+
+const itemsDetailed_Electronic = [
+    <Form.Item
+        label="Nhà máy sản xuất"
+        name={['attribute', 'manufacturer']}
+        {...formItemLayoutDetailed}
+    >
+        <Input />
+    </Form.Item>,
+]
+
+const AttributeItems = ({ type, ...rest }: { type: 'CLOTHING' | 'ELECTRONIC' | 'OTHER' }) => {
+    return (
+        <>
+            <div className="grid grid-cols-2 gap-x-10 gap-y-3">
+                <Form.Item
+                    label="Thương hiệu"
+                    name={['attribute', 'brand']}
+                    rules={[{ required: true }]}
+                    {...formItemLayoutDetailed}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item
+                    label="Xuất xứ"
+                    name={['attribute', 'origin']}
+                    rules={[{ required: true }]}
+                    {...formItemLayoutDetailed}
+                >
+                    <Input />
+                </Form.Item>
+
+                {type === 'CLOTHING' &&
+                    itemsDetailed_Clothing.map((item) =>
+                        cloneElement(item, { ...rest, key: uniqueId() })
+                    )}
+                {type === 'ELECTRONIC' &&
+                    itemsDetailed_Electronic.map((item) =>
+                        cloneElement(item, { ...rest, key: uniqueId() })
+                    )}
+            </div>
+            <Divider />
+            <Form.List name={['attribute', 'listAttribute']}>
+                {(fields, { add, remove }) => (
+                    <div className="space-y-3 ">
+                        {fields.map(({ key, name, ...restField }) => (
+                            <>
+                                <div className="flex">
+                                    <div
+                                        key={key}
+                                        className=" relative grid grid-cols-2 gap-x-10 gap-y-3 w-[98%] "
+                                    >
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'key']}
+                                            label="Tên thuộc tính"
+                                            className="p-3 pb-0"
+                                            {...formItemLayoutDetailed}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'value']}
+                                            label="Giá trị"
+                                            className="p-3 pb-0"
+                                            {...formItemLayoutDetailed}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                    </div>
+                                    <CiCircleRemove
+                                        size={25}
+                                        className=" text-[#00000073] hover:cursor-pointer hover:text-red-500"
+                                        onClick={() => remove(name)}
+                                    />
+                                </div>
+                                <Divider />
+                            </>
+                        ))}
+
+                        <div className="pt-3">
+                            <Form.Item>
+                                <Button
+                                    type="dashed"
+                                    icon={<FaPlus />}
+                                    onClick={() => add()}
+                                    className="text-blue-400 hover:text-blue-500"
+                                >
+                                    Thêm thuộc tính mới
+                                </Button>
+                            </Form.Item>
+                        </div>
+                    </div>
+                )}
+            </Form.List>
+        </>
+    )
+}
+
 const combineVariants = (
     data: ListMap[],
     index = 0,
@@ -77,6 +175,7 @@ const combineVariants = (
             price: 0,
             priceImport: 0,
             priceSale: 0,
+            sold: 0,
             valueVariant: Object.keys(currentVariant).map((key) => ({
                 key,
                 value: currentVariant[key],
@@ -113,9 +212,12 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
     // theo giõi ảnh bìa (chỗ này cần optimize lại, không cần dùng state, chỉ cần lấy từ form là đủ)
     const [thumb, setThumb] = useState<string | null>(null)
 
-    useEffect(() => {
-        console.log('variants', variants)
-    }, [variants])
+    // theo dõi loại sản phẩm
+    const [type, setType] = useState<ProductType>(productType[0])
+
+    // useEffect(() => {
+    //     console.log('variants', variants)
+    // }, [variants])
 
     useEffect(() => {
         if (!isAdd && slug) {
@@ -126,6 +228,7 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
                 // setProductReq(product)
                 setVariants(res.variants)
                 form.setFieldsValue(product)
+                setType(product.type)
                 form.setFieldValue('attribute', product.attribute)
                 console.log('all valuesádasdasdasdasd', form.getFieldsValue())
             })()
@@ -147,17 +250,23 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
 
     const handleSubmit = async (values: ProductRequest) => {
         // Kiểm tra số lượng của các phân loại
+
+        if (variants.length === 0) {
+            error('Phải có ít nhất 1 phân loại')
+            return
+        }
+
         const variantError = variants.find(({ price }) => price <= 10000)
         if (variantError) {
             const name = variantError.valueVariant.map((v) => v.key + ':' + v.value).join(', ')
             error(`Giá bán của phân loại ${name} không hợp lệ`)
+            return
         }
 
         const newData = {
             ...values,
             variants: variants.map((v) => ({ ...v, price: Number(v.price) })),
         }
-        console.log('newData', newData)
         console.log('listVariant', values?.attribute?.listVariant)
 
         // Chuyển categoryId từ mảng thành string
@@ -169,6 +278,7 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
 
         const isHidden = newData.isHidden
         delete newData.isHidden
+        console.log('newData', newData)
 
         if (isAdd) {
             try {
@@ -541,7 +651,7 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
 
                     {/* loại sản phẩm */}
                     <Form.Item label="Loại sản phẩm" name="type" rules={[{ required: true }]}>
-                        <Radio.Group>
+                        <Radio.Group value={type} onChange={(e) => setType(e.target.value)}>
                             {productType.map((type) => (
                                 <Radio value={type} key={type}>
                                     {type}
@@ -583,25 +693,6 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
                 </>
             ),
         },
-    ]
-
-    const itemsDetailed = [
-        <Form.Item
-            label="Giá bán"
-            name="price"
-            rules={[{ required: true }]}
-            {...formItemLayoutDetailed}
-        >
-            <Input type="number" />
-        </Form.Item>,
-        <Form.Item
-            label="Giá nhập"
-            name="priceImport"
-            rules={[{ required: true }]}
-            {...formItemLayoutDetailed}
-        >
-            <Input type="number" />
-        </Form.Item>,
     ]
 
     const itemsSales = [
@@ -792,27 +883,18 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
                         size="small"
                         items={itemsGeneral}
                     />
-                    <Collapse defaultActiveKey={['itemsSales']} size="small" items={itemsSales} />
-                    {/* <Collapse
+                    <Collapse
                         defaultActiveKey={['thong tin chi tiet']}
                         size="small"
                         items={[
                             {
                                 key: 'thong tin chi tiet',
                                 label: 'Thông tin chi tiết',
-                                children: (
-                                    <div className="grid grid-cols-2 gap-x-10 gap-y-3">
-                                        {itemsDetailed.map((item) =>
-                                            cloneElement(item, {
-                                                ...formItemLayoutDetailed,
-                                                key: uniqueId(),
-                                            })
-                                        )}
-                                    </div>
-                                ),
+                                children: <AttributeItems type={type} />,
                             },
                         ]}
-                    /> */}
+                    />
+                    <Collapse defaultActiveKey={['itemsSales']} size="small" items={itemsSales} />
                 </div>
                 <div className="border-[1px] rounded-lg bg-white p-3 flex justify-end mt-5 sticky bottom-0 right-0">
                     <div className="flex space-x-4">

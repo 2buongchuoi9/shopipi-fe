@@ -96,19 +96,19 @@ const NavLeft_admin = ({ ...rest }: Props) => {
             icon: <FaUserCircle />,
             children: [
                 {
-                    key: '43',
+                    key: '/shop',
                     label: 'Danh sách cửa hàng',
                     icon: <HiArrowCircleRight />,
                 },
             ],
         },
         {
-            key: '4',
+            key: '/customer',
             label: 'Khách hàng',
             icon: <FaUserCircle />,
             children: [
                 {
-                    key: '43',
+                    key: '/customer',
                     label: 'Danh sách khách hàng',
                     icon: <HiArrowCircleRight />,
                 },

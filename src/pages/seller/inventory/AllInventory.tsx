@@ -107,7 +107,7 @@ const AllInventory = () => {
                     (prev, current) => prev + current.priceImport * current.quantity,
                     0
                 )
-                return <>{total}</>
+                return <>{total.vnd()}</>
             },
         },
         {

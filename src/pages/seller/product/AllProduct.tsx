@@ -74,8 +74,7 @@ const AllProduct = () => {
             if (res) {
                 setProducts((prev) => prev.filter((item) => item.id !== id))
                 success('Xóa sản phẩm thành công')
-            }
-            error('Xóa sản phẩm thất bại')
+            } else error('Xóa sản phẩm thất bại')
         } catch (e) {
             error('Xóa sản phẩm thất bại')
         }
@@ -154,25 +153,24 @@ const AllProduct = () => {
             title: 'Kho hàng',
             dataIndex: 'quantity',
             key: 'quantity',
-            render: (quantity) => <Tooltip title={quantity}>{quantity}</Tooltip>,
         },
         {
             title: 'Giá bán',
             dataIndex: 'price',
             key: 'price',
-            render: (price) => <Tooltip title={price}>{price}</Tooltip>,
+            render: (price) => price.vnd(),
         },
         {
             title: 'Giá giá nhập',
             dataIndex: 'priceImport',
             key: 'priceImport',
-            render: (price) => <Tooltip title={price}>{price}</Tooltip>,
+            render: (price) => price.vnd(),
         },
         {
             title: 'Giá khuyến mãi',
             dataIndex: 'priceSale',
             key: 'priceSale',
-            render: (price) => <Tooltip title={price}>{price}</Tooltip>,
+            render: (price) => price.vnd(),
         },
     ]
 
@@ -343,6 +341,17 @@ const AllProduct = () => {
                                                 {item.key}: {item.values.join(', ')}
                                             </li>
                                         )
+                                    )
+                                } else if (key === 'listAttribute') {
+                                    const listAttribute = attribute.listAttribute as Map[]
+
+                                    return (
+                                        listAttribute &&
+                                        listAttribute.map((item, index) => (
+                                            <li key={index}>
+                                                {item.key}: {item.value}
+                                            </li>
+                                        ))
                                     )
                                 } else {
                                     return (

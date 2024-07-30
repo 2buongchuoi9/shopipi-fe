@@ -35,12 +35,13 @@ const ModalDetailInventory = ({ open, onClose, inventory }: Props) => {
             title: 'Giá nhập',
             dataIndex: 'priceImport',
             key: 'priceImport',
+            render: (priceImport) => priceImport.vnd(),
         },
         {
             title: 'Tổng tiền',
             dataIndex: 'total',
             key: 'total',
-            render: (_, { quantity, priceImport }) => quantity * priceImport,
+            render: (_, { quantity, priceImport }) => (quantity * priceImport).vnd(),
         },
     ]
     return (
@@ -63,10 +64,9 @@ const ModalDetailInventory = ({ open, onClose, inventory }: Props) => {
                     <div className="flex justify-between">
                         <p>Tổng </p>
                         <p>
-                            {variantInventoryModel.reduce(
-                                (total, v) => total + v.priceImport * v.quantity,
-                                0
-                            )}
+                            {variantInventoryModel
+                                .reduce((total, v) => total + v.priceImport * v.quantity, 0)
+                                .vnd()}
                         </p>
                     </div>
                 </div>

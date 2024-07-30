@@ -64,6 +64,7 @@ export const initialProduct: Product = {
         phone: '',
         followers: [],
         slug: '',
+        address: [],
     },
 }
 
@@ -93,10 +94,11 @@ export const productType = ['CLOTHING', 'ELECTRONIC', 'OTHER'] as const
 export type ProductType = (typeof productType)[number]
 
 export type AttributeBase = {
-    type?: string | null
+    type?: ProductType | null
     brand?: string | null
     origin?: string | null
     listVariant: ListMap[] | []
+    listAttribute?: Map[] | []
 }
 export type ElectronicAttr = AttributeBase & {
     manufacturer?: string | null // nha may san xuat

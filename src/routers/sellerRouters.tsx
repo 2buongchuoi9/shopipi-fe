@@ -1,4 +1,5 @@
 import { SellerLayout } from '@/layouts'
+import { AllCustomer } from '@/pages/seller/customer'
 import { Dashboard } from '@/pages/seller/dashboard'
 import { AllDiscount, DetailDiscount } from '@/pages/seller/discount'
 import { AddInventory, AllInventory, StatisticInventory } from '@/pages/seller/inventory'
@@ -44,6 +45,8 @@ const SellerRouters = [
     route('/sale/all', AllSale),
     route('/sale/detail/:id', () => DetailSale({ isAdd: false })),
     route('/sale/add', () => DetailSale({ isAdd: true })),
+
+    route('/customer/', AllCustomer),
 ]
 
 export default SellerRouters

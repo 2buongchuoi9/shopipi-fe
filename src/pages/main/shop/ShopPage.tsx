@@ -147,7 +147,7 @@ const ShopPage = () => {
                                     </p>
                                 </div>
                             </div>
-                            {shop.followers.includes(currentId) ? (
+                            {shop.followers && shop.followers.includes(currentId) ? (
                                 <Button
                                     block
                                     size="small"
@@ -178,12 +178,12 @@ const ShopPage = () => {
                             </div>
                             <div className="flex justify-start">
                                 <Button type="link" icon={<FaUser />} className="text-black">
-                                    Người theo dõi: {shop.followers.length}
+                                    Người theo dõi: {shop.followers && shop.followers.length}
                                 </Button>
                             </div>
                             <div className="flex justify-start">
                                 <Button type="link" icon={<FaUser />} className="text-black">
-                                    Đang theo dõi: {shop.followers.length}
+                                    Đang theo dõi: {shop.followers && shop.followers.length}
                                 </Button>
                             </div>
                             <div className="flex justify-start">

@@ -87,16 +87,14 @@ const AllDiscount = () => {
             title: 'Giảm giá',
             key: 'value',
             render: (value, { type }) => (
-                <p>
-                    {value} {type === 'PERCENTAGE_AMOUNT' ? '%' : 'đ'}
-                </p>
+                <p>{type === 'PERCENTAGE_AMOUNT' ? `${value}%` : `${value.vnd()}`}</p>
             ),
         },
         {
             dataIndex: 'minOrderValue',
             title: 'Giảm tối thiểu',
             key: 'minOrderValue',
-            render: (minOrderValue) => <p>{minOrderValue}đ</p>,
+            render: (minOrderValue) => <p>{minOrderValue.vnd()}</p>,
         },
         {
             dataIndex: 'totalCount',
