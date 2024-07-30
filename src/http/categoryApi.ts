@@ -7,7 +7,6 @@ export type Category = {
     name: string
     parentIds: string[]
     thumb: string
-
     key: string
     label: string
     value: string | number

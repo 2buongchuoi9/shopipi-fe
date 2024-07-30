@@ -7,9 +7,11 @@ import authApi from '@/http/authApi'
 import cartApi from '@/http/cartApi'
 import productApi, { initialProduct, Map, Variant } from '@/http/productApi'
 import ratingApi from '@/http/ratingApi'
-import { Button, Input, Radio, Tabs, TabsProps } from 'antd'
+import { Button, Input, Radio, Tabs, TabsProps, Typography, Divider, Row, Col } from 'antd'
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
+
+const { Title, Text } = Typography
 
 const ProductDetail = () => {
     const { slug } = useParams<{ slug: string }>()
@@ -19,7 +21,6 @@ const ProductDetail = () => {
     const [product, setProduct] = useState<Product>(initialProduct)
     const [selectedValuesVariant, setSelectedValuesVariant] = useState<Map[]>([])
     const [quantity, setQuantity] = useState(1)
-    console.log('selectedValuesVariant', selectedValuesVariant)
 
     const {
         attribute: { listVariant },
@@ -32,7 +33,6 @@ const ProductDetail = () => {
         id,
     } = product
 
-    // Tìm variant khớp với các giá trị đã chọn
     const matchedVariant = () => {
         return variants.find((variant) =>
             variant.valueVariant.every((valueVariant) =>
@@ -47,29 +47,22 @@ const ProductDetail = () => {
 
     const handleClickVariant = (map: Map) => {
         setSelectedValuesVariant((prev) => {
-            // Lọc các object có key khác với key của object mới
             const filtered = prev.filter((item) => item.key !== map.key)
-            // Thêm object mới vào danh sách đã lọc
             return [...filtered, map]
         })
-        console.log(matchedVariant())
     }
 
     const handleAddToCart = async () => {
         const o = matchedVariant()
         if (o) {
-            console.log('Matched Variant:', o)
-
-            // check quantity
             if (quantity > o.quantity) {
-                error('kho hàng không đủ')
+                error('Không đủ số lượng trong kho')
                 return
             }
 
             const data = { productId: product.id, variantId: o.id, quantity }
             let res
             if (!isAuthenticated) {
-                // đăng ký user Mod
                 const userMod = await authApi.registerUserMod()
                 setUser(userMod)
                 res = await cartApi.addToCartGuest(data, userMod.id)
@@ -78,10 +71,9 @@ const ProductDetail = () => {
             }
 
             await fetchCart()
-            success('Add to cart success')
-            console.log('Add to cart:', res)
+            success('Đã thêm vào giỏ hàng')
         } else {
-            console.log('No matching variant found')
+            error('Không tìm thấy biến thể phù hợp')
         }
     }
 
@@ -96,79 +88,69 @@ const ProductDetail = () => {
 
     return (
         <>
-            <div>
-                <div className="flex items-center text-sm font-normal p-1.5">
-                    <img
-                        className="object-cover w-2/5 h-80 rounded-lg"
-                        src={thumb}
-                        alt="HomeCard"
-                    />
-                    <div className="w-3/5 bg-slate-300">
-                        <div className="">{name}</div>
-                        <div>price:{price}</div>
-                        <div>shop:{shop.name}</div>
-                        <div>mã giảm giá:conc</div>
-                        <div>số luọng:{matchedVariant()?.quantity ?? productQuantity}</div>
-
-                        <div>
-                            {listVariant.map((item) => {
-                                return (
-                                    <div key={item.key} className="flex">
-                                        <div>{item.key}:</div>
-                                        <Radio.Group>
-                                            {item.values.map((v) => (
-                                                <Radio.Button
-                                                    value={v}
-                                                    onClick={() =>
-                                                        handleClickVariant({
-                                                            key: item.key,
-                                                            value: v,
-                                                        })
-                                                    }
-                                                >
-                                                    {v}
-                                                </Radio.Button>
-                                            ))}
-                                        </Radio.Group>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                        <div>
-                            Số lượng:
-                            <QuantitySelector initialQuantity={quantity} onChange={setQuantity} />
-                        </div>
-                        <Button onClick={handleAddToCart}>add cart</Button>
-                        <Button>buy now</Button>
-                    </div>
+            <div className="container mx-auto p-4">
+                <div className="bg-white shadow-md rounded-lg p-4 flex flex-col md:flex-row">
+                    <Row gutter={[16, 16]}>
+                        <Col xs={24} md={10}>
+                            <img
+                                className="object-cover w-full h-80 rounded-lg"
+                                src={thumb}
+                                alt="Product Image"
+                            />
+                        </Col>
+                        <Col xs={24} md={14}>
+                            <Title level={3}>{name}</Title>
+                            <Text strong className="text-lg">
+                                Giá: {price} VND
+                            </Text>
+                            <Text className="block">Cửa hàng: {shop.name}</Text>
+                            <Text className="block">
+                                Số lượng còn lại: {matchedVariant()?.quantity ?? productQuantity}
+                            </Text>
+                            <Divider />
+                            {listVariant.map((item) => (
+                                <div key={item.key} className="mb-2">
+                                    <Text className="mr-2">{item.key}:</Text>
+                                    <Radio.Group>
+                                        {item.values.map((v) => (
+                                            <Radio.Button
+                                                key={v}
+                                                value={v}
+                                                onClick={() =>
+                                                    handleClickVariant({
+                                                        key: item.key,
+                                                        value: v,
+                                                    })
+                                                }
+                                            >
+                                                {v}
+                                            </Radio.Button>
+                                        ))}
+                                    </Radio.Group>
+                                </div>
+                            ))}
+                            <div className="mt-4">
+                                <Text className="mr-2">Số lượng:</Text>
+                                <QuantitySelector
+                                    initialQuantity={quantity}
+                                    onChange={setQuantity}
+                                />
+                            </div>
+                            <div className="mt-4 flex space-x-2">
+                                <Button type="primary" onClick={handleAddToCart}>
+                                    Thêm vào giỏ hàng
+                                </Button>
+                                <Button type="default">Mua ngay</Button>
+                            </div>
+                        </Col>
+                    </Row>
                 </div>
             </div>
-            <div>
-                <Button
-                    type="primary"
-                    className="mb-4"
-                    onClick={async () => {
-                        const res = await ratingApi.addRating({
-                            comment:
-                                'Sản phẩm k giống hình, dáng quần thực sự quá xấu, k có túi bên, khoá giả, túm lại la thất vọng',
-                            isComment: false,
-                            images: [
-                                'http://res.cloudinary.com/anhdaden/image/upload/v1719726212/shopipi_fpt/mz8ipsummrpstz3rrmol.jpg',
-                            ],
-                            parentId: null,
-                            productId: id,
-                            value: 1,
-                            variantId: variants[0].id,
-                        })
-                        console.log('Rating:', res)
-                        success('Rating success')
-                    }}
-                >
-                    test rate
-                </Button>
+            <div className="container mx-auto p-4">
                 <Comment product={product} />
             </div>
         </>
     )
 }
+
 export default ProductDetail

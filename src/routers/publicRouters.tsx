@@ -20,16 +20,12 @@ const route = (
 
 const publicRouters = [
     route('/', HomePage),
-
     route('/login-redirect', Redirect),
     route('/login', Login),
     route('/register', Register),
-
     route('/product', ProductPage),
     route('/product/:slug', ProductDetail),
-
     route('/cart', CartPage),
-
     route('/order', OrderPage),
 ]
 
