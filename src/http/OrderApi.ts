@@ -1,4 +1,4 @@
-import { OrderPayment, OrderShipping } from '@/utils/constants'
+import { OrderPayment, OrderShipping, OrderState } from '@/utils/constants'
 import { User } from './authApi'
 import { CartRequest, ShopOrderItem } from './cartApi'
 import http, { Page, ParamsRequest } from './http'
@@ -30,7 +30,7 @@ export type Order = {
     profit: number
     items: ShopOrderItem[]
     payment: keyof typeof OrderPayment
-    state: string
+    state: keyof typeof OrderState
     notes: string[]
     createdAt: string
     updatedAt: string

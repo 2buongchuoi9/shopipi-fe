@@ -193,5 +193,16 @@ const productApi = {
         await http.post<boolean>(`/product/update-many-state`, { ids, value: state }),
 
     deleteProduct: async (id: string) => await http.delete<boolean>(`/product/${id}`),
+
+    countProduct: async (shopId: string) => {
+        const res = await http.get<number[]>(`/product/count/${shopId}`)
+        console.log('res', res)
+
+        return {
+            countProduct: res[0],
+            countVariant: res[1],
+            countSold: res[2],
+        }
+    },
 }
 export default productApi

@@ -120,7 +120,12 @@ const Detail = ({ product }: CardProps) => {
                 <div className="text-lg text-red-500 mb-2">
                     Price: {priceSale ? priceSale : price}
                 </div>
-                <div className="text-md text-gray-700 mb-2">Shop: {shop.name}</div>
+                <Link
+                    className="text-md text-gray-700 mb-2"
+                    to={`https://shopipi.click/shop/${shop.slug}`}
+                >
+                    Shop: {shop.name}
+                </Link>
                 <div className="text-md text-gray-700 mb-4">Mã giảm giá: conc</div>
                 <div className="space-y-4">
                     {listVariant.map((item) => (

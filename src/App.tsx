@@ -34,7 +34,7 @@ const ProgressBar = () => {
 function App() {
     const { isAuthenticated, user } = useAuth()
     const { notify, error } = useMessage()
-    const { count, setCount, visible, setVisible } = useChat()
+    const { count, setCount, visible, setVisible, setNewNotification } = useChat()
 
     useEffect(() => {
         let pingInterval: NodeJS.Timeout | undefined
@@ -53,6 +53,12 @@ function App() {
                 notify('info', 'New message', message.message)
             })
 
+            socketService.subscribe(`/user/${user.id}/notifications`, (message) => {
+                notify('success', 'New notification', message?.content)
+                setNewNotification(true)
+                console.log('message', message)
+            })
+
             updateOnlineStatus('online')
 
             pingInterval = setInterval(() => {
@@ -67,6 +73,7 @@ function App() {
         return () => {
             if (isAuthenticated && user.id) {
                 socketService.unsubscribe(`/user/${user.id}/private`)
+                socketService.unsubscribe(`/user/${user.id}/notifications`)
 
                 updateOnlineStatus('offline')
 

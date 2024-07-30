@@ -10,6 +10,7 @@ import { MdOutlineCloudDownload } from 'react-icons/md'
 
 import Search from 'antd/es/transfer/search'
 import './footer.css'
+import { NotifyComponent } from '@/components/notification'
 
 type Props = {
     isAuthenticated: boolean
@@ -97,7 +98,7 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
 
     return (
         <header {...rest}>
-            <div className="flex flex-col md:flex-row flex-wrap justify-between bg-amazonclone text-black h-[60px] px-10 py-2">
+            <div className="flex flex-col md:flex-row justify-between bg-amazonclone text-black h-[60px] px-10 py-2">
                 {/* Left */}
                 <div className="flex items-center space-x-4 md:space-x-0 md:mx-4">
                     <Link to={'/'} className="focus:outline-white">
@@ -108,9 +109,7 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
                         />
                         <span className="font-bold text-sm text-sky-800 ml-2">Tốt & Nhanh</span>
                     </Link>
-                    <Link to={'/'} className="hidden md:flex md:items-start mb-2">
-                        hôm
-                    </Link>
+
                     <div className="hidden md:flex md:items-start mb-2">
                         <span className="ml-8 mt-4">
                             <MdOutlineCloudDownload size={25} />
@@ -133,10 +132,11 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
                         user={user}
                         isAdmin={user?.roles?.includes(UserRoles.ADMIN) ?? false}
                     />
-                    <div className="hidden md:flex md:flex-col md:items-start md:space-y-1 mr-[2rem] hover:shadow-2xl rounded-md link-hover-effect">
+                    {/* <div className="hidden md:flex md:flex-col md:items-start md:space-y-1 mr-[2rem] hover:shadow-2xl rounded-md link-hover-effect">
                         <div className="text-1sm px-3">Giỏ hàng</div>
                         <div className="text-1sm font-bold px-1">& Thanh toán</div>
-                    </div>
+                    </div> */}
+                    {isAuthenticated && <NotifyComponent />}
                     <div className="mr-[1rem]">
                         <Link to={'/cart'}>
                             <div className="flex items-center mr-3 ml-4 m-1">

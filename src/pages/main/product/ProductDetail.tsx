@@ -8,7 +8,7 @@ import productApi, { initialProduct, Map, Variant } from '@/http/productApi'
 import ratingApi from '@/http/ratingApi'
 import { Button, Input, Radio, Tabs, TabsProps, Typography, Divider, Row, Col } from 'antd'
 import { useEffect, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 
 const { Title, Text } = Typography
 
@@ -102,7 +102,9 @@ const ProductDetail = () => {
                             <Text strong className="text-lg">
                                 Giá: {price} VND
                             </Text>
-                            <Text className="block">Cửa hàng: {shop.name}</Text>
+                            <Text className="block">
+                                Cửa hàng: <Link to={`/shop/${shop.slug}`}>{shop.name}</Link>
+                            </Text>
                             <Text className="block">
                                 Số lượng còn lại: {matchedVariant()?.quantity ?? productQuantity}
                             </Text>

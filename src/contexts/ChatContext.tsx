@@ -16,6 +16,8 @@ export interface ChatContextProps {
     setSelectedUser: Dispatch<SetStateAction<Shop | null>>
     count: number
     setCount: Dispatch<SetStateAction<number>>
+    newNotification: boolean
+    setNewNotification: Dispatch<SetStateAction<boolean>>
 }
 
 export const ChatContext = createContext<ChatContextProps | undefined>({
@@ -25,16 +27,28 @@ export const ChatContext = createContext<ChatContextProps | undefined>({
     setSelectedUser: () => {},
     count: 0,
     setCount: () => {},
+    newNotification: false,
+    setNewNotification: () => {},
 })
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const [visible, setVisible] = useState(false)
     const [selectedUser, setSelectedUser] = useState<Shop | null>(null)
     const [count, setCount] = useState<number>(0)
+    const [newNotification, setNewNotification] = useState(false)
 
     return (
         <ChatContext.Provider
-            value={{ visible, setVisible, selectedUser, setSelectedUser, count, setCount }}
+            value={{
+                visible,
+                setVisible,
+                selectedUser,
+                setSelectedUser,
+                count,
+                setCount,
+                newNotification,
+                setNewNotification,
+            }}
         >
             {children}
         </ChatContext.Provider>

@@ -51,3 +51,17 @@ export const OrderShipping = {
     HT: { name: 'Giao hàng hỏa tốc', price: 45000, time: 'trong ngày' },
     NONE: { name: 'Test', price: 0, time: 'test' },
 }
+
+export const NotificationType = {
+    LIKE: 'LIKE',
+    COMMENT: 'COMMENT',
+    SHARE: 'SHARE',
+    NEW_PRODUCT: 'NEW_PRODUCT',
+    NEW_ORDER: 'NEW_ORDER',
+    NEW_SHOP: 'NEW_SHOP',
+    NEW_USER: 'NEW_USER',
+    NEW_COMMENT: 'NEW_COMMENT',
+    NEW_REPLY: 'NEW_REPLY',
+    NEW_FOLLOW: 'NEW_FOLLOW',
+    NEW_MESSAGE: 'NEW_MESSAGE',
+}

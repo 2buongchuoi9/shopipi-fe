@@ -63,7 +63,7 @@ const ChatComponent = ({ ...rest }: Props) => {
                 (message.senderId === selectedUser.id || message.receiverId === selectedUser.id)
             ) {
                 setMessages((prev) => {
-                    const messageExists = prev.some((msg) => msg.id === message.id)
+                    const messageExists = prev.some((msg) => msg.message === message.message)
                     if (!messageExists) {
                         return [...prev, message]
                     }

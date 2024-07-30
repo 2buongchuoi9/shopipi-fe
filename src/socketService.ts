@@ -93,6 +93,11 @@ class SocketService {
             console.error('WebSocket is not connected')
         }
     }
+    public changeNotifyRead(id: string) {
+        if (this.client.connected) {
+            this.client.send(`/app/notify.read/${id}`)
+        }
+    }
 
     public pingUser(userId: string, type: 'online' | 'offline' = 'online') {
         if (this.client.connected) {
@@ -104,7 +109,7 @@ class SocketService {
 
     public subscribe(
         destination: string,
-        callback: (message: ChatPayload) => void,
+        callback: (message: ChatPayload | any) => void,
         callbackFail?: (error: string) => void
     ) {
         if (!this.subscribers.has(destination)) {
