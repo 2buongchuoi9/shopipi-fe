@@ -24,7 +24,7 @@ const Header = () => {
     }, [])
 
     return (
-        <div className="border w-[73rem] h-auto bg-white rounded-lg relative">
+        <div className="w-full h-auto bg-white rounded-lg relative">
             <div className="flex justify-center flex-wrap p-4">
                 <div className="w-1/2 h-[20rem] p-1">
                     <img
