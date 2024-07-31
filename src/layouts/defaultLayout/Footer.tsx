@@ -7,7 +7,7 @@ import './footer.css'
 const Footer = () => {
     return (
         <div className="footer">
-            <div className="footer-content m-[3rem]">
+            <div className="footer-content m-[3rem] ml-[20rem]">
                 <div className="footer-section">
                     <h3>Get to Know Us</h3>
                     <ul>
@@ -66,7 +66,7 @@ const Footer = () => {
                         <Link to={'/'}>
                             <img
                                 className="h-[25px] w-[80px]"
-                                src={'../images/amazon.png'}
+                                src="https://salt.tikicdn.com/ts/upload/0e/07/78/ee828743c9afa9792cf20d75995e134e.png"
                                 alt="Amazon logo"
                             />
                         </Link>
@@ -93,7 +93,7 @@ const Footer = () => {
                     </div>
                 </span>
             </div>
-            <div className="mt-3 bg-black p-[5rem]">
+            <div className="mt-3 bg-white p-[5rem]">
                 <Footer2 />
             </div>
             <hr />
