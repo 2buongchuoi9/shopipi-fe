@@ -1,8 +1,8 @@
 .footer {
-    background-color: #232f3e;
-    color: white;
     font-family: 'Roboto', sans-serif;
     padding: 3rem 0;
+    background-color: #ffffff; /* Nền màu trắng */
+    color: #000000; /* Chữ màu đen */
 }
 
 .footer-content {
@@ -34,7 +34,7 @@
 .footer-section h3 {
     font-size: 1.25rem;
     margin-bottom: 1rem;
-    color: #f0f0f0;
+    color: #000000; /* Chữ màu đen */
     font-weight: 600;
 }
 
@@ -46,7 +46,7 @@
 
 .footer-section li {
     margin-bottom: 0.5rem;
-    color: #b3b3b3;
+    color: #000000; /* Chữ màu đen */
     line-height: 1.6;
 }
 
@@ -56,18 +56,18 @@
     align-items: center; /* Center vertically */
     padding: 1rem 2rem;
     border-top: 1px solid #404040;
-    color: #b3b3b3;
+    color: #000000; /* Chữ màu đen */
     font-size: 0.875rem;
 }
 
 .footer-bottom a {
-    color: #b3b3b3;
+    color: #000000; /* Chữ màu đen */
     text-decoration: none;
     margin: 0 0.5rem; /* Add some spacing between links */
 }
 
 .footer-bottom a:hover {
-    color: #ffffff; /* Change color on hover */
+    color: #171717; /* Change color on hover */
 }
 
 /* bottoms */
@@ -77,18 +77,18 @@
     align-items: center; /* Center vertically */
     padding: 1rem 2rem;
     border-top: 1px solid #404040;
-    color: #b3b3b3;
+    color: #000000; /* Chữ màu đen */
     font-size: 0.875rem;
 }
 
 .footer-bottoms a {
-    color: #b3b3b3;
+    color: #000000; /* Chữ màu đen */
     text-decoration: none;
     margin: 0 0.5rem; /* Add some spacing between links */
 }
 
 .footer-bottoms a:hover {
-    color: #ffffff; /* Change color on hover */
+    color: #171717; /* Change color on hover */
 }
 
 /* footer2 */
@@ -121,7 +121,7 @@
 .footer-section2 h3 {
     font-size: 13px;
     margin-bottom: 1rem;
-    color: #f0f0f0;
+    color: #000000; /* Chữ màu đen */
     font-weight: 500;
     text-transform: uppercase;
 }
@@ -135,23 +135,23 @@
 .footer-section2 li {
     font-size: 12px;
     margin-bottom: 0.5rem;
-    color: #b3b3b3;
+    color: #000000; /* Chữ màu đen */
     line-height: 1.6;
     transition: color 0.3s ease;
 }
 
 .footer-section2 li:hover {
-    color: #f0f0f0;
+    color: #171717; /* Change color on hover */
 }
 
 .footer-section2 a {
-    color: #b3b3b3;
+    color: #000000; /* Chữ màu đen */
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .footer-section2 a:hover {
-    color: #ffffff;
+    color: #171717; /* Change color on hover */
 }
 
 .ant-input-outlined {

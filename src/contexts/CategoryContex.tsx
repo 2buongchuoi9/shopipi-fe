@@ -33,42 +33,6 @@ export const buildCategoryTree = (categories: Category[], parentId: string | nul
     })
 
     return tree
-
-    // // Create a map to quickly find categories by their id
-    // const map: Record<string, Category> = {}
-    // categories.forEach((category) => {
-    //     map[category.id] = { ...category, children: [] }
-    //     category.label = category.name
-    //     category.value = category.id
-    //     category.key = category.id
-    // })
-
-    // const roots: Category[] = []
-
-    // // Create the tree structure
-    // categories.forEach((category) => {
-    //     if (category.parentIds.length === 0) {
-    //         // If there are no parentIds, it's a root category
-    //         roots.push(map[category.id])
-    //     } else {
-    //         // Otherwise, find the correct parent and add this category as a child
-    //         let parent = roots
-    //         for (const parentId of category.parentIds) {
-    //             if (!map[parentId]) {
-    //                 console.warn(`Parent ID ${parentId} not found for category ${category.id}`)
-    //                 continue
-    //             }
-    //             const parentCategory = map[parentId]
-    //             if (!parentCategory.children) {
-    //                 parentCategory.children = []
-    //             }
-    //             parent = parentCategory.children
-    //         }
-    //         parent.push(map[category.id])
-    //     }
-    // })
-
-    // return roots
 }
 
 export default function CategoryProvider({ children }: { children: ReactNode }) {

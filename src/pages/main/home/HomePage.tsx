@@ -11,7 +11,7 @@ const HomePage = () => {
                 <div className="sticky top-0 mt-5 h-full">
                     <CategoryLeft />
                 </div>
-                <div className=" p-5 overflow-y-auto h-full flex flex-col">
+                <div className="p-5 overflow-y-auto h-full flex flex-col">
                     <div className="flex-grow">
                         <Header />
                         <CategoryHome />

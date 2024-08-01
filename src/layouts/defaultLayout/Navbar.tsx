@@ -109,7 +109,6 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
                         />
                         <span className="font-bold text-sm text-sky-800 ml-2">Tốt & Nhanh</span>
                     </Link>
-
                     <div className="hidden md:flex md:items-start mb-2">
                         <span className="ml-8 mt-4">
                             <MdOutlineCloudDownload size={25} />

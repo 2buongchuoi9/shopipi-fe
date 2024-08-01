@@ -45,11 +45,16 @@ const Comment = ({ product }: Props) => {
     }
 
     return (
-        <div>
-            <div className="text-black font-bold text-xl">Comment({countComments})</div>
+        <div className="mt-5 p-6 bg-white rounded-lg">
+            <header className="mb-4">
+                <h2 className="text-[17px] font-bold">Đánh giá sản phẩm</h2>
+            </header>
+            <div className="text-black font-bold text-[15px] mb-4">
+                Bài đánh giá ({countComments})
+            </div>
 
-            <div className="p-4 border rounded shadow-md w-full max-w-2xl mx-auto">
-                <h3 className="text-xl font-semibold mb-2">Khách hàng đánh giá</h3>
+            <div className="p-6 border rounded-lg w-full max-w-2xl mx-auto bg-white">
+                <h3 className="text-xl font-semibold mb-4">Khách hàng đánh giá</h3>
                 <div className="flex items-center mb-4">
                     <div className="text-2xl font-bold mr-2">{ratingAvg}</div>
                     <Rate allowHalf disabled value={ratingAvg} />
@@ -70,12 +75,13 @@ const Comment = ({ product }: Props) => {
                     </div>
                 ))}
             </div>
-
-            {comments &&
-                comments.map((comment, index) => (
-                    <ItemComment key={index} comment={comment} handleReload={handleReload} />
-                ))}
-            <InputComment productId={productId} handleReload={handleReload} className="mt-3" />
+            <div className="mt-6">
+                {comments &&
+                    comments.map((comment, index) => (
+                        <ItemComment key={index} comment={comment} handleReload={handleReload} />
+                    ))}
+            </div>
+            <InputComment productId={productId} handleReload={handleReload} className="mt-6" />
         </div>
     )
 }
