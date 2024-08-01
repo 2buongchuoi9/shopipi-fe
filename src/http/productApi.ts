@@ -64,7 +64,6 @@ export const initialProduct: Product = {
         phone: '',
         followers: [],
         slug: '',
-        address: [],
     },
 }
 
@@ -94,11 +93,10 @@ export const productType = ['CLOTHING', 'ELECTRONIC', 'OTHER'] as const
 export type ProductType = (typeof productType)[number]
 
 export type AttributeBase = {
-    type?: ProductType | null
+    type?: string | null
     brand?: string | null
     origin?: string | null
     listVariant: ListMap[] | []
-    listAttribute?: Map[] | []
 }
 export type ElectronicAttr = AttributeBase & {
     manufacturer?: string | null // nha may san xuat
@@ -193,16 +191,5 @@ const productApi = {
         await http.post<boolean>(`/product/update-many-state`, { ids, value: state }),
 
     deleteProduct: async (id: string) => await http.delete<boolean>(`/product/${id}`),
-
-    countProduct: async (shopId: string) => {
-        const res = await http.get<number[]>(`/product/count/${shopId}`)
-        console.log('res', res)
-
-        return {
-            countProduct: res[0],
-            countVariant: res[1],
-            countSold: res[2],
-        }
-    },
 }
 export default productApi
