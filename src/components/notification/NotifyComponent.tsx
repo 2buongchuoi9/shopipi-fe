@@ -46,6 +46,14 @@ const NotifyComponent = () => {
         })()
     }, [query.page])
 
+    useEffect(() => {
+        if (newNotification) {
+            ;(async () => {
+                await fetchNotifies()
+            })()
+        }
+    }, [newNotification])
+
     return (
         <div>
             <Dropdown

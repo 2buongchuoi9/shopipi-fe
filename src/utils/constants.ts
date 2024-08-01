@@ -53,9 +53,7 @@ export const OrderShipping = {
 }
 
 export const NotificationType = {
-    LIKE: 'LIKE',
-    COMMENT: 'COMMENT',
-    SHARE: 'SHARE',
+    NEW_LIKE: 'NEW_LIKE',
     NEW_PRODUCT: 'NEW_PRODUCT',
     NEW_ORDER: 'NEW_ORDER',
     NEW_SHOP: 'NEW_SHOP',
