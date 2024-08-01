@@ -9,8 +9,11 @@ const CategoryLeft = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const categoryData = await categoryApi.get()
-                setCategories(categoryData)
+                const allCategories = await categoryApi.get()
+                const topLevelCategories = allCategories.filter(
+                    (category) => category.parentIds.length === 0
+                )
+                setCategories(topLevelCategories)
             } catch (error) {
                 console.error('Failed to fetch categories', error)
             }

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-
 import categoryApi, { Category } from '@/http/categoryApi'
 import { Link } from 'react-router-dom'
 
@@ -9,8 +8,11 @@ const ProductPageHome = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const categoryData = await categoryApi.get()
-                setCategories(categoryData)
+                const allCategories = await categoryApi.get()
+                const topLevelCategories = allCategories.filter(
+                    (category) => category.parentIds.length === 0
+                )
+                setCategories(topLevelCategories)
             } catch (error) {
                 console.error('Failed to fetch categories', error)
             }
