@@ -205,7 +205,7 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
     const [typeMedia, setTypeMedia] = useState<MediaType>(mediaType.IMAGE)
     const [onCancel, setOnCancel] = useState(() => () => setOpenMedia(false))
     const [open, setOpen] = useState(false)
-    const editor_vi = useRef<IJodit | null>(null)
+    const editor_vi = useRef<any | null>(null)
 
     // const [productReq, setProductReq] = useState<ProductRequest>(initProduct)
 
@@ -699,10 +699,10 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
                                     language: 'en',
                                     limitChars: 5000,
                                     events: {
-                                        afterInit: (instance: IJodit) => {
+                                        afterInit: (instance: any) => {
                                             editor_vi.current = instance
                                         },
-                                        beforeEnter: (instance: IJodit) => {
+                                        beforeEnter: (instance: any) => {
                                             if (instance.getEditorValue().length >= 5000) {
                                                 return false
                                             }
