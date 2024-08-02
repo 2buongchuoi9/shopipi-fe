@@ -43,19 +43,19 @@ const InputComment = ({ productId, comment = null, handleReload, ...rest }: Prop
     }
 
     return (
-        <div {...rest}>
+        <div {...rest} className="p-4 bg-white rounded-lg border">
             <div className="space-y-4 pb-2">
                 <TextArea
-                    className=" border-l-red-500 border-l-2 hover:border-l-red-500 hover:border-l-2 focus:border-l-red-500 focus:border-l-2 "
+                    className="border-l-4 border-red-500 hover:border-red-500 focus:border-red-500 transition duration-200 ease-in-out"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     placeholder="Chia sẻ ý kiến của bạn"
-                    rows={2}
+                    rows={4}
                 ></TextArea>
                 <div className="flex justify-end items-center space-x-4">
                     {isAuthenticated && (
                         <div className="flex space-x-2 items-center">
-                            <Avatar src={user?.image}></Avatar>
+                            <Avatar src={user?.image} className="w-10 h-10 rounded-full"></Avatar>
                             <span className="text-base font-normal">{user?.name}</span>
                         </div>
                     )}
@@ -63,10 +63,10 @@ const InputComment = ({ productId, comment = null, handleReload, ...rest }: Prop
                         <Button
                             onClick={handleComment}
                             type="primary"
-                            style={{ backgroundColor: token.colorPrimaryHover }}
+                            className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg py-2 px-4 transition duration-200 ease-in-out"
                             disabled={!value.trim()}
                         >
-                            Send
+                            Gửi đánh giá
                         </Button>
                     </Tooltip>
                 </div>

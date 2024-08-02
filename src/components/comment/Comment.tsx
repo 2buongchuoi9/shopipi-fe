@@ -45,43 +45,47 @@ const Comment = ({ product }: Props) => {
     }
 
     return (
-        <div className="mt-5 p-6 bg-white rounded-lg">
-            <header className="mb-4">
-                <h2 className="text-[17px] font-bold">Đánh giá sản phẩm</h2>
+        <div className="mt-5 p-10 bg-white border border-gray-200 rounded-lg">
+            <header className="mb-2">
+                <h2 className="text-[16px] font-semibold text-gray-800">Đánh giá sản phẩm</h2>
             </header>
-            <div className="text-black font-bold text-[15px] mb-4">
+            <div className="text-gray-700 font-medium text-[14px] mb-2">
                 Bài đánh giá ({countComments})
             </div>
 
-            <div className="p-6 border rounded-lg w-full max-w-2xl mx-auto bg-white">
-                <h3 className="text-xl font-semibold mb-4">Khách hàng đánh giá</h3>
-                <div className="flex items-center mb-4">
-                    <div className="text-2xl font-bold mr-2">{ratingAvg.toFixed(2)}</div>
-                    <Rate allowHalf disabled value={ratingAvg} />
+            <div className="p-3 border border-gray-200 rounded-lg w-full max-w-md mx-auto bg-white shadow-sm">
+                <h3 className="text-md font-medium text-gray-800 mb-2">Khách hàng đánh giá</h3>
+                <div className="flex items-center mb-1">
+                    <div className="text-sm font-bold text-blue-600 mr-1">
+                        {ratingAvg.toFixed(2)}
+                    </div>
+                    <Rate allowHalf disabled value={ratingAvg} className="text-xs" />
                 </div>
-                <div className="text-gray-600 mb-4">({totalRating} đánh giá)</div>
+                <div className="text-gray-500 text-sm mb-2">({totalRating} đánh giá)</div>
                 {[5, 4, 3, 2, 1].map((star) => (
-                    <div key={star} className="flex items-center mb-2">
-                        <Rate disabled value={star} className="text-sm" />
-                        <div className="w-40 h-2 bg-gray-300 mx-2 rounded">
+                    <div key={star} className="flex items-center mb-1">
+                        <Rate disabled value={star} className="text-xs" />
+                        <div className="w-20 h-1 bg-gray-300 mx-1 rounded">
                             <div
-                                className="h-2 bg-blue-500 rounded"
+                                className="h-1 bg-blue-500 rounded"
                                 style={{
                                     width: `${(ratingsCount[star] / totalRating) * 100 || 0}%`,
                                 }}
                             ></div>
                         </div>
-                        <div className="w-6 text-right">{ratingsCount[star] || 0}</div>
+                        <div className="w-3 text-right text-gray-700 text-xs">
+                            {ratingsCount[star] || 0}
+                        </div>
                     </div>
                 ))}
             </div>
-            <div className="mt-6">
+            <div className="mt-3">
                 {comments &&
                     comments.map((comment, index) => (
                         <ItemComment key={index} comment={comment} handleReload={handleReload} />
                     ))}
             </div>
-            <InputComment productId={productId} handleReload={handleReload} className="mt-6" />
+            <InputComment productId={productId} handleReload={handleReload} className="mt-3" />
         </div>
     )
 }

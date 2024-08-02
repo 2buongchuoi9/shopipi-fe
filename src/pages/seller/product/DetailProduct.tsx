@@ -6,7 +6,7 @@ import { Button, Cascader, Collapse, Divider, Form, Input, Radio, Tooltip } from
 import { useForm } from 'antd/es/form/Form'
 import TextArea from 'antd/es/input/TextArea'
 import _, { uniqueId } from 'lodash'
-import { cloneElement, useEffect, useState } from 'react'
+import { cloneElement, useEffect, useMemo, useRef, useState } from 'react'
 import { CiCircleRemove } from 'react-icons/ci'
 import { FaImage, FaPlay, FaPlus, FaRegImage, FaTrashCan } from 'react-icons/fa6'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -14,6 +14,7 @@ import VariantTable from './VariantTable'
 import productApi, { ProductType } from '@/http/productApi'
 import { ErrorInfoForm } from '@/types/customType'
 import { useCategory, useMessage, useProgress } from '@/hooks'
+import JoditEditor from 'jodit-react'
 
 const initProduct = {
     attribute: {
@@ -203,6 +204,8 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
     const [activeField, setActiveField] = useState<ActiveFieldMediaType>(null)
     const [typeMedia, setTypeMedia] = useState<MediaType>(mediaType.IMAGE)
     const [onCancel, setOnCancel] = useState(() => () => setOpenMedia(false))
+    const [open, setOpen] = useState(false)
+    const editor_vi = useRef<IJodit | null>(null)
 
     // const [productReq, setProductReq] = useState<ProductRequest>(initProduct)
 
@@ -685,9 +688,58 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
 
                     {/* description */}
                     <Form.Item label="Mô tả sản phẩm" name="description">
-                        <TextArea
-                            placeholder="Mô tả sản phẩm"
-                            autoSize={{ minRows: 3, maxRows: 5 }}
+                        <JoditEditor
+                            config={useMemo(
+                                () => ({
+                                    showXPathInStatusbar: false,
+                                    showCharsCounter: true, // Enable character counter
+                                    showWordsCounter: false,
+                                    toolbarAdaptive: false,
+                                    readonly: false,
+                                    language: 'en',
+                                    limitChars: 5000,
+                                    events: {
+                                        afterInit: (instance: IJodit) => {
+                                            editor_vi.current = instance
+                                        },
+                                        beforeEnter: (instance: IJodit) => {
+                                            if (instance.getEditorValue().length >= 5000) {
+                                                return false
+                                            }
+                                        },
+                                        keydown: (event: KeyboardEvent) => {
+                                            if (
+                                                editor_vi.current?.getEditorValue().length >=
+                                                    5000 &&
+                                                event.key !== 'Backspace'
+                                            ) {
+                                                event.preventDefault()
+                                            }
+                                        },
+                                        paste: (event: ClipboardEvent) => {
+                                            const clipboardData = event.clipboardData
+                                            if (!clipboardData) {
+                                                return
+                                            }
+                                            const items = clipboardData.items
+                                            for (let index in items) {
+                                                const item = items[index]
+                                                if (
+                                                    item.kind === 'file' &&
+                                                    item.type.indexOf('image') !== -1
+                                                ) {
+                                                    event.preventDefault()
+                                                    alert('Không được phép dán hình ảnh trực tiếp.')
+                                                    return false
+                                                }
+                                            }
+                                        },
+                                    },
+                                }),
+                                []
+                            )}
+                            ref={editor_vi}
+                            value={''}
                         />
                     </Form.Item>
                 </>

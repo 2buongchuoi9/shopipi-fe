@@ -57,6 +57,7 @@ const ProductDetail = () => {
         thumb,
         name,
         price,
+        priceSale,
         shop,
         quantity: productQuantity,
         id,
@@ -66,10 +67,17 @@ const ProductDetail = () => {
     const productDetails = [
         { title: 'Tên sản phẩm', description: name },
         { title: 'Giá', description: price ? `${price} VND` : 'N/A' },
-        { title: 'Mô tả', description },
+        { title: 'Giá khuyến mãi', description: priceSale ? `${priceSale} VND` : 'N/A' },
         { title: 'Số lượng', description: productQuantity.toString() },
         { title: 'Shop', description: shop.name },
+        { title: 'Mô tả', description },
     ]
+
+    const formatPrice = (price: number) => {
+        return price
+            .toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+            .replace('₫', 'VND')
+    }
 
     const startIndex = currentPage * itemsPerPage
     const currentProducts = products.slice(startIndex, startIndex + itemsPerPage)
@@ -197,7 +205,30 @@ const ProductDetail = () => {
             ;(async () => {
                 try {
                     const data = await productApi.findBySlug(slug)
-                    setProduct(data)
+                    let totalPrice = 0
+                    let totalPriceSale = 0
+                    let countPrice = 0
+                    let countPriceSale = 0
+
+                    data.variants.forEach((v) => {
+                        if (v.price > 0) {
+                            totalPrice += v.price
+                            countPrice++
+                        }
+                        if (v.priceSale > 0) {
+                            totalPriceSale += v.priceSale
+                            countPriceSale++
+                        }
+                    })
+
+                    const price = countPrice > 0 ? totalPrice / countPrice : 0
+                    const priceSale = countPriceSale > 0 ? totalPriceSale / countPriceSale : 0
+
+                    setProduct({
+                        ...data,
+                        price,
+                        priceSale,
+                    })
                     setCurrentImage(data.thumb)
                 } catch (err) {
                     error('Có lỗi xảy ra khi tải sản phẩm')
@@ -205,7 +236,6 @@ const ProductDetail = () => {
             })()
         }
     }, [slug])
-
     return (
         <div className="w-full h-auto">
             <div className="container p-4 flex flex-col md:flex-row rounded-lg relative">
@@ -236,7 +266,7 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Info productDetail */}
-                <div className="w-[35rem] p-3">
+                <div className="w-[50rem] p-3">
                     {/*  Price  */}
                     <div className="w-full h-auto bg-white rounded-lg shadow-sm">
                         <div className="">
@@ -264,13 +294,20 @@ const ProductDetail = () => {
                                 <div className="flex-1 p-1">
                                     <div className="flex-1 p-4">
                                         <Title level={3}>{name}</Title>
-                                        <Text strong className="text-lg">
-                                            Giá: {price} VND
-                                        </Text>
-                                        <Text className="block">
-                                            Cửa hàng:
-                                            <Link to={`/shop/${shop.slug}`}>{shop.name}</Link>
-                                        </Text>
+                                        <div className="flex justify-between mt-2">
+                                            <Text strong>Giá:</Text>
+                                            <Text delete={!!priceSale} className="text-gray-500">
+                                                {price ? formatPrice(price) : 'N/A'}
+                                            </Text>
+                                        </div>
+                                        <div className="flex justify-between mt-2">
+                                            <Text strong>Giá khuyến mãi:</Text>
+                                            <Text className="text-red-500">
+                                                {priceSale ? formatPrice(priceSale) : 'N/A'}
+                                            </Text>
+                                        </div>
+
+                                        <Text className="block">Cửa hàng: {shop.name}</Text>
                                         <Text className="block">
                                             Số lượng còn lại:{' '}
                                             {matchedVariant()?.quantity ?? productQuantity}
@@ -353,26 +390,26 @@ const ProductDetail = () => {
                                 {productDetails.map((item, index) => (
                                     <li
                                         key={index}
-                                        className="py-4 px-4 w-full bg-white hover:bg-gray-100 transition-colors duration-200 flex flex-col sm:flex-row gap-4 items-start sm:items-center"
+                                        className="py-4 px-4 w-full bg-white flex flex-col sm:flex-row gap-4 items-start sm:items-center"
                                     >
                                         <div className="flex flex-wrap gap-2 items-center">
                                             <span className="font-medium text-gray-800">
                                                 {item.title}:
                                             </span>
-                                            <p className="text-sm text-gray-600 mt-1 sm:mt-0">
-                                                {item.description}
-                                            </p>
+                                            <p
+                                                className="text-sm text-gray-600 mt-1 sm:mt-0"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: item.description,
+                                                }}
+                                            ></p>
                                         </div>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     </div>
-                    {/* review */}
-                    <div className="mt-5 bg-white rounded-lg">
-                        <Comment product={product} />
-                    </div>
                 </div>
+
                 {/* payment productDetail */}
                 <div className="w-[35rem] p-3 ml-3 sticky top-0 h-full">
                     {/*  Price  */}
@@ -423,8 +460,16 @@ const ProductDetail = () => {
                 </div>
             </div>
 
+            {/* review */}
+            <div className="w-[64.3rem] ml-7 -mt-8">
+                <div className="bg-white rounded-lg">
+                    <Comment product={product} />
+                </div>
+            </div>
+
             {/* Product gợi ý */}
             <div className="mb-10 py-10">
+                {/* product */}
                 <div className="relative w-[97%] ml-6 bg-white rounded-lg pt-10 ">
                     <div className="px-10">
                         <div className="flex flex-wrap gap-14 ml-1 px-10 pb-10">
