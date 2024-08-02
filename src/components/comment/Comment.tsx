@@ -56,7 +56,7 @@ const Comment = ({ product }: Props) => {
             <div className="p-6 border rounded-lg w-full max-w-2xl mx-auto bg-white">
                 <h3 className="text-xl font-semibold mb-4">Khách hàng đánh giá</h3>
                 <div className="flex items-center mb-4">
-                    <div className="text-2xl font-bold mr-2">{ratingAvg}</div>
+                    <div className="text-2xl font-bold mr-2">{ratingAvg.toFixed(2)}</div>
                     <Rate allowHalf disabled value={ratingAvg} />
                 </div>
                 <div className="text-gray-600 mb-4">({totalRating} đánh giá)</div>

@@ -62,4 +62,5 @@ export const NotificationType = {
     NEW_REPLY: 'NEW_REPLY',
     NEW_FOLLOW: 'NEW_FOLLOW',
     NEW_MESSAGE: 'NEW_MESSAGE',
+    NEW_RATING: 'NEW_RATING',
 }

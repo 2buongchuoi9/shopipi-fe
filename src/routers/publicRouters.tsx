@@ -6,6 +6,7 @@ import { HomePage } from '@/pages/main/home'
 import { OrderPage } from '@/pages/main/order'
 import { Login, Redirect, Register } from '@/pages/main/auth'
 import { ShopPage } from '@/pages/main/shop'
+import { CategoryPage } from '@/pages/main/category'
 
 const route = (
     path: string,
@@ -24,12 +25,16 @@ const publicRouters = [
     route('/login-redirect', Redirect),
     route('/login', Login),
     route('/register', Register),
+
     route('/product', ProductPage),
     route('/product/:slug', ProductDetail),
+
     route('/cart', CartPage),
     route('/order', OrderPage),
 
     route('/shop/:slug', ShopPage),
+
+    route('/:slug', CategoryPage),
 ]
 
 export default publicRouters

@@ -99,15 +99,18 @@ const OrderPage = () => {
             title: 'Thanh toán/trạng thái',
             dataIndex: 'createdAt',
             key: 'createdAt',
-            render: (_, { payment }) => (
-                <div>
-                    <Tag color={payment === 'CASH' ? 'red' : 'green'}>
-                        {payment === 'CASH' ? 'Chưa thanh toán' : 'Đã thanh toán'}
-                    </Tag>
-                    <p>{OrderPayment[payment as keyof typeof OrderPayment]}</p>
-                    <p>{_}</p>
-                </div>
-            ),
+            render: (_, { payment, state }) => {
+                let text
+                if (payment === 'CASH' && state !== 'DELIVERED') text = 'Chưa thanh toán'
+                else text = 'Đã thanh toán'
+                return (
+                    <div>
+                        <Tag color={text === 'Chưa thanh toán' ? 'red' : 'green'}>{text}</Tag>
+                        <p>{OrderPayment[payment as keyof typeof OrderPayment]}</p>
+                        <p>{_}</p>
+                    </div>
+                )
+            },
         },
         {
             title: 'Voucher',

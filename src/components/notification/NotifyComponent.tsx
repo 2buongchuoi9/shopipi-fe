@@ -13,7 +13,7 @@ const Item = ({ notify }: { notify: Notify }) => {
     return (
         <div className="flex items-center justify-between p-2 border-b border-gray-200">
             <div className="flex items-center">
-                <Avatar src={userFrom.image} size={'small'} className="bg-blue-500">
+                <Avatar src={userFrom?.image ?? ''} size={'small'} className="bg-blue-500">
                     {notify.content[0]}
                 </Avatar>
                 <div className="ml-2">

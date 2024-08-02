@@ -112,3 +112,15 @@ export function findCategoryTree(categories: Category[], ids: String[]): Categor
 
     return traverse(categories, ids)
 }
+
+export function findCategoryBySlug(categories: Category[], slug: String): Category | undefined {
+    for (const category of categories) {
+        if (category.slug === slug) {
+            return category
+        } else if (category.children && category.children.length > 0) {
+            const found = findCategoryBySlug(category.children, slug)
+            if (found) return found
+        }
+    }
+    return undefined
+}

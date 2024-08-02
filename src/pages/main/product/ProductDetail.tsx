@@ -267,7 +267,10 @@ const ProductDetail = () => {
                                         <Text strong className="text-lg">
                                             Giá: {price} VND
                                         </Text>
-                                        <Text className="block">Cửa hàng: {shop.name}</Text>
+                                        <Text className="block">
+                                            Cửa hàng:
+                                            <Link to={`/shop/${shop.slug}`}>{shop.name}</Link>
+                                        </Text>
                                         <Text className="block">
                                             Số lượng còn lại:{' '}
                                             {matchedVariant()?.quantity ?? productQuantity}
@@ -379,7 +382,8 @@ const ProductDetail = () => {
                                 <div className="flex-1 p-2">
                                     <div className="flex-1 p-4">
                                         <Text className="block text-lg font-semibold">
-                                            Cửa hàng: {shop.name}
+                                            Cửa hàng:{' '}
+                                            <Link to={`/shop/${shop.slug}`}>{shop.name}</Link>
                                         </Text>
                                         <Text className="block text-lg">
                                             Số lượng còn lại:{' '}

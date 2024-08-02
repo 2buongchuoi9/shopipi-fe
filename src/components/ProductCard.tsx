@@ -1,5 +1,5 @@
 import { Product } from '@/http'
-import { Radio } from 'antd'
+import { Radio, Rate } from 'antd'
 import { Link } from 'react-router-dom'
 
 type Props = CardProps & {
@@ -13,7 +13,7 @@ type CardProps = {
 const badge = 'Deal có giới hạn'
 
 const Card = ({ product }: CardProps) => {
-    const { thumb, price, priceSale, name, slug, shop, discount, variants } = product
+    const { thumb, price, priceSale, name, slug, shop, discount, variants, ratingAvg } = product
 
     return (
         <div className="border rounded-lg w-full h-full hover:shadow-xl transition-shadow duration-300 ease-in-out">
@@ -23,17 +23,23 @@ const Card = ({ product }: CardProps) => {
             >
                 <img className="object-cover w-full h-48 rounded-sm" src={thumb} alt={name} />
                 <div className="mt-2 flex justify-center items-center w-full gap-2">
-                    <span className="px-2 py-1 bg-red-500 text-white rounded-md text-xs">
-                        {discount}
-                    </span>
+                    {price !== priceSale && (
+                        <span className="px-2 py-1 bg-red-500 text-white rounded-md text-xs">
+                            {discount}
+                        </span>
+                    )}
                     <span className="px-2 py-1 text-xs bg-yellow-300 rounded-md">{badge}</span>
                 </div>
                 <div className="flex mt-2 justify-center gap-3 w-full">
                     <span className="text-green-600 font-semibold">{priceSale?.vnd()}</span>
-                    <span className="line-through text-gray-400">{price?.vnd()}</span>
+                    {price !== priceSale && (
+                        <span className="line-through text-gray-400">{price?.vnd()}</span>
+                    )}
                 </div>
-                <div className="text-gray-800 mt-1">
-                    <span>shop: {shop.name}</span>
+                <div className="text-gray-800 mt-1 space-x-2">
+                    <span>
+                        <Rate allowHalf value={ratingAvg || 5} className="text-1sm p-0" disabled />
+                    </span>
                     <span>
                         Đã bán:{' '}
                         {variants.map((v) => v.sold).reduce((sold, current) => sold + current, 0)}
@@ -120,10 +126,7 @@ const Detail = ({ product }: CardProps) => {
                 <div className="text-lg text-red-500 mb-2">
                     Price: {priceSale ? priceSale : price}
                 </div>
-                <Link
-                    className="text-md text-gray-700 mb-2"
-                    to={`https://shopipi.click/shop/${shop.slug}`}
-                >
+                <Link className="text-md text-gray-700 mb-2" to={`/shop/${shop.slug}`}>
                     Shop: {shop.name}
                 </Link>
                 <div className="text-md text-gray-700 mb-4">Mã giảm giá: conc</div>
