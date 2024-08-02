@@ -290,6 +290,12 @@ const ProductDetail = () => {
                                     >
                                         Đổi trả 30 ngày
                                     </Link>
+                                    <Link
+                                        to={`/shop/${shop.slug}`}
+                                        className="bg-black text-white hover:text-black ml-[6rem] hover:border-b-2 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-2xl hover:bg-white transition duration-300"
+                                    >
+                                        Thăm shop
+                                    </Link>
                                 </div>
                                 <div className="flex-1 p-1">
                                     <div className="flex-1 p-4">
@@ -307,9 +313,16 @@ const ProductDetail = () => {
                                             </Text>
                                         </div>
 
-                                        <Text className="block">Cửa hàng: {shop.name}</Text>
+                                        <div className="block">
+                                            <Link
+                                                to={`/shop/${shop.slug}`}
+                                                className="bg-sky-500 text-white text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-2xl hover:bg-slate-500"
+                                            >
+                                                Cửa hàng: {shop.name}
+                                            </Link>
+                                        </div>
                                         <Text className="block">
-                                            Số lượng còn lại:{' '}
+                                            Số lượng còn lại:
                                             {matchedVariant()?.quantity ?? productQuantity}
                                         </Text>
                                         <Divider />

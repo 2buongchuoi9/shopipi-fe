@@ -25,7 +25,7 @@ const CategoryLeft = () => {
     return (
         <div className="w-[16rem] h-full bg-white p-8 rounded-lg mb-6">
             <span className="text-[15px] font-semibold ml-2">Danh mục</span>
-            <div className="h-[calc(100vh-4rem)] overflow-y-scroll custom-scrollbar">
+            <div className="h-[calc(100vh-4rem)] overflow-y-scroll custom-scrollbar mt-4">
                 {categories.map((category) => (
                     <Link
                         to={`/category/${category.id}`}
