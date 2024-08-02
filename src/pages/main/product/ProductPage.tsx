@@ -35,8 +35,6 @@ const ProductPage = () => {
     const { user } = useAuth()
     const { categories: allCate } = useCategory()
     const [products, setProducts] = useState<Product[]>([])
-    const [searchTerm, setSearchTerm] = useState('')
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
     const [query, setQuery] = useState<ParamsRequest>({
         page: 0,
         size: 10,
@@ -44,18 +42,24 @@ const ProductPage = () => {
         minPrice: null,
         maxPrice: null,
         state: 'ACTIVE',
+        rate: null,
+        categoryId: null,
     })
     const [cc, setCc] = useState<{ minPrice: number | null; maxPrice: number | null }>({
         minPrice: null,
         maxPrice: null,
     })
+    const [currentCate, setCurrentCate] = useState<Category | null>(null)
     const [selectedCate, setSelectedCate] = useState<Category | null>(null)
-    const [categories, setCategories] = useState<Category[]>([])
+    // const [categories, setCategories] = useState<Category[]>([])
     const { setLoading } = useLoading()
 
     const fetchProducts = async () => {
+        // if (!selectedCate?.id) return
+        const categoryId = selectedCate?.id ?? currentCate?.id ?? null
+        if (!categoryId) return
         setLoading(true)
-        const data = await productApi.getAll(query)
+        const data = await productApi.getAll({ ...query, categoryId })
 
         const products = data.content.map((p) => {
             let totalPrice = 0
@@ -93,11 +97,7 @@ const ProductPage = () => {
 
     useEffect(() => {
         fetchProducts()
-    }, [query.sort, query.minPrice, query.maxPrice, query.page, query.size])
-
-    useEffect(() => {
-        console.log('selectedCate', selectedCate?.name)
-    }, [selectedCate])
+    }, [query, params, selectedCate?.id, currentCate?.id])
 
     useEffect(() => {
         // find category
@@ -105,8 +105,10 @@ const ProductPage = () => {
         if (!slug) return
         const foundCate = findCategoryBySlug(allCate, slug)
         if (!foundCate) return
-        setCategories(foundCate?.children ?? [])
-    }, [params])
+        setCurrentCate(foundCate)
+        // setSelectedCate(foundCate)
+        // setCategories(foundCate?.children ?? [])
+    }, [params, allCate])
 
     return (
         <div>
@@ -115,7 +117,20 @@ const ProductPage = () => {
                     <Breadcrumb.Item>
                         <Link to="/">Trang chủ</Link>
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item>{params.get('category')}</Breadcrumb.Item>
+                    <Breadcrumb.Item
+                        onClick={() => setSelectedCate(currentCate)}
+                        className="hover:cursor-pointer"
+                    >
+                        {currentCate?.name}
+                    </Breadcrumb.Item>
+                    {selectedCate && selectedCate.id !== currentCate?.id && (
+                        <Breadcrumb.Item
+                            onClick={() => setSelectedCate(selectedCate)}
+                            className="hover:cursor-pointer"
+                        >
+                            {selectedCate.name}
+                        </Breadcrumb.Item>
+                    )}
                 </Breadcrumb>
             </div>
 
@@ -124,16 +139,32 @@ const ProductPage = () => {
                     <CateTree
                         setSelected={setSelectedCate}
                         selected={selectedCate}
-                        categories={categories}
+                        categories={currentCate?.children ?? []}
                     />
                     <div className="border-[1px] rounded-lg p-2 bg-white">
                         <div className="text-lg font-bold p-2">Tìm theo sao</div>
                         <div className="border-t border-gray-200" />
-                        <Checkbox.Group
-                            options={itemsStart}
-                            className="mt-2"
-                            onChange={(cc) => console.log('sdasd', cc)}
-                        />
+
+                        <div className="mt-2">
+                            {itemsStart.map((item) => (
+                                <Checkbox
+                                    key={item.value}
+                                    checked={query.rate === item.value}
+                                    value={item.value}
+                                    onChange={(value) =>
+                                        setQuery((prev) => ({
+                                            ...prev,
+                                            rate:
+                                                prev.rate === value.target.value
+                                                    ? null
+                                                    : value.target.value,
+                                        }))
+                                    }
+                                >
+                                    {item.label}
+                                </Checkbox>
+                            ))}
+                        </div>
                     </div>
                     <div className="border-[1px] rounded-lg p-2 bg-white">
                         <div className="text-lg font-bold p-2">Tìm theo giá</div>

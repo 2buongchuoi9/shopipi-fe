@@ -17,7 +17,7 @@ const Comment = ({ product }: Props) => {
 
     const fetchComment = async () => {
         const res = await ratingApi.get({ productId })
-        console.log('Comment:', res)
+        // console.log('Comment:', res)
 
         const ratings = res.content.map((r) => ({
             ...r,
@@ -50,7 +50,7 @@ const Comment = ({ product }: Props) => {
                 <h2 className="text-[16px] font-semibold text-gray-800">Đánh giá sản phẩm</h2>
             </header>
             <div className="text-gray-700 font-medium text-[14px] mb-2">
-                Bài đánh giá ({countComments})
+                Bình luận ({countComments})
             </div>
 
             <div className="p-3 border border-gray-200 rounded-lg w-full max-w-md mx-auto bg-white shadow-sm">

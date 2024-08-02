@@ -20,6 +20,7 @@ export const initialProduct: Product = {
     totalComment: 0,
     state: 'HIDDEN',
     isDeleted: false,
+    sold: 0,
     attribute: {
         brand: '',
         origin: '',
@@ -64,6 +65,7 @@ export const initialProduct: Product = {
         phone: '',
         followers: [],
         slug: '',
+        address: [],
     },
 }
 
@@ -139,6 +141,7 @@ export type Product = {
     createdAt: string // Consider using Date if possible
     shop: Shop
     isDeleted: boolean
+    sold: number
 }
 
 export type ProductRequest = {

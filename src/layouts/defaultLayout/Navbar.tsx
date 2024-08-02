@@ -11,6 +11,8 @@ import { MdOutlineCloudDownload } from 'react-icons/md'
 import Search from 'antd/es/transfer/search'
 import './footer.css'
 import { NotifyComponent } from '@/components/notification'
+import Searchd from '@/components/SearchCpn'
+import SearchCpn from '@/components/SearchCpn'
 
 type Props = {
     isAuthenticated: boolean
@@ -121,7 +123,7 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
                 </div>
                 {/* Middle */}
                 <div className="flex-1 md:flex-none md:w-1/2 md:mt-4 m-3">
-                    <Search />
+                    <SearchCpn />
                 </div>
 
                 {/* Right */}

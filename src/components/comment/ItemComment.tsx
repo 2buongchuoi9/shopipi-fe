@@ -22,15 +22,15 @@ const ItemComment = ({ comment, handleReload }: Props) => {
 
     const { createdAt, variant } = comment
 
-    console.log('comment', comment)
+    // console.log('comment', comment)
 
     const handleLikeComment = async () => {
         if (!isAuthenticated) {
             error('vui lòng đăng nhập để thích bình luận')
             return
         }
-        console.log('comment', comment)
-        console.log('user', user)
+        // console.log('comment', comment)
+        // console.log('user', user)
         try {
             const res = await ratingApi.like(comment.id)
             handleReload()

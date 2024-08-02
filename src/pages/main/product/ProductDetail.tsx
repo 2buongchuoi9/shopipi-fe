@@ -229,6 +229,8 @@ const ProductDetail = () => {
                         price,
                         priceSale,
                     })
+                    console.log('product', product)
+
                     setCurrentImage(data.thumb)
                 } catch (err) {
                     error('Có lỗi xảy ra khi tải sản phẩm')
