@@ -9,7 +9,7 @@ import categoryApi, { Category } from '@/http/categoryApi'
 import productApi, { initialProduct, Map, Variant } from '@/http/productApi'
 // import ratingApi from '@/http/ratingApi'
 import { Button, Radio, Typography, Divider } from 'antd'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FcNext, FcPrevious } from 'react-icons/fc'
 import { Link, useParams } from 'react-router-dom'
 
@@ -72,6 +72,11 @@ const ProductDetail = () => {
         { title: 'Shop', description: shop.name },
         { title: 'Mô tả', description },
     ]
+
+    const totalPrice = useMemo(() => {
+        const finalPrice = priceSale || price || 0
+        return quantity * finalPrice
+    }, [quantity, price, priceSale])
 
     const formatPrice = (price: number) => {
         return price
@@ -229,8 +234,6 @@ const ProductDetail = () => {
                         price,
                         priceSale,
                     })
-                    console.log('product', product)
-
                     setCurrentImage(data.thumb)
                 } catch (err) {
                     error('Có lỗi xảy ra khi tải sản phẩm')
@@ -427,46 +430,48 @@ const ProductDetail = () => {
 
                 {/* payment productDetail */}
                 <div className="w-[35rem] p-3 ml-3 sticky top-0 h-full">
-                    {/*  Price  */}
                     <div className="w-full h-auto bg-white rounded-lg">
-                        <div className="">
-                            <div className="p-6">
-                                <div className="flex-1 p-2">
-                                    <div className="flex-1 p-4">
-                                        <Text className="block text-lg font-semibold">
-                                            Cửa hàng:{' '}
-                                            <Link to={`/shop/${shop.slug}`}>{shop.name}</Link>
-                                        </Text>
-                                        <Text className="block text-lg">
-                                            Số lượng còn lại:{' '}
-                                            {matchedVariant()?.quantity ?? productQuantity}
-                                        </Text>
-                                        <Divider className="my-4" />
+                        <div className="p-6">
+                            <div className="flex-1 p-2">
+                                <div className="flex-1 p-4">
+                                    <Text className="block text-xl font-semibold text-gray-800">
+                                        Cửa hàng: {shop.name}
+                                    </Text>
+                                    <Text className="block text-lg text-gray-600">
+                                        Số lượng còn lại:{' '}
+                                        {matchedVariant()?.quantity ?? productQuantity}
+                                    </Text>
+                                    <Divider className="my-4" />
 
-                                        <div className="mt-4">
-                                            <Text className="mr-2 font-medium text-lg">
-                                                Số lượng:
-                                            </Text>
-                                            <QuantitySelector
-                                                initialQuantity={quantity}
-                                                onChange={setQuantity}
-                                            />
+                                    <div className="mt-3">
+                                        <div className="mr-2 font-medium text-lg text-gray-700">
+                                            Số lượng:
                                         </div>
-                                        <div className="mt-6 flex space-x-4">
-                                            <Button
-                                                type="primary"
-                                                onClick={handleAddToCart}
-                                                className="bg-blue-500 hover:bg-blue-600 text-white transition duration-300"
-                                            >
-                                                Thêm vào giỏ hàng
-                                            </Button>
-                                            <Button
-                                                className="bg-red-500 hover:bg-red-600 text-white transition duration-300"
-                                                type="primary"
-                                            >
-                                                Mua ngay
-                                            </Button>
+                                        <QuantitySelector
+                                            initialQuantity={quantity}
+                                            onChange={setQuantity}
+                                        />
+                                        <div className="mt-3 mr-2 font-medium text-lg text-gray-700">
+                                            Tổng tiền:
                                         </div>
+                                        <div className="font-semibold text-lg text-red-500">
+                                            {formatPrice(totalPrice)}
+                                        </div>
+                                    </div>
+                                    <div className="mt-5 flex space-x-4">
+                                        <Button
+                                            type="primary"
+                                            onClick={handleAddToCart}
+                                            className="bg-blue-500 hover:bg-blue-600 text-white transition duration-300"
+                                        >
+                                            Thêm vào giỏ hàng
+                                        </Button>
+                                        <Button
+                                            className="bg-red-500 hover:bg-red-600 text-white transition duration-300"
+                                            type="primary"
+                                        >
+                                            Mua ngay
+                                        </Button>
                                     </div>
                                 </div>
                             </div>

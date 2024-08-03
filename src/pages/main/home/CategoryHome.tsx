@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import categoryApi, { Category } from '@/http/categoryApi'
 import { Link } from 'react-router-dom'
+import categoryApi, { Category } from '@/http/categoryApi'
+import './Home.css'
 
 const ProductPageHome = () => {
     const [categories, setCategories] = useState<Category[]>([])
@@ -26,7 +27,7 @@ const ProductPageHome = () => {
             <div className="flex flex-wrap gap-2 p-6">
                 {categories.map((category) => (
                     <Link
-                        to={`/category/${category.id}`}
+                        to={`/product?category=${category.slug}`}
                         key={category.id}
                         className="flex px-2 py-1 rounded-lg border hover:shadow-xl transition-shadow duration-300 ease-in-out items-center"
                     >
