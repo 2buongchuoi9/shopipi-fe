@@ -45,6 +45,7 @@ const ProductPage = () => {
         rate: null,
         categoryId: null,
     })
+
     const [cc, setCc] = useState<{ minPrice: number | null; maxPrice: number | null }>({
         minPrice: null,
         maxPrice: null,

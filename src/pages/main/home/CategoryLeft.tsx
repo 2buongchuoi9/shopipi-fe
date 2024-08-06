@@ -5,22 +5,7 @@ import './Home.css'
 import { useCategory } from '@/hooks'
 
 const CategoryLeft = () => {
-    // const [categories, setCategories] = useState<Category[]>([])
-
     const { categories } = useCategory()
-
-    // useEffect(() => {
-    //     const fetchCategories = async () => {
-    //         try {
-    //             const categoryData = await categoryApi.get()
-    //             setCategories(categoryData)
-    //         } catch (error) {
-    //             console.error('Failed to fetch categories', error)
-    //         }
-    //     }
-
-    //     fetchCategories()
-    // }, [])
 
     return (
         <div className="w-[16rem] h-full bg-white p-8 rounded-lg mb-6">

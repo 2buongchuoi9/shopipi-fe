@@ -2,11 +2,11 @@ import ProductCard from '@/components/ProductCard'
 import TimeCount from '@/components/TimeCount'
 import { buildCategoryTree } from '@/contexts/CategoryContex'
 import { useAuth, useCategory, useMessage } from '@/hooks'
-import { Category, Product } from '@/http'
+import { Category, ParamsRequest, Product } from '@/http'
 import productApi from '@/http/productApi'
 import shopApi, { Online, Shop } from '@/http/shopApi'
 import ErrorPage from '@/pages/ErrorPage'
-import { Button } from 'antd'
+import { Button, InputNumber } from 'antd'
 import { useEffect, useState } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { PiPlus } from 'react-icons/pi'
@@ -30,6 +30,21 @@ const ShopPage = () => {
     const [totalRatingCount, setTotalRatingCount] = useState<number>(0)
     const { success, error } = useMessage()
     const [cateShop, setCateShop] = useState<Category[] | null>(null)
+    const [query, setQuery] = useState<ParamsRequest>({
+        page: 0,
+        size: 10,
+        sort: '',
+        minPrice: null,
+        maxPrice: null,
+        state: 'ACTIVE',
+        rate: null,
+        categoryId: null,
+    })
+
+    const [cc, setCc] = useState<{ minPrice: number | null; maxPrice: number | null }>({
+        minPrice: null,
+        maxPrice: null,
+    })
 
     console.log('cateShop', cateShop)
 
@@ -48,23 +63,47 @@ const ShopPage = () => {
     const fetchShop = async () => {
         if (slug) {
             const res = await shopApi.findShopBySlug(slug)
-
             const ol = await shopApi.online(res.id)
-
-            console.log('online', ol)
-
             setShop({ ...ol, ...res })
-            console.log('shop', res)
 
-            const res3 = await productApi.getAll({ shopId: res.id, size: 1000 })
+            const res3 = await productApi.getAll({ shopId: res.id, size: 1000, ...query })
 
             let avgRating = 0
             let totalRating = 0
 
-            res3.content.forEach((product) => {
-                avgRating += product.ratingAvg
-                totalRating += product.totalRating
+            const products = res3.content.map((p) => {
+                let totalPrice = 0
+                let totalPriceSale = 0
+                let countPrice = 0
+                let countPriceSale = 0
+
+                p.variants.forEach((v) => {
+                    if (v.price > 0) {
+                        totalPrice += v.price
+                        countPrice++
+                    }
+                    if (v.priceSale > 0) {
+                        totalPriceSale += v.priceSale
+                        countPriceSale++
+                    }
+                })
+
+                const price = countPrice > 0 ? totalPrice / countPrice : 0
+                const priceSale = countPriceSale > 0 ? totalPriceSale / countPriceSale : 0
+
+                avgRating += p.ratingAvg
+                totalRating += p.totalRating
+
+                return {
+                    ...p,
+                    price,
+                    priceSale,
+                    discount:
+                        p.sale?.type === 'FIXED_AMOUNT' ? p.sale?.value.vnd() : p.sale?.value + '%',
+                }
             })
+
+            setProducts(products)
 
             let idsCate: string[] = []
 
@@ -85,17 +124,22 @@ const ShopPage = () => {
 
             setAvgRating(avgRating / totalRating)
             setTotalRatingCount(totalRating)
-
-            setProducts(res3.content)
-            console.log('products', res3)
         }
     }
 
     useEffect(() => {
-        ;(async () => {
-            await fetchShop()
-        })()
-    }, [slug])
+        if (slug && categoriesFlat.length > 0) {
+            fetchShop()
+        }
+    }, [slug, categoriesFlat, query])
+
+    const handleApplyFilter = () => {
+        setQuery((prev) => ({
+            ...prev,
+            minPrice: cc.minPrice,
+            maxPrice: cc.maxPrice,
+        }))
+    }
 
     if (!slug) {
         return <ErrorPage subTitle="Không tim thấy shop" />
@@ -110,8 +154,13 @@ const ShopPage = () => {
             ) : (
                 <div className="w-full h-auto bg-gray-100">
                     {/* header */}
-                    <div className="p-10 w-full flex bg-white">
-                        <div className="p-6 bg-white border w-[25rem] space-y-6 rounded-lg">
+                    <div className="relative p-10 w-full flex bg-white">
+                        <img
+                            src={shop.image ?? ''}
+                            alt="Background"
+                            className="absolute inset-0 w-full h-full object-cover opacity-100"
+                        />
+                        <div className="relative p-6 bg-white border w-[25rem] h-[12rem] space-y-6 rounded-lg">
                             <div className="flex space-x-6 items-center">
                                 <img
                                     src={shop.image ?? ''}
@@ -149,7 +198,7 @@ const ShopPage = () => {
                                     : 'Theo dõi'}
                             </Button>
                         </div>
-                        <div className="w-2/3 grid grid-cols-2 gap-2 p-5 border ml-5 rounded-lg">
+                        <div className="relative bg-white w-2/3 grid grid-cols-2 gap-2 p-8 border ml-5 rounded-lg">
                             <div className="flex items-center">
                                 <Button
                                     type="link"
@@ -207,9 +256,46 @@ const ShopPage = () => {
                                     Tham gia: {shop.createdAt}
                                 </Button>
                             </div>
+                            {/* search */}
+                            <div className="border rounded-lg p-2 bg-white w-auto h-auto mt-5">
+                                <div className="text-xs font-extrabold text-sky-500 mb-2">
+                                    Tìm theo giá
+                                </div>
+                                <div className="border-t border-gray-200" />
+                                <div className="space-y-2 mt-3">
+                                    <InputNumber<number>
+                                        addonAfter="Ngìn đồng"
+                                        addonBefore="Min"
+                                        type="number"
+                                        value={cc.minPrice ? cc.minPrice / 1000 : null}
+                                        onChange={(value) => {
+                                            setCc((prev) => ({
+                                                ...prev,
+                                                minPrice: value ? value * 1000 : null,
+                                            }))
+                                        }}
+                                    />
+                                    <InputNumber<number>
+                                        addonAfter="Ngìn đồng"
+                                        addonBefore="Max"
+                                        type="number"
+                                        value={cc.maxPrice ? cc.maxPrice / 1000 : null}
+                                        onChange={(value) =>
+                                            setCc((prev) => ({
+                                                ...prev,
+                                                maxPrice: value ? value * 1000 : null,
+                                            }))
+                                        }
+                                    />
+                                    <div className="flex items-center justify-center">
+                                        <Button type="primary" onClick={handleApplyFilter}>
+                                            Áp dụng
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                     {/* product */}
                     <div className="flex mt-10 p-6 bg-white rounded-lg">
                         {/* categories */}
@@ -221,7 +307,16 @@ const ShopPage = () => {
                                     </h2>
                                     <ul className="space-y-2">
                                         {cateShop.map((category) => (
-                                            <li key={category.id} className="text-sm text-gray-700">
+                                            <li
+                                                key={category.id}
+                                                className="text-sm text-gray-700 cursor-pointer"
+                                                onClick={() =>
+                                                    setQuery((prev) => ({
+                                                        ...prev,
+                                                        categoryId: category.id,
+                                                    }))
+                                                }
+                                            >
                                                 {category.name}
                                             </li>
                                         ))}
@@ -230,19 +325,11 @@ const ShopPage = () => {
                             )}
                         </div>
                         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {products.length > 0 &&
-                                products.map((product) => (
-                                    <div
-                                        key={product.id}
-                                        className="px-1 py-4 rounded-lg duration-300"
-                                    >
-                                        <ProductCard
-                                            product={product}
-                                            key={product.id}
-                                            type="any"
-                                        />
-                                    </div>
-                                ))}
+                            {products.map((product) => (
+                                <div key={product.id} className="px-1 py-4 rounded-lg duration-300">
+                                    <ProductCard product={product} type="any" />
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
