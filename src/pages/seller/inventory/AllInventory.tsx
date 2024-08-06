@@ -68,9 +68,9 @@ const AllInventory = () => {
                     console.log('data', data)
                     close()
                 } catch (error) {
-                    if (error instanceof ErrorPayload) {
-                        console.error('ErrorPayload', error)
-                    }
+                    // if (error instanceof ErrorPayload) {
+                    //     console.error('ErrorPayload', error)
+                    // }
                 }
             }
         })()
