@@ -39,7 +39,7 @@ const Register = () => {
             navigate(redirect ?? '/')
         } catch (e) {
             console.log('error', e)
-            err('Đăng nhập thất bại')
+            err('Đăng Ký thất bại')
         } finally {
             setSubmitting(false)
         }
@@ -143,13 +143,13 @@ const Register = () => {
                             />
                         </Form.Item>
 
-                        <Form.Item
+                        {/* <Form.Item
                             name="address"
                             label="Address"
                             rules={[{ required: true, message: 'Name không được trống' }]}
                         >
                             <Input size="large" placeholder="Email" />
-                        </Form.Item>
+                        </Form.Item> */}
 
                         <div className="flex w-full">
                             <Button

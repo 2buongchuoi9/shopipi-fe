@@ -122,7 +122,7 @@ const Login = () => {
                                 className="w-1/2"
                                 onClick={() => {
                                     navigate(
-                                        `/register` + +(redirect ? '?redirect=' + redirect : '')
+                                        `/register` + (redirect ? '?redirect=' + redirect : '')
                                     )
                                 }}
                             >
