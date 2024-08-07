@@ -4,25 +4,16 @@ import fileApi from '@/http/fileApi'
 import shopApi from '@/http/shopApi'
 import { convertVietNameseToSlug } from '@/utils'
 import { LoadingOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Spin, Upload } from 'antd'
+import { Button, Form, Input, Spin, Upload, message } from 'antd'
 import { useEffect, useState } from 'react'
 
 const formItemLayout = {
     labelCol: {
-        // xs: {
-        //     span: 24,
-        // },
-        sm: {
-            span: 4,
-        },
+        sm: { span: 4 },
     },
     wrapperCol: {
-        xs: {
-            span: 24,
-        },
-        sm: {
-            span: 14,
-        },
+        xs: { span: 24 },
+        sm: { span: 14 },
     },
     formItemLayout: 'vertical',
 }
@@ -32,28 +23,11 @@ const Account = () => {
     const [form] = Form.useForm<User>()
     const [image, setImage] = useState<string | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null)
-    const { loading, success } = useMessage()
+    const { loading, success, error } = useMessage()
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
-        // try {
-        //     setLoading(true)
-        //     if (
-        //         image?.startsWith(
-        //             'http://res.cloudinary.com/anhdaden/image/upload/' ||
-        //                 'https://res.cloudinary.com/anhdaden/image/upload/'
-        //         )
-        //     )
-        //         await fileApi.deleteByUrl(image)
-
-        //     if (!file) return
-        //     const formData = new FormData()
-        //     formData.append('file', file as Blob)
-        //     const { url } = await fileApi.uploadImage(formData)
-        //     setImage(url)
-        // } catch (e) {}
-        // setLoading(false)
-
         if (file) {
             setImageFile(file)
             const reader = new FileReader()
@@ -63,7 +37,9 @@ const Account = () => {
             reader.readAsDataURL(file)
         }
     }
+
     const handleOnSubmit = async (values: User) => {
+        setIsSubmitting(true)
         try {
             loading('Đang cập nhật')
             const formData = new FormData()
@@ -78,10 +54,13 @@ const Account = () => {
             const res = await shopApi.updateWithFile(user.id, formData)
             console.log(res)
             await fetchUser()
+            success('Cập nhật thành công')
         } catch (e) {
             console.log(e)
+            error('Cập nhật thất bại')
+        } finally {
+            setIsSubmitting(false)
         }
-        success('Cập nhật thành công')
     }
 
     useEffect(() => {
@@ -98,14 +77,16 @@ const Account = () => {
     }, [user])
 
     return (
-        <div className="w-full  bg-white">
-            <div className="p-2 border-b-[1px]">
-                <p className="text-xl">Hồ sơ của tôi</p>
-                <p className="text-sm">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+        <div className="w-full bg-white p-6 rounded-lg shadow-md">
+            <div className="p-2 border-b-[1px] mb-4">
+                <p className="text-2xl font-semibold">Hồ sơ của tôi</p>
+                <p className="text-sm text-gray-600">
+                    Quản lý thông tin hồ sơ để bảo mật tài khoản
+                </p>
             </div>
             <Form {...formItemLayout} form={form} onFinish={handleOnSubmit}>
                 <div className="flex w-full">
-                    <div className="w-2/3">
+                    <div className="w-2/3 pr-4">
                         <Form.Item name="id" hidden>
                             <Input />
                         </Form.Item>
@@ -159,7 +140,7 @@ const Account = () => {
                         >
                             <Input />
                         </Form.Item>
-                        <Form.Item name="email" label="email" required>
+                        <Form.Item name="email" label="Email" required>
                             <Input />
                         </Form.Item>
                         <Form.Item name="phone" label="Số điện thoại" required>
@@ -167,16 +148,15 @@ const Account = () => {
                         </Form.Item>
                     </div>
                     <div className="w-1/3 flex flex-col items-center">
-                        <div className="w-32 h-32 bg-gray-300 rounded-full">
+                        <div className="w-32 h-32 bg-gray-300 rounded-full overflow-hidden">
                             <img
                                 src={image || ''}
                                 alt="avatar"
-                                className="w-full h-full rounded-full object-cover"
+                                className="w-full h-full object-cover"
                             />
                         </div>
                         <div className="mt-2">
                             <Button
-                                className=""
                                 type="primary"
                                 onClick={() => {
                                     document.getElementById('imageUpload')?.click()
@@ -192,11 +172,13 @@ const Account = () => {
                                 onChange={handleImageChange}
                             />
                         </div>
-                        <p className="">Dụng lượng file tối đa 1 MB Định dạng:.JPEG, .PNG</p>
+                        <p className="text-xs text-gray-500 mt-2">
+                            Dụng lượng file tối đa 1 MB. Định dạng: .JPEG, .PNG
+                        </p>
                     </div>
                 </div>
-                <div className="border-[1px] rounded-lg bg-white  flex justify-end mt-5 sticky bottom-0 right-0 p-4">
-                    <Button type="primary" htmlType="submit">
+                <div className="flex justify-end mt-5">
+                    <Button type="primary" htmlType="submit" loading={isSubmitting}>
                         Lưu
                     </Button>
                 </div>
@@ -204,4 +186,5 @@ const Account = () => {
         </div>
     )
 }
+
 export default Account

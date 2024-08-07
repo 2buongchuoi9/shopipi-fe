@@ -1,18 +1,13 @@
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
-// import Search from '../Search/Search'
 import { useAuth, useCart, useMessage } from '@/hooks'
 import authApi, { User } from '@/http/authApi'
 import { UserRoles } from '@/utils/constants'
 import { Avatar, Dropdown, MenuProps } from 'antd'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { MdOutlineCloudDownload } from 'react-icons/md'
-
-import Search from 'antd/es/transfer/search'
-import './footer.css'
-import { NotifyComponent } from '@/components/notification'
-import Searchd from '@/components/SearchCpn'
 import SearchCpn from '@/components/SearchCpn'
+import { NotifyComponent } from '@/components/notification'
 
 type Props = {
     isAuthenticated: boolean
@@ -25,27 +20,26 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
     const { success, error } = useMessage()
 
     const items: MenuProps['items'] = [
-        { key: 1, label: <Link to="/login">Login</Link> },
+        !isAuthenticated && { key: '1', label: <Link to="/login">Đăng nhập</Link> },
         {
-            key: 2,
-            label: <Link to={isAdmin ? '/admin/product' : '/seller/product/all'}>dô admin</Link>,
-        },
-        {
-            key: 3,
+            key: '2',
             label: (
-                <Link to="/login" onClick={logout}>
-                    Logout
-                </Link>
+                <Link to={isAdmin ? '/admin/product' : '/seller/product/all'}>Kênh bán hàng</Link>
             ),
         },
         {
-            key: 4,
-            label: 'đăng ký shop',
+            key: '4',
+            label: 'Đăng ký bán hàng',
             onClick: async () => {
                 try {
+                    if (!user.name || !user.email || !user.slug || !user.phone || !user.image) {
+                        error('Vui lòng điền đầy đủ thông tin hồ sơ trước khi đăng ký bán hàng')
+                        return
+                    }
                     await authApi.registerShop(user.id)
                     await fetchUser()
                     success('Đăng ký shop thành công')
+                    window.location.href = '/user/account'
                 } catch (e) {
                     console.log('error', e)
                     error('Đăng ký shop thất bại')
@@ -53,14 +47,22 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
             },
         },
         {
-            key: 5,
-            label: <Link to={'/user/account'}>Thông tin tài khoản</Link>,
+            key: '5',
+            label: <Link to={'/user/account'}>Hồ sơ của tôi</Link>,
         },
         {
-            key: 6,
+            key: '6',
             label: <Link to={'/user/order'}>Đơn hàng của tôi</Link>,
         },
-    ]
+        isAuthenticated && {
+            key: '3',
+            label: (
+                <Link to="/login" onClick={logout}>
+                    Đăng xuất
+                </Link>
+            ),
+        },
+    ].filter(Boolean) as MenuProps['items']
 
     return isAuthenticated ? (
         <Dropdown trigger={['click', 'hover']} menu={{ items }}>
@@ -86,7 +88,7 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
 const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
     const [categories, setCategories] = useState<any[]>([])
     const { user, isAuthenticated } = useAuth()
-    const { totalItem, totalQuantity } = useCart()
+    const { totalItem } = useCart()
 
     useEffect(() => {
         fetch('/data/categories.json')
@@ -103,7 +105,7 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
             <div className="flex flex-col md:flex-row justify-between bg-amazonclone text-black h-[60px] px-10 py-2">
                 {/* Left */}
                 <div className="flex items-center space-x-4 md:space-x-0 md:mx-4">
-                    <Link to={'/'} className="focus:outline-white">
+                    <Link to={'/'}>
                         <img
                             className="h-[35px] w-[100px]"
                             src="https://salt.tikicdn.com/ts/upload/0e/07/78/ee828743c9afa9792cf20d75995e134e.png"
@@ -133,10 +135,6 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
                         user={user}
                         isAdmin={user?.roles?.includes(UserRoles.ADMIN) ?? false}
                     />
-                    {/* <div className="hidden md:flex md:flex-col md:items-start md:space-y-1 mr-[2rem] hover:shadow-2xl rounded-md link-hover-effect">
-                        <div className="text-1sm px-3">Giỏ hàng</div>
-                        <div className="text-1sm font-bold px-1">& Thanh toán</div>
-                    </div> */}
                     {isAuthenticated && <NotifyComponent />}
                     <div className="mr-[1rem]">
                         <Link to={'/cart'}>
