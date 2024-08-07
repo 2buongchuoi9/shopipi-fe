@@ -2,11 +2,13 @@ import { useAuth, useCategory, useMessage } from '@/hooks'
 import { ParamsRequest } from '@/http'
 import { ShopOrderItem } from '@/http/cartApi'
 import orderApi, { Order } from '@/http/OrderApi'
+import { exportToExcel } from '@/utils'
 import { OrderPayment, OrderShipping, OrderState } from '@/utils/constants'
 import { Button, Select, Table, TableColumnType, Tabs, Tag, TreeSelect } from 'antd'
 import Search from 'antd/es/input/Search'
 import { ColumnsType } from 'antd/es/table'
 import { useEffect, useState } from 'react'
+import { BiDetail } from 'react-icons/bi'
 const initialQuery = {
     page: 0,
     size: 10,
@@ -155,19 +157,17 @@ const OrderPage = () => {
             title: 'Thao tác',
             dataIndex: 'id',
             key: 'id',
-            // render: (id, record) => (
-            //     <span className="flex flex-col justify-start">
-            //         <Button size="small" type="link" className="flex justify-start">
-            //             <Link to={`/admin/product/detail/${record.slug}`}> cập nhật</Link>
-            //         </Button>
-            //         <Button size="small" type="link" className="flex justify-start">
-            //             xóa
-            //         </Button>
-            //         <Button size="small" type="link" className="flex justify-start">
-            //             xem thêm
-            //         </Button>
-            //     </span>
-            // ),
+            render: (_, record) => (
+                <div
+                    className="hover:text-blue-500 cursor-pointer"
+                    onClick={() => {
+                        // setOpen(true)
+                        // setSelectedInventory(record)
+                    }}
+                >
+                    <BiDetail />
+                </div>
+            ),
         },
     ]
 
@@ -178,7 +178,14 @@ const OrderPage = () => {
                 <div className="flex items-center space-x-5">
                     <Button
                         type="primary"
-                        // onClick={() => navigate('/admin/product/add')}
+                        onClick={() => {
+                            if (orders.length === 0) {
+                                error('Không có đơn hàng nào')
+                                return
+                            }
+
+                            exportToExcel(orders)
+                        }}
                     >
                         Xuất
                     </Button>

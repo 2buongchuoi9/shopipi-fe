@@ -28,7 +28,7 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
         { key: 1, label: <Link to="/login">Login</Link> },
         {
             key: 2,
-            label: <Link to={isAdmin ? '/admin/product' : '/seller/product/all'}>dô admin</Link>,
+            label: <Link to={isAdmin ? '/admin/product' : '/seller/'}>dô admin</Link>,
         },
         {
             key: 3,

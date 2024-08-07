@@ -1,0 +1,176 @@
+{
+    "id": "66b10d093e9af017bbd92419",
+    "user": {
+        "id": "66a0575b6505495975b8b2d8",
+        "name": "Nguyen Hong Phi Long (FPL HCM)",
+        "email": "longnhpps27325@fpt.edu.vn",
+        "image": "https://lh3.googleusercontent.com/a/ACg8ocJKvK1doqr1vW1Vd_-jVhnp0bjGQ8j3artmwQLIpnXmabyfog=s96-c",
+        "slug": "longnhpps27325@fpt.edu.vn",
+        "status": true,
+        "verify": false,
+        "authType": "GOOGLE",
+        "roles": ["USER"],
+        "phone": null,
+        "address": [
+            {
+                "name": "Nguyễn Hồng Phi Long",
+                "phone": "0961354192",
+                "province": "Thành phố Hồ Chí Minh",
+                "district": "Huyện Bình Chánh",
+                "address": "Fpoly",
+                "isDefault": true
+            },
+            {
+                "name": "Nguyễn Hồng Phi Long",
+                "phone": "0961354192",
+                "province": "Thành phố Hồ Chí Minh",
+                "district": "Huyện Bình Chánh",
+                "address": "Fpoly",
+                "isDefault": true
+            }
+        ],
+        "followers": [],
+        "createdAt": "06-08-2024 00:34:01",
+        "oauth2Id": "109540541694685788593"
+    },
+    "shippingType": "NORMAL",
+    "shippingAddress": null,
+    "totalOrder": 85000,
+    "totalShipping": 20000,
+    "totalDiscount": 0,
+    "totalCheckout": 65000,
+    "capital": 400000,
+    "revenue": 65000,
+    "profit": -335000,
+    "items": [
+        {
+            "shopId": "6690b631ddb29f2a2f7e4038",
+            "discountId": null,
+            "items": [
+                {
+                    "product": {
+                        "id": "66ac870f3e9af017bbd92374",
+                        "name": "Combo 2 Áo thun nam Cotton Compact Premium trẻ trung thấm hút mồ hôi, co giãn 4 chiều MRM Manlywear",
+                        "slug": "combo-2-ao-thun-nam-cotton-compact-premium-tre-trung-tham-hut-mo-hoi-co-gian-4-chieu-mrm-manlywear",
+                        "thumb": "http://res.cloudinary.com/anhdaden/image/upload/v1722582418/shopipi_fpt/rqwzwmgaaxktrvmimowp.webp",
+                        "video": null,
+                        "images": [
+                            "http://res.cloudinary.com/anhdaden/image/upload/v1722582418/shopipi_fpt/rqwzwmgaaxktrvmimowp.webp",
+                            "http://res.cloudinary.com/anhdaden/image/upload/v1722582653/shopipi_fpt/jdp2laiargy7smzwnaj2.webp",
+                            "http://res.cloudinary.com/anhdaden/image/upload/v1722582648/shopipi_fpt/hpd2vzpwkqzirnnpyrlt.webp"
+                        ],
+                        "sale": {
+                            "id": "66b0cb143e9af017bbd923e8",
+                            "name": "KM1",
+                            "productIds": ["66ac870f3e9af017bbd92374", "66ac8a453e9af017bbd9237b"],
+                            "shopId": "6690b631ddb29f2a2f7e4038",
+                            "type": "PERCENTAGE_AMOUNT",
+                            "value": 10,
+                            "dateStart": "05-08-2024 19:52:05",
+                            "dateEnd": "31-08-2024 00:00:00",
+                            "state": "ACTIVE"
+                        },
+                        "type": "CLOTHING",
+                        "description": "Combo 2 Áo thun nam Cotton Compact Premium trẻ trung thấm hút mồ hôi, co giãn 4 chiều MRM Manlywear",
+                        "quantity": 196,
+                        "ratingAvg": 5,
+                        "totalRating": 1,
+                        "totalComment": 0,
+                        "isDeleted": false,
+                        "attribute": {
+                            "brand": " MRM Manlywear",
+                            "origin": "Việt Nam",
+                            "listAttribute": null,
+                            "listVariant": [
+                                { "key": "Áo thun nam ", "values": ["Đen Xanh", "Đen Trắng Navy"] }
+                            ],
+                            "material": "Cotton Organic cao cấp, mềm mại và nhẹ nhàng.",
+                            "model": null,
+                            "season": null,
+                            "style": null
+                        },
+                        "variants": [
+                            {
+                                "id": "66ac870f3e9af017bbd92375",
+                                "productId": "66ac870f3e9af017bbd92374",
+                                "quantity": 99,
+                                "price": 50000,
+                                "priceSale": 45000,
+                                "priceImport": 400000,
+                                "valueVariant": [{ "key": "Áo thun nam ", "value": "Đen Xanh" }],
+                                "sold": 1
+                            },
+                            {
+                                "id": "66ac870f3e9af017bbd92376",
+                                "productId": "66ac870f3e9af017bbd92374",
+                                "quantity": 97,
+                                "price": 20000,
+                                "priceSale": 18000,
+                                "priceImport": 200000,
+                                "valueVariant": [
+                                    { "key": "Áo thun nam ", "value": "Đen Trắng Navy" }
+                                ],
+                                "sold": 3
+                            }
+                        ],
+                        "sold": 4,
+                        "category": {
+                            "id": "669dac500ceb317d06eeb318",
+                            "slug": "thoi-trang-nam",
+                            "name": "thời trang nam",
+                            "parentIds": [],
+                            "thumb": "http://res.cloudinary.com/anhdaden/image/upload/v1720760596/shopipi_fpt/djisaoizevat0j4saraj.jpg"
+                        },
+                        "price": 0,
+                        "state": "ACTIVE",
+                        "createdAt": "02-08-2024 14:13:19",
+                        "shop": {
+                            "id": "6690b631ddb29f2a2f7e4038",
+                            "name": "CoolMate",
+                            "email": "shop1@gmail.com",
+                            "image": "http://res.cloudinary.com/anhdaden/image/upload/v1722682962/shopipi_fpt/xyfnwhbexoawskdjkd1m.jpg",
+                            "slug": "coolmate",
+                            "status": true,
+                            "verify": false,
+                            "authType": "LOCAL",
+                            "roles": ["USER", "SHOP"],
+                            "phone": "097646246",
+                            "address": [
+                                {
+                                    "name": "Nguyễn Quốc Dũng",
+                                    "phone": "0936631402",
+                                    "province": "Thành phố Hồ Chí Minh",
+                                    "district": "Quận 12",
+                                    "address": "345 Tô Ký q.12 Hồ CHí Minh",
+                                    "isDefault": true
+                                }
+                            ],
+                            "followers": ["669fe92dc7307a29b809c9df"],
+                            "createdAt": "21-07-2024 11:37:58",
+                            "oauth2Id": null
+                        }
+                    },
+                    "variant": {
+                        "id": "66ac870f3e9af017bbd92375",
+                        "productId": "66ac870f3e9af017bbd92374",
+                        "quantity": 99,
+                        "price": 50000,
+                        "priceSale": 45000,
+                        "priceImport": 400000,
+                        "valueVariant": [{ "key": "Áo thun nam ", "value": "Đen Xanh" }],
+                        "sold": 1
+                    },
+                    "quantity": 1,
+                    "price": 45000
+                }
+            ],
+            "totalDiscount": 0,
+            "total": 45000
+        }
+    ],
+    "payment": "VN_PAY",
+    "state": "PENDING",
+    "notes": ["Tạo hóa đơn date:06-08-2024 00:34:01content: "],
+    "createdAt": "06-08-2024 00:34:01",
+    "updatedAt": "06-08-2024 00:34:01"
+}
