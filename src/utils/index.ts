@@ -1,6 +1,11 @@
 import { Category, ParamsRequest } from '@/http'
 import { ChatGroup } from '@/http/chatApi'
+import { Order } from '@/http/OrderApi'
 import { ChatPayload } from '@/socketService'
+import { saveAs } from 'file-saver'
+import moment from 'moment'
+import * as XLSX from 'xlsx'
+import { dateFormat } from './constants'
 
 const routeRedirect = `${window.location.origin}/login-redirect`
 const apiUrl = import.meta.env.VITE_API_URL
@@ -123,4 +128,88 @@ export function findCategoryBySlug(categories: Category[], slug: String): Catego
         }
     }
     return undefined
+}
+
+export const exportToExcel = (orders: Order[]) => {
+    const exportData = orders.flatMap((order) => {
+        const recipientAddress = order.user.address
+            ? order.user.address.find((addr) => addr.isDefault)
+            : ''
+
+        return order.items.flatMap((item) => {
+            return item.items.map((productItem) => ({
+                'Mã hóa đơn': order.id,
+                'Ngày đặt': order.createdAt,
+                'Tình trạng đơn hàng': order.state,
+                'Đơn vị vận chuyển': order.shippingType,
+                'Phương thức thanh toán/Trạng thái thanh toán': order.payment,
+                'Tên sản phẩm': productItem.product.name,
+                'Tên biến thể của sản phẩm': productItem.variant.valueVariant
+                    .map((v) => v.value)
+                    .join(', '),
+                'Số lượng mua của sản phẩm': productItem.quantity,
+                'Giá gốc của biến thể': productItem.variant.price,
+                'Số tiền giảm giá': productItem.product.sale
+                    ? productItem.product.sale.type === 'PERCENTAGE_AMOUNT'
+                        ? productItem.product.sale.value
+                        : `${productItem.product.sale.value} %`
+                    : 0,
+                'Số tiền áp dụng voucher': item.totalDiscount,
+                'Tổng giá trị đơn hàng': order.totalOrder,
+                'Tên người nhận': recipientAddress ? recipientAddress.name : order.user.name,
+                'Số điện thoại': recipientAddress ? recipientAddress.phone : order.user.phone,
+                'Địa chỉ': recipientAddress
+                    ? `${recipientAddress.address}, ${recipientAddress.district}, ${recipientAddress.province}`
+                    : '',
+                'Email người nhận': order.user.email,
+            }))
+        })
+    })
+
+    // Chuyển đổi dữ liệu thành sheet
+    const ws = XLSX.utils.json_to_sheet(exportData, {
+        header: [
+            'Mã hóa đơn',
+            'Ngày đặt',
+            'Tình trạng đơn hàng',
+            'Đơn vị vận chuyển',
+            'Phương thức thanh toán/Trạng thái thanh toán',
+            'Tên sản phẩm',
+            'Tên biến thể của sản phẩm',
+            'Số lượng mua của sản phẩm',
+            'Giá gốc của biến thể',
+            'Số tiền giảm giá',
+            'Số tiền áp dụng voucher',
+            'Tổng giá trị đơn hàng',
+            'Tên người nhận',
+            'Số điện thoại',
+            'Địa chỉ',
+            'Email người nhận',
+        ],
+    })
+
+    // Tính chiều rộng của các cột để tự động điều chỉnh
+    const colWidths = Object.keys(ws).reduce((acc, key) => {
+        const cell = ws[key]
+        if (cell && cell.v) {
+            const length = cell.v ? cell.v.toString().length : 0
+            const colIndex = XLSX.utils.decode_cell(key).c
+            acc[colIndex] = Math.max(acc[colIndex] || 10, length)
+        }
+        return acc
+    }, {} as { [key: number]: number })
+
+    ws['!cols'] = Object.keys(colWidths).map((colIndex) => ({
+        wpx: colWidths[Number(colIndex)] * 7,
+    }))
+
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Orders')
+
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+    const dataBlob = new Blob([excelBuffer], { type: 'application/octet-stream' })
+
+    const shop = orders[0].items[0].items[0].product.shop.name
+
+    saveAs(dataBlob, `Orders_${shop}_${moment().format('DD-MM-YYYY')}.xlsx`)
 }

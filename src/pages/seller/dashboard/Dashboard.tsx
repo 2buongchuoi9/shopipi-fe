@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react'
 import orderApi, { Order } from '@/http/OrderApi'
 import { title } from 'process'
 import productApi, { Product } from '@/http/productApi'
-import { ProductState } from '@/utils/constants'
-import { Table, Tag } from 'antd'
+import { dateFormat, ProductState } from '@/utils/constants'
+import { Select, Table, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import DashboardCart from '@/components/DashboardCart'
+import moment from 'moment'
 
 const op: { [key: string]: any } = {
     total: { title: 'Số lượng đơn hàng', description: 'Số lượng đơn hàng' },
@@ -16,6 +17,31 @@ const op: { [key: string]: any } = {
     pending: { title: 'Đơn hàng chờ xử lý', description: 'Số lượng đơn hàng cần xử lý' },
     countProduct: { title: 'Số lượng sản phẩm', description: 'Số lượng sản phẩm' },
 }
+
+const now = moment().startOf('day')
+
+const items = [
+    {
+        // value: now.format(dateFormat),
+        value: 'day',
+        label: `Ngày (${now.format('DD')})`,
+    },
+    {
+        // value: now.startOf('week').format(dateFormat),
+        value: 'week',
+        label: `Tuần (${now.clone().startOf('week').format('DD-MM-YYYY')})`,
+    },
+    {
+        // value: now.startOf('month').format(dateFormat),
+        value: 'month',
+        label: `Tháng (${now.format('MM')})`,
+    },
+    {
+        // value: now.startOf('year').format(dateFormat),
+        value: 'year',
+        label: `Năm (${now.format('YYYY')})`,
+    },
+]
 
 type Option = {
     total: number
@@ -41,12 +67,18 @@ const Dashboard = () => {
     const [pending, setPending] = useState<Order[]>([])
     const [topProductSold, setTopProductSold] = useState<Product[]>([])
     const { loading, success } = useMessage()
+    const [selectedDay, setSelectedDay] = useState('day')
+    const [query, setQuery] = useState({
+        shopId: user.id,
+        size: 1000,
+        startDate: now.format(dateFormat),
+    })
 
     console.log('orders', orders)
 
     const fetchOrder = async () => {
         loading('Đang tải dữ liệu')
-        const res = await orderApi.get({ shopId: user.id, size: 1000 })
+        const res = await orderApi.get(query)
         const { countProduct } = await productApi.countProduct(user.id)
         const topProductSold = await productApi.getAll({
             size: 5,
@@ -87,12 +119,34 @@ const Dashboard = () => {
         ;(async () => {
             await fetchOrder()
         })()
-    }, [])
+    }, [query.startDate])
+
+    useEffect(() => {
+        console.log('query', query)
+        const startDate =
+            selectedDay === 'day'
+                ? moment().startOf('day').format(dateFormat)
+                : selectedDay === 'week'
+                ? moment().clone().startOf('week').format(dateFormat)
+                : selectedDay === 'month'
+                ? moment().startOf('month').format(dateFormat)
+                : moment().startOf('year').format(dateFormat)
+
+        console.log('startDate', startDate)
+
+        setQuery((prev) => ({ ...prev, startDate }))
+    }, [selectedDay])
 
     return (
         <div className="space-y-3">
-            <div>
+            <div className="flex justify-between items-center">
                 <p>Tổng quan</p>
+                <Select
+                    className="w-52"
+                    options={items}
+                    value={selectedDay}
+                    onChange={(e) => setSelectedDay(e)}
+                />
             </div>
 
             <div className="grid grid-cols-3 gap-5">

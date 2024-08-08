@@ -114,7 +114,9 @@ const Register = () => {
                                         return Promise.resolve()
                                     }
                                     return Promise.reject(
-                                        new Error('Mật khẩu không trùng khớp, vui lòng kiểm tra lại')
+                                        new Error(
+                                            'Mật khẩu không trùng khớp, vui lòng kiểm tra lại'
+                                        )
                                     )
                                 },
                             }),
@@ -123,13 +125,13 @@ const Register = () => {
                         <Input.Password size="large" placeholder="Confirm Password" />
                     </Form.Item>
 
-                    <Form.Item
+                    {/* <Form.Item
                         name="address"
                         label="Address"
-                        rules={[{ required: true, message: 'Địa chỉ không được trống' }]}
+                        rules={[{ required: true, message: 'Name không được trống' }]}
                     >
-                        <Input size="large" placeholder="Address" />
-                    </Form.Item>
+                        <Input size="large" placeholder="Email" />
+                    </Form.Item> */}
 
                     <div className="flex space-x-4 mt-6">
                         <Button

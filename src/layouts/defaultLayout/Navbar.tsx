@@ -23,7 +23,11 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
     const items: MenuProps['items'] = [
         !isAuthenticated && { key: '1', label: <Link to="/login">Đăng nhập</Link> },
         {
-            key: '2',
+            key: 2,
+            label: <Link to={isAdmin ? '/admin/product' : '/seller/'}>dô admin</Link>,
+        },
+        {
+            key: 3,
             label: (
                 <Link to={isAdmin ? '/admin/product' : '/seller/product/all'}>Kênh bán hàng</Link>
             ),
