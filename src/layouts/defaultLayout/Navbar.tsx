@@ -1,5 +1,5 @@
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth, useCart, useMessage } from '@/hooks'
 import authApi, { User } from '@/http/authApi'
 import { UserRoles } from '@/utils/constants'
@@ -18,6 +18,7 @@ type Props = {
 const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
     const { logout, fetchUser } = useAuth()
     const { success, error } = useMessage()
+    const navigate = useNavigate()
 
     const items: MenuProps['items'] = [
         !isAuthenticated && { key: '1', label: <Link to="/login">Đăng nhập</Link> },
@@ -34,12 +35,13 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
                 try {
                     if (!user.name || !user.email || !user.slug || !user.phone || !user.image) {
                         error('Vui lòng điền đầy đủ thông tin hồ sơ trước khi đăng ký bán hàng')
+                        navigate('/user/account') // Chuyển hướng đến trang hồ sơ
                         return
                     }
                     await authApi.registerShop(user.id)
                     await fetchUser()
                     success('Đăng ký shop thành công')
-                    window.location.href = '/user/account'
+                    navigate('/user/account') // Điều hướng về trang hồ sơ sau khi đăng ký thành công
                 } catch (e) {
                     console.log('error', e)
                     error('Đăng ký shop thất bại')
