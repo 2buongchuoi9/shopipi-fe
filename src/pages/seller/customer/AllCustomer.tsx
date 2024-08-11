@@ -1,5 +1,6 @@
 import { useAuth } from '@/hooks'
-import { ParamsRequest, Shop } from '@/http'
+import { ParamsRequest } from '@/http'
+import { User } from '@/http/authApi'
 import shopApi from '@/http/shopApi'
 import { Button, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
@@ -14,7 +15,7 @@ const initQuery = {
 
 const AllCustomer = () => {
     const { user } = useAuth()
-    const [users, setUsers] = useState<Shop[]>([])
+    const [users, setUsers] = useState<User[]>([])
     const [query, setQuery] = useState<ParamsRequest>(initQuery)
 
     const fetchUsers = async () => {
@@ -28,7 +29,7 @@ const AllCustomer = () => {
         })()
     }, [user.id, query.page, query.size])
 
-    const columns: ColumnsType<Shop> = [
+    const columns: ColumnsType<User> = [
         {
             title: 'Tên',
             dataIndex: 'name',

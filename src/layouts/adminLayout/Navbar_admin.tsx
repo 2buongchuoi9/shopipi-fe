@@ -10,7 +10,7 @@ const Navbar_admin = ({ ...rest }: Props) => {
         <div {...rest}>
             <div className="flex justify-between items-center h-full">
                 <div className="flex items-center justify-start h-full space-x-1">
-                    <Link to="/product" className="h-full aspect-video">
+                    <Link to="/" className="h-full aspect-video">
                         <img alt="logo" className="h-full" src="/logo.png" />
                     </Link>
                     <div className="h-full flex flex-1 items-center">Kênh người bán</div>
@@ -21,7 +21,7 @@ const Navbar_admin = ({ ...rest }: Props) => {
                             trigger={['click', 'hover']}
                             menu={{
                                 items: [
-                                    { key: 1, label: <Link to="/login">Login</Link> },
+                                    // { key: 1, label: <Link to="/login">Login</Link> },
                                     {
                                         key: 2,
                                         label: (
@@ -30,7 +30,7 @@ const Navbar_admin = ({ ...rest }: Props) => {
                                             </Link>
                                         ),
                                     },
-                                    { key: 2, label: <Link to="/product">cook về home</Link> },
+                                    { key: 3, label: <Link to="/">home</Link> },
                                 ] as MenuProps['items'],
                             }}
                         >

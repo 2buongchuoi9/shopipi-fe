@@ -1,6 +1,7 @@
 import ModalDiscount from '@/components/ModalDiscount'
 import QuantitySelector from '@/components/QuantitySelector'
 import { useAuth, useCart, useDebounce, useMessage } from '@/hooks'
+import useChat from '@/hooks/useChat'
 import authApi, { User } from '@/http/authApi'
 import { CartItem, CartRequest, ShopOrderItem } from '@/http/cartApi'
 import { ShopOrderItemsRequest } from '@/http/OrderApi'
@@ -56,9 +57,9 @@ const EmptyCart = () => {
             <div className="aspect-video w-32">
                 <img src="/logo.png" alt="empty-cart" />
             </div>
-            <Link to="/product">
+            <Link to="/">
                 <Button type="link" className="text-lg font-semibold">
-                    Đi mua hàng đi mới có show. đm
+                    Giỏ hàng trống. Vào mua sắm!!!
                 </Button>
             </Link>
         </div>
@@ -82,6 +83,8 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
     const [open, setOpen] = useState(false)
     const { shopId, items } = shopItem
     const [shop, setShop] = useState<User>()
+
+    const { setVisible, setSelectedUser } = useChat()
 
     console.log('shopItem', shopItem)
 
@@ -109,6 +112,13 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
 
     // chọn variant để checkout review -> set request order vào context (xử lí call api, cập nhật result checkout review)
     // -> render lại component
+
+    const handleShowChat = (shop: User) => {
+        console.log('handleShowChat')
+
+        setVisible(true)
+        setSelectedUser(shop)
+    }
 
     const rowSelection: TableRowSelection<CartItem> = {
         onChange: (selectedRowKeys, selectedRows) => {
@@ -223,7 +233,14 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
 
             <div className="flex items-center space-x-3 pl-5">
                 <p>{shop?.name}</p>
-                <Button type="link" className="text-blue-500" icon={<HiChatBubbleLeftRight />}>
+                <Button
+                    type="link"
+                    className="text-blue-500"
+                    icon={<HiChatBubbleLeftRight />}
+                    onClick={() => {
+                        shop && handleShowChat(shop)
+                    }}
+                >
                     Chat ngay
                 </Button>
             </div>
@@ -258,18 +275,29 @@ const ShopOrder = ({ shopItem, onChangeSelectedCartRequests }: Props) => {
 const CartPage = () => {
     const { isAuthenticated } = useAuth()
     const navigate = useNavigate()
-    const { cart, setOrderRequest, resultCheckoutReview: checkout } = useCart()
+    const { cart, setOrderRequest, orderRequest, resultCheckoutReview: checkout } = useCart()
     const [shopOrderItemsRequest, setShopOrderItemsRequest] = useState<ShopOrderItemsRequest[]>([])
     const { warning } = useMessage()
 
     const handleOrder = () => {
-        if (isAuthenticated) {
-            navigate('/order')
-            return
-        } else {
+        if (!isAuthenticated) {
             warning('Vui lòng đăng nhập để mua hàng')
             navigate('/login?redirect=/cart')
+            return
         }
+
+        console.log('orderRequest', orderRequest)
+
+        if (
+            orderRequest == null ||
+            orderRequest.shopOrderItems == null ||
+            orderRequest.shopOrderItems.length === 0
+        ) {
+            warning('Vui lòng chọn ít nhất 1 sản phẩm để mua hàng')
+            return
+        }
+
+        navigate('/order')
     }
 
     // set orderRequest khi shopOrderItemsRequest thay đổi (cập nhật orderRequest) -> resultCheckoutReview thay đổi

@@ -4,7 +4,7 @@ export const userPath = '/user'
 
 export const dateFormat = 'DD-MM-YYYY HH:mm:ss'
 
-export const REDIRECT_RESULT_ORDER = import.meta.env.VITE_URL + '/user/order'
+export const REDIRECT_RESULT_ORDER = import.meta.env.VITE_URL + '/redirect-payment'
 
 export enum UserRoles {
     ADMIN = 'ADMIN',

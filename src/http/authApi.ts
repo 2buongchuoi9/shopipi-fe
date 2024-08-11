@@ -1,5 +1,5 @@
 import http from './http'
-import { Address } from './shopApi'
+import { Address, Role } from './shopApi'
 
 export const initialUser: User = {
     id: '',
@@ -28,8 +28,8 @@ export type User = {
     status: boolean
     verify: boolean
     authType: string
-    roles: string[]
-    updatedAt: string
+    roles: Role[]
+    updatedAt?: string
     oauth2Id: string | null
     addressShipping: string
     createdAt: string

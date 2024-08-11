@@ -8,7 +8,6 @@ import TimeCount from '../TimeCount'
 import ChatBox from './ChatBox'
 import chatApi from '@/http/chatApi'
 import socketService, { ChatPayload } from '@/socketService'
-import { Shop } from '@/http'
 import useAuth from '@/hooks/useAuth'
 import useChat from '@/hooks/useChat'
 import { useDebounce, useMessage } from '@/hooks'
@@ -17,6 +16,7 @@ import shopApi, { Online } from '@/http/shopApi'
 import { CgClose } from 'react-icons/cg'
 import moment, { now } from 'moment'
 import { dateFormat } from '@/utils/constants'
+import { User } from '@/http/authApi'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
     // onClose: () => void
@@ -26,13 +26,13 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 const ChatComponent = ({ ...rest }: Props) => {
     const { user, isAuthenticated } = useAuth()
     // const [selectedUser, setSelectedUser] = useState<Shop | null>(null)
-    const [users, setUsers] = useState<(Shop & Online)[]>([])
+    const [users, setUsers] = useState<(User & Online)[]>([])
     const [messages, setMessages] = useState<ChatPayload[]>([])
     const [input, setInput] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [search, setSearch] = useState('')
     const keySearch = useDebounce({ value: search, delay: 500 })
-    const [resultSearch, setResultSearch] = useState<Shop[]>([])
+    const [resultSearch, setResultSearch] = useState<User[]>([])
     const [showResult, setShowResult] = useState(false)
     const { success } = useMessage()
     const { selectedUser, setSelectedUser, setVisible } = useChat()
@@ -83,7 +83,7 @@ const ChatComponent = ({ ...rest }: Props) => {
 
                         const users = Array(res.length)
                             .fill(null)
-                            .map((_, i) => ({ ...res2[i], ...res[i] })) as (Shop & Online)[]
+                            .map((_, i) => ({ ...res2[i], ...res[i] })) as (User & Online)[]
 
                         setUsers(users)
                     })()

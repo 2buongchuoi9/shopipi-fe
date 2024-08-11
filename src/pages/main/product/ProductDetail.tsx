@@ -1,17 +1,34 @@
 import { Comment } from '@/components/comment'
 import ProductCard from '@/components/ProductCard'
 import QuantitySelector from '@/components/QuantitySelector'
+import TimeCount from '@/components/TimeCount'
 import { useAuth, useCart, useMessage } from '@/hooks'
+import useChat from '@/hooks/useChat'
 import { Product } from '@/http'
-import authApi from '@/http/authApi'
+import authApi, { User } from '@/http/authApi'
 import cartApi from '@/http/cartApi'
 import categoryApi, { Category } from '@/http/categoryApi'
 import productApi, { initialProduct, Map, Variant } from '@/http/productApi'
 // import ratingApi from '@/http/ratingApi'
-import { Button, Radio, Typography, Divider } from 'antd'
+import { Button, Radio, Typography, Divider, Rate, Avatar, Tag } from 'antd'
+import { title } from 'process'
 import { useEffect, useMemo, useState } from 'react'
 import { FcNext, FcPrevious } from 'react-icons/fc'
+import { IoIosChatboxes } from 'react-icons/io'
 import { Link, useParams } from 'react-router-dom'
+
+const ShowPrice = ({ price, priceSale }: { price?: number; priceSale?: number }) => {
+    return (
+        <>
+            {price != priceSale && (
+                <Text delete={!!priceSale} className="text-gray-500">
+                    {price?.vnd()}
+                </Text>
+            )}
+            <Text className="text-red-500">{priceSale?.vnd()}</Text>
+        </>
+    )
+}
 
 const { Title, Text } = Typography
 
@@ -38,6 +55,7 @@ const ProductDetail = () => {
     const { fetchCart } = useCart()
     const { isAuthenticated, setUser } = useAuth()
     const { success, error } = useMessage()
+    const { setVisible, setSelectedUser } = useChat()
     const [categories, setCategories] = useState<Category[]>([])
 
     const [product, setProduct] = useState<Product>(initialProduct)
@@ -51,7 +69,7 @@ const ProductDetail = () => {
     const itemsPerPage = 5
 
     const {
-        attribute: { listVariant },
+        attribute,
         variants,
         description,
         thumb,
@@ -62,14 +80,16 @@ const ProductDetail = () => {
         quantity: productQuantity,
         id,
         images,
+        ratingAvg,
+        totalRating,
     } = product
 
     const productDetails = [
-        { title: 'Tên sản phẩm', description: name },
-        { title: 'Giá', description: price ? `${price} VND` : 'N/A' },
-        { title: 'Giá khuyến mãi', description: priceSale ? `${priceSale} VND` : 'N/A' },
-        { title: 'Số lượng', description: productQuantity.toString() },
-        { title: 'Shop', description: shop.name },
+        { title: 'Thương hiệu', description: attribute.brand },
+        { title: 'Xuất xứ', description: attribute.origin },
+        ...(Array.isArray(attribute.listAttribute)
+            ? attribute.listAttribute.map((v) => ({ title: v.key, description: v.value }))
+            : []),
         { title: 'Mô tả', description },
     ]
 
@@ -78,20 +98,14 @@ const ProductDetail = () => {
         return quantity * finalPrice
     }, [quantity, price, priceSale])
 
-    const formatPrice = (price: number) => {
-        return price
-            .toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
-            .replace('₫', 'VND')
-    }
-
     const startIndex = currentPage * itemsPerPage
     const currentProducts = products.slice(startIndex, startIndex + itemsPerPage)
 
     const startSuggestedIndex = currentSuggestedPage * itemsPerPage
-    const currentSuggestedProducts = suggestedProducts.slice(
-        startSuggestedIndex,
-        startSuggestedIndex + itemsPerPage
-    )
+    // const currentSuggestedProducts = suggestedProducts.slice(
+    //     startSuggestedIndex,
+    //     startSuggestedIndex + itemsPerPage
+    // )
 
     const handlePrev = (type: 'products' | 'suggested') => {
         if (type === 'products' && currentPage > 0) {
@@ -110,6 +124,13 @@ const ProductDetail = () => {
         ) {
             setCurrentSuggestedPage(currentSuggestedPage + 1)
         }
+    }
+
+    const handleShowChat = (shop: User) => {
+        console.log('handleShowChat')
+
+        setVisible(true)
+        setSelectedUser(shop)
     }
 
     const matchedVariant = () => {
@@ -234,6 +255,11 @@ const ProductDetail = () => {
                         price,
                         priceSale,
                     })
+                    console.log('cccccccccccccc', data.attribute.listVariant)
+
+                    setSelectedValuesVariant(
+                        data.attribute.listVariant.map((v) => ({ key: v.key, value: v.values[0] }))
+                    )
                     setCurrentImage(data.thumb)
                 } catch (err) {
                     error('Có lỗi xảy ra khi tải sản phẩm')
@@ -276,7 +302,7 @@ const ProductDetail = () => {
                     <div className="w-full h-auto bg-white rounded-lg shadow-sm">
                         <div className="">
                             <div className="p-4">
-                                <div className="flex gap-3">
+                                {/* <div className="flex gap-3">
                                     <Link
                                         to="/re-nhat-thang"
                                         className="bg-red-100 text-red-500 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-2xl hover:bg-red-200 transition duration-300"
@@ -301,21 +327,36 @@ const ProductDetail = () => {
                                     >
                                         Thăm shop
                                     </Link>
-                                </div>
+                                </div> */}
                                 <div className="flex-1 p-1">
                                     <div className="flex-1 p-4">
                                         <Title level={3}>{name}</Title>
-                                        <div className="flex justify-between mt-2">
-                                            <Text strong>Giá:</Text>
-                                            <Text delete={!!priceSale} className="text-gray-500">
-                                                {price ? formatPrice(price) : 'N/A'}
-                                            </Text>
+                                        <div className="flex items-center space-x-2">
+                                            <p>{ratingAvg.toFixed(1)}</p>
+                                            <Rate disabled value={ratingAvg} className="text-1sm" />
+                                            <p>đánh giá: {totalRating}</p>
+                                            <p>
+                                                đã bán:{' '}
+                                                {variants
+                                                    .map((v) => v.sold)
+                                                    .reduce((sold, current) => sold + current, 0)}
+                                            </p>
                                         </div>
                                         <div className="flex justify-between mt-2">
-                                            <Text strong>Giá khuyến mãi:</Text>
-                                            <Text className="text-red-500">
-                                                {priceSale ? formatPrice(priceSale) : 'N/A'}
-                                            </Text>
+                                            <Text strong>Giá:</Text>
+                                            <span className="space-x-2">
+                                                {matchedVariant() ? (
+                                                    <ShowPrice
+                                                        price={matchedVariant()?.price}
+                                                        priceSale={matchedVariant()?.priceSale}
+                                                    />
+                                                ) : (
+                                                    <ShowPrice
+                                                        price={price}
+                                                        priceSale={priceSale}
+                                                    />
+                                                )}
+                                            </span>
                                         </div>
 
                                         <div className="block">
@@ -326,12 +367,9 @@ const ProductDetail = () => {
                                                 Cửa hàng: {shop.name}
                                             </Link>
                                         </div>
-                                        <Text className="block">
-                                            Số lượng còn lại:
-                                            {matchedVariant()?.quantity ?? productQuantity}
-                                        </Text>
+
                                         <Divider />
-                                        {listVariant.map((item) => (
+                                        {attribute.listVariant.map((item) => (
                                             <div key={item.key} className="mb-2">
                                                 <Text className="mr-2 uppercase text-black font-light">
                                                     {item.key}:
@@ -417,7 +455,7 @@ const ProductDetail = () => {
                                             <p
                                                 className="text-sm text-gray-600 mt-1 sm:mt-0"
                                                 dangerouslySetInnerHTML={{
-                                                    __html: item.description,
+                                                    __html: item.description ?? '',
                                                 }}
                                             ></p>
                                         </div>
@@ -434,28 +472,62 @@ const ProductDetail = () => {
                         <div className="p-6">
                             <div className="flex-1 p-2">
                                 <div className="flex-1 p-4">
-                                    <Text className="block text-xl font-semibold text-gray-800">
-                                        Cửa hàng: {shop.name}
-                                    </Text>
-                                    <Text className="block text-lg text-gray-600">
-                                        Số lượng còn lại:{' '}
-                                        {matchedVariant()?.quantity ?? productQuantity}
-                                    </Text>
+                                    <div className="flex justify-between items-center">
+                                        <Link
+                                            to={`/shop/${shop.slug}`}
+                                            className="flex items-center space-x-1"
+                                        >
+                                            <Avatar src={shop.image}>
+                                                {shop.name.substring(0, 1)}
+                                            </Avatar>
+                                            <div className="text-sm">
+                                                <p>{shop.name}</p>
+                                                <span>
+                                                    tham gia:{' '}
+                                                    {<TimeCount createdAt={shop.createdAt} />}
+                                                </span>
+                                            </div>
+                                        </Link>
+                                        <Button
+                                            title="Chat"
+                                            // type="primary"
+                                            icon={<IoIosChatboxes />}
+                                            onClick={() => handleShowChat(shop)}
+                                            size="small"
+                                        />
+                                    </div>
+
                                     <Divider className="my-4" />
 
                                     <div className="mt-3">
+                                        <div>
+                                            {matchedVariant() && (
+                                                <Tag color="green">
+                                                    {matchedVariant()
+                                                        ?.valueVariant.map((v) => v.value)
+                                                        .join(', ')}
+                                                </Tag>
+                                            )}
+                                            <Tag color="">
+                                                {matchedVariant()?.quantity ?? productQuantity} sản
+                                                phẩm có sẵn
+                                            </Tag>
+                                        </div>
                                         <div className="mr-2 font-medium text-lg text-gray-700">
                                             Số lượng:
                                         </div>
                                         <QuantitySelector
                                             initialQuantity={quantity}
                                             onChange={setQuantity}
+                                            disabled={!matchedVariant()}
                                         />
                                         <div className="mt-3 mr-2 font-medium text-lg text-gray-700">
-                                            Tổng tiền:
+                                            Tạm tính:
                                         </div>
                                         <div className="font-semibold text-lg text-red-500">
-                                            {formatPrice(totalPrice)}
+                                            {matchedVariant() && matchedVariant()?.priceSale
+                                                ? (matchedVariant()!.priceSale * quantity).vnd()
+                                                : priceSale?.vnd()}
                                         </div>
                                     </div>
                                     <div className="mt-5 flex space-x-4">

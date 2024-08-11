@@ -1,6 +1,6 @@
+import { User } from './authApi'
 import http, { Page, ParamsRequest } from './http'
 import { Variant } from './productApi'
-import { Shop } from './shopApi'
 
 export type CommentRequest = {
     productId: string
@@ -11,7 +11,7 @@ export type CommentRequest = {
 export type Comment = CommentRequest & {
     id: string
     shopId: string
-    user: Shop
+    user: User
     left: number
     right: number
     likes: string[]

@@ -1,7 +1,7 @@
 import { count } from 'console'
 import http, { Page, ParamsRequest } from './http'
 import { Variant } from './productApi'
-import { Shop } from './shopApi'
+import { User } from './authApi'
 
 type root = {
     productId: string
@@ -27,7 +27,7 @@ export type Rating = RatingRequest & {
     id: string
     shopId: string
     value: number
-    user: Shop
+    user: User
     likes: string[]
     images: string[]
     variantId: string | null
@@ -64,7 +64,7 @@ const ratingApi = {
     like: async (id: string) => await http.post<Rating>(`/rating/like/${id}`),
 
     addRatingWithFile: async (data: FormData) =>
-        await http.post<Shop>(`/rating/file`, data, {
+        await http.post<User>(`/rating/file`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },

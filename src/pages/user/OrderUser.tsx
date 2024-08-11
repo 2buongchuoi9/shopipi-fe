@@ -9,6 +9,7 @@ import { size, update } from 'lodash'
 import { useEffect, useState } from 'react'
 import { FaStore } from 'react-icons/fa'
 import { IoIosChatboxes } from 'react-icons/io'
+import { Link } from 'react-router-dom'
 
 const initialQuery = {
     page: 0,
@@ -50,7 +51,7 @@ const Item = ({ order }: { order: Order }) => {
                         Chat
                     </Button>
                     <Button icon={<FaStore />} size="small">
-                        Xem shop
+                        <Link to={`/shop/${shop.slug}`}>Xem shop</Link>
                     </Button>
                 </div>
                 <div className="flex items-center">

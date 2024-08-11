@@ -1,10 +1,9 @@
 import { User } from './authApi'
 import http, { Page, ParamsRequest } from './http'
 import { Product } from './productApi'
-import { Shop } from './shopApi'
 
 export type ResultSearch = {
-    shops: Page<Shop>
+    shops: Page<User>
     products: Page<Product>
 }
 

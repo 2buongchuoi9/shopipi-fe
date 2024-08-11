@@ -13,26 +13,26 @@ type Props = {
     isAuthenticated: boolean
     user: User
     isAdmin: boolean
+    isUser: boolean
 }
 
-const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
+const Profile = ({ isAuthenticated, user, isAdmin, isUser }: Props) => {
     const { logout, fetchUser } = useAuth()
     const { success, error } = useMessage()
     const navigate = useNavigate()
 
     const items: MenuProps['items'] = [
         !isAuthenticated && { key: '1', label: <Link to="/login">Đăng nhập</Link> },
-        {
-            key: 2,
-            label: <Link to={isAdmin ? '/admin/product' : '/seller/'}>dô admin</Link>,
-        },
-        {
-            key: 3,
+        !isUser && {
+            key: '3',
             label: (
-                <Link to={isAdmin ? '/admin/product' : '/seller/product/all'}>Kênh bán hàng</Link>
+                <Link to={isAdmin ? '/admin/product' : '/seller/'}>
+                    {' '}
+                    {isAdmin ? 'Trang quản trị' : 'Kênh bán hàng'}
+                </Link>
             ),
         },
-        {
+        isUser && {
             key: '4',
             label: 'Đăng ký bán hàng',
             onClick: async () => {
@@ -61,7 +61,7 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
             label: <Link to={'/user/order'}>Đơn hàng của tôi</Link>,
         },
         isAuthenticated && {
-            key: '3',
+            key: '7',
             label: (
                 <Link to="/login" onClick={logout}>
                     Đăng xuất
@@ -81,7 +81,7 @@ const Profile = ({ isAuthenticated, user, isAdmin }: Props) => {
         </Dropdown>
     ) : (
         <Link
-            to="/login?redirect=/product"
+            to="/login?redirect=/"
             title="Login"
             className="hidden md:flex md:flex-col md:items-start md:space-y-1 mr-[2rem] hover:shadow-2xl rounded-md link-hover-effect"
         >
@@ -140,6 +140,7 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
                         isAuthenticated={isAuthenticated}
                         user={user}
                         isAdmin={user?.roles?.includes(UserRoles.ADMIN) ?? false}
+                        isUser={user?.roles?.includes(UserRoles.USER) && user?.roles.length === 1}
                     />
                     {isAuthenticated && <NotifyComponent />}
                     <div className="mr-[1rem]">

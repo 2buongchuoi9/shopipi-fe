@@ -1,5 +1,6 @@
 import { useMessage } from '@/hooks'
-import { ParamsRequest, Shop } from '@/http'
+import { ParamsRequest } from '@/http'
+import { User } from '@/http/authApi'
 import shopApi from '@/http/shopApi'
 import { UserRoles } from '@/utils/constants'
 import { Button, Tabs, Tag } from 'antd'
@@ -16,7 +17,7 @@ const initQuery = {
     status: '',
 }
 
-type Shop_ = Shop & { countProduct: number }
+type Shop_ = User & { countProduct: number }
 
 const AllShop = () => {
     const [shops, setShops] = useState<Shop_[]>([])

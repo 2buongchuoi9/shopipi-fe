@@ -7,13 +7,13 @@ import React, {
     Dispatch,
     SetStateAction,
 } from 'react'
-import { Shop } from '@/http'
+import { User } from '@/http/authApi'
 
 export interface ChatContextProps {
     visible: boolean
     setVisible: Dispatch<SetStateAction<boolean>>
-    selectedUser: Shop | null
-    setSelectedUser: Dispatch<SetStateAction<Shop | null>>
+    selectedUser: User | null
+    setSelectedUser: Dispatch<SetStateAction<User | null>>
     count: number
     setCount: Dispatch<SetStateAction<number>>
     newNotification: boolean
@@ -33,7 +33,7 @@ export const ChatContext = createContext<ChatContextProps | undefined>({
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const [visible, setVisible] = useState(false)
-    const [selectedUser, setSelectedUser] = useState<Shop | null>(null)
+    const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const [count, setCount] = useState<number>(0)
     const [newNotification, setNewNotification] = useState(false)
 

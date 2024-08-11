@@ -1,3 +1,4 @@
+import { User } from './authApi'
 import http, { Page, ParamsRequest } from './http'
 
 export type Role = 'ADMIN' | 'USER' | 'SHOP' | 'MOD'
@@ -17,34 +18,34 @@ export type Online = {
     time: string
 }
 
-export type Shop = {
-    id: string
-    name: string
-    email: string
-    image: string | null
-    status: boolean
-    verify: boolean
-    authType: string
-    roles: Role[]
-    addressShipping: string | null
-    createdAt: string // Consider using Date if possible
-    oauth2Id: string | null
-    slug: string
+// export type Shop = {
+//     id: string
+//     name: string
+//     email: string
+//     image: string | null
+//     status: boolean
+//     verify: boolean
+//     authType: string
+//     roles: Role[]
+//     addressShipping: string | null
+//     createdAt: string // Consider using Date if possible
+//     oauth2Id: string | null
+//     slug: string
 
-    followers: string[]
-    address: Address[]
-    phone: string
-}
+//     followers: string[]
+//     address: Address[]
+//     phone: string
+// }
 
 const shopApi = {
-    findShop: async (params: ParamsRequest) => await http.get<Page<Shop>>('/user', { params }),
+    findShop: async (params: ParamsRequest) => await http.get<Page<User>>('/user', { params }),
 
-    findShopBySlug: async (slug: string) => await http.get<Shop>(`/user/slug/${slug}`),
+    findShopBySlug: async (slug: string) => await http.get<User>(`/user/slug/${slug}`),
 
-    followerShop: async (shopId: string) => await http.post<Shop>(`/user/follow/${shopId}`),
+    followerShop: async (shopId: string) => await http.post<User>(`/user/follow/${shopId}`),
 
     updateWithFile: async (id: string, data: FormData) =>
-        await http.post<Shop>(`/user/update/file/${id}`, data, {
+        await http.post<User>(`/user/update/file/${id}`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -79,7 +80,7 @@ const shopApi = {
     changeStatus: async (id: string) => await http.post<boolean>(`/user/change-status/${id}`),
 
     getUserFollow: async (id: string, params?: ParamsRequest) =>
-        await http.get<Page<Shop>>(`/user/follow/user/${id}`, { params }),
+        await http.get<Page<User>>(`/user/follow/user/${id}`, { params }),
 }
 
 export default shopApi

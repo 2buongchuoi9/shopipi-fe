@@ -1,5 +1,6 @@
 import { useMessage } from '@/hooks'
-import { ParamsRequest, Shop } from '@/http'
+import { ParamsRequest } from '@/http'
+import { User } from '@/http/authApi'
 import shopApi from '@/http/shopApi'
 import { UserRoles } from '@/utils/constants'
 import { Button, Tabs, Tag } from 'antd'
@@ -16,7 +17,7 @@ const initQuery = {
 }
 
 const AllCustomer = () => {
-    const [shops, setShops] = useState<Shop[]>([])
+    const [shops, setShops] = useState<User[]>([])
     const [query, setQuery] = useState<ParamsRequest>(initQuery)
     const { success, error } = useMessage()
     console.log('shops', shops)
@@ -42,7 +43,7 @@ const AllCustomer = () => {
         })()
     }, [query.keySearch, query.page, query.size, query.sort, query.status, query.role])
 
-    const columns: ColumnsType<Shop> = [
+    const columns: ColumnsType<User> = [
         {
             title: 'Tên shop',
             dataIndex: 'name',

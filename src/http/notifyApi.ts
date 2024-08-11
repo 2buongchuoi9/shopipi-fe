@@ -1,10 +1,10 @@
+import { User } from './authApi'
 import http, { Page } from './http'
 import { NotificationType } from '@/utils/constants'
-import { Shop } from './shopApi'
 
 export type Notify = {
     id: string
-    userFrom: Shop
+    userFrom: User
     content: string
     type: string
     read: boolean

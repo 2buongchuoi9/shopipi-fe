@@ -1,8 +1,8 @@
 import { ProductState } from '@/utils/constants'
 import { Category } from './categoryApi'
 import http, { Page, ParamsRequest } from './http'
-import { Shop } from './shopApi'
 import { Sale } from './saleApi'
+import { User } from './authApi'
 
 export const initialProduct: Product = {
     id: '',
@@ -59,7 +59,7 @@ export const initialProduct: Product = {
         verify: false,
         authType: 'LOCAL',
         roles: ['USER'],
-        addressShipping: null,
+        addressShipping: '',
         createdAt: '',
         oauth2Id: null,
         phone: '',
@@ -140,7 +140,7 @@ export type Product = {
     variants: Variant[]
     category: Category
     createdAt: string // Consider using Date if possible
-    shop: Shop
+    shop: User
     isDeleted: boolean
     sold: number
 }

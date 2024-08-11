@@ -1,7 +1,6 @@
 import { ChatPayload } from '@/socketService'
 import http, { Page, ParamsRequest } from './http'
 import { User } from './authApi'
-import { Shop } from './shopApi'
 
 export type ChatGroup = {
     senderId: string
@@ -16,7 +15,7 @@ const chatApi = {
         }),
 
     getUserChattedWithUser: async (userId: string) =>
-        await http.get<Shop[]>(`/chat/user-chatted/${userId}`),
+        await http.get<User[]>(`/chat/user-chatted/${userId}`),
 
     getChatDetail: '/chat/detail',
     sendMsg: '/chat/send',

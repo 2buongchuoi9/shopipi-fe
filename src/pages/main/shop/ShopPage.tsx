@@ -3,8 +3,9 @@ import TimeCount from '@/components/TimeCount'
 import { buildCategoryTree } from '@/contexts/CategoryContex'
 import { useAuth, useCategory, useMessage } from '@/hooks'
 import { Category, ParamsRequest, Product } from '@/http'
+import { User } from '@/http/authApi'
 import productApi from '@/http/productApi'
-import shopApi, { Online, Shop } from '@/http/shopApi'
+import shopApi, { Online } from '@/http/shopApi'
 import ErrorPage from '@/pages/ErrorPage'
 import { Button, InputNumber } from 'antd'
 import { useEffect, useState } from 'react'
@@ -24,7 +25,7 @@ const ShopPage = () => {
         user: { id: currentId },
     } = useAuth()
     const { categories, categoriesFlat } = useCategory()
-    const [shop, setShop] = useState<(Shop & Online) | null>(null)
+    const [shop, setShop] = useState<(User & Online) | null>(null)
     const [products, setProducts] = useState<Product[]>([])
     const [avgRating, setAvgRating] = useState<number>(0)
     const [totalRatingCount, setTotalRatingCount] = useState<number>(0)
