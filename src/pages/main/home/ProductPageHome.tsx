@@ -81,17 +81,20 @@ const ProductPageHome = () => {
     const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([])
     const [currentPage, setCurrentPage] = useState(0)
     const [currentSuggestedPage, setCurrentSuggestedPage] = useState(0)
+    const [currentBestSellingProducts, setCurrentBestSellingProducts] = useState<Product[]>([])
     const itemsPerPage = 5
 
-    const handlePrev = (type: 'products' | 'suggested') => {
+    const handlePrev = (type: 'products' | 'suggested' | 'bestSelling') => {
         if (type === 'products' && currentPage > 0) {
             setCurrentPage(currentPage - 1)
         } else if (type === 'suggested' && currentSuggestedPage > 0) {
             setCurrentSuggestedPage(currentSuggestedPage - 1)
+        } else if (type === 'bestSelling' && currentPage > 0) {
+            setCurrentPage(currentPage - 1)
         }
     }
 
-    const handleNext = (type: 'products' | 'suggested') => {
+    const handleNext = (type: 'products' | 'suggested' | 'bestSelling') => {
         if (type === 'products' && (currentPage + 1) * itemsPerPage < products.length) {
             setCurrentPage(currentPage + 1)
         } else if (
@@ -99,6 +102,11 @@ const ProductPageHome = () => {
             (currentSuggestedPage + 1) * itemsPerPage < suggestedProducts.length
         ) {
             setCurrentSuggestedPage(currentSuggestedPage + 1)
+        } else if (
+            type === 'bestSelling' &&
+            (currentPage + 1) * itemsPerPage < currentBestSellingProducts.length
+        ) {
+            setCurrentPage(currentPage + 1)
         }
     }
 
@@ -143,6 +151,7 @@ const ProductPageHome = () => {
             })
             setSuggestedProducts(products)
             setProducts(products)
+            setCurrentBestSellingProducts(products.filter((p) => p.sold > 10))
             const res = await cartApi.getCart()
             console.log('cart', res)
         }
@@ -163,9 +172,9 @@ const ProductPageHome = () => {
     return (
         <div>
             {/* Top deal giá rẻ */}
-            <div className="relative w-full h-full bg-white rounded-lg shadow-lg">
+            <div className="relative w-full h-full bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <div className="px-8">
-                    <div className="flex gap-2 mb-2 pt-5">
+                    <div className="flex gap-2 mb-2 pt-5 items-center">
                         <BiSolidLike className="text-2xl text-red-500" />
                         <span className="font-bold text-[18px] text-gray-600">Top Deal Giá rẻ</span>
                     </div>
@@ -173,25 +182,25 @@ const ProductPageHome = () => {
                         <div className="flex gap-2">
                             <Link
                                 to="/re-nhat-thang"
-                                className="bg-red-100 text-red-500 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded hover:bg-red-200 transition duration-300"
+                                className="bg-red-100 text-red-500 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded hover:bg-red-200 transition-all duration-300 transform hover:scale-105"
                             >
                                 Rẻ nhất tháng
                             </Link>
                             <Link
                                 to="/sale-dau-thang"
-                                className="bg-blue-100 text-blue-500 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded hover:bg-blue-200 transition duration-300"
+                                className="bg-blue-100 text-blue-500 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded hover:bg-blue-200 transition-all duration-300 transform hover:scale-105"
                             >
                                 Sale đầu tháng
                             </Link>
                             <Link
                                 to="/mua-nhieu-nhat"
-                                className="bg-green-100 text-green-500 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded hover:bg-green-200 transition duration-300"
+                                className="bg-green-100 text-green-500 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded hover:bg-green-200 transition-all duration-300 transform hover:scale-105"
                             >
                                 Mua nhiều nhất
                             </Link>
                             <Link
                                 to="/yeu-thich-nhat"
-                                className="bg-yellow-100 text-yellow-500 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded hover:bg-yellow-200 transition duration-300"
+                                className="bg-yellow-100 text-yellow-500 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded hover:bg-yellow-200 transition-all duration-300 transform hover:scale-105"
                             >
                                 Yêu thích nhất
                             </Link>
@@ -203,18 +212,18 @@ const ProductPageHome = () => {
                         ))}
                     </div>
                 </div>
-                <div className="absolute top-1/2 left-[-5px] right-[-5px] flex justify-between px-4 transform -translate-y-1/2">
+                <div className="absolute top-1/2 left-[-5px] right-[-5px] flex justify-between px-4 transform -translate-y-1/2 transition-all duration-300 ease-in-out">
                     <button
                         onClick={() => handlePrev('products')}
                         disabled={currentPage === 0}
-                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-gray-300 disabled:opacity-50"
+                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-gray-300 disabled:opacity-50 transition-transform duration-300 ease-in-out hover:bg-gray-100"
                     >
                         <FcPrevious className="text-xl" />
                     </button>
                     <button
                         onClick={() => handleNext('products')}
                         disabled={(currentPage + 1) * itemsPerPage >= products.length}
-                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-gray-300 disabled:opacity-50"
+                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-gray-300 disabled:opacity-50 transition-transform duration-300 ease-in-out hover:bg-gray-100"
                     >
                         <FcNext className="text-xl" />
                     </button>
@@ -227,13 +236,13 @@ const ProductPageHome = () => {
                     <div className="pb-2 border-b border-gray-200">
                         <div className="flex gap-2 items-center">
                             <span className="font-bold text-lg text-gray-800">
-                                Sản phẩm yêu thích
+                                Sản phẩm đánh giá cao
                             </span>
                         </div>
                     </div>
                     <div className="flex flex-wrap gap-4 p-4">
                         {products.map((p) => (
-                            <ProductCard key={p.id} product={p} type="any" />
+                            <ProductCard key={p.id} product={p} type="any" ratingFilter="high" />
                         ))}
                     </div>
                 </div>
@@ -277,56 +286,44 @@ const ProductPageHome = () => {
                 </div>
             </div>
 
-            {/* Gợi ý sản phẩm */}
+            {/* Sản phẩm bán nhiều */}
             <div className="relative w-full h-full bg-white rounded-lg mt-3 shadow-lg">
                 <div className="px-8 py-6">
                     <div className="p-4 border-b border-gray-200">
                         <div className="flex gap-2 items-center">
                             <span className="font-bold text-lg text-gray-800">
-                                Bạn có thể thích
+                                Sản phẩm bán chạy
                             </span>
                         </div>
                     </div>
-                    <div className="flex gap-2 mb-4 mt-4">
-                        <Link
-                            to="/do-cong-nghe"
-                            className="px-4 py-2 bg-gray-200 rounded-full text-sm hover:bg-gray-300 transition duration-300"
-                        >
-                            Đồ công nghệ
-                        </Link>
-                        <Link
-                            to="/do-gia-dung-thong-minh"
-                            className="px-4 py-2 bg-gray-200 rounded-full text-sm hover:bg-gray-300 transition duration-300"
-                        >
-                            Đồ gia dụng thông minh
-                        </Link>
-                        <Link
-                            to="/quan-ao-gym"
-                            className="px-4 py-2 bg-gray-200 rounded-full text-sm hover:bg-gray-300 transition duration-300"
-                        >
-                            Quần áo gym
-                        </Link>
-                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                        {currentSuggestedProducts.map((p) => (
-                            <ProductCard key={p.id} product={p} type="any" />
+                        {currentBestSellingProducts.map((p) => (
+                            <ProductCard key={p.id} product={p} type="any" soldFilter="high" />
                         ))}
                     </div>
                 </div>
                 <div className="absolute top-1/2 left-[-5px] right-[-5px] flex justify-between px-4 transform -translate-y-1/2">
                     <button
-                        onClick={() => handlePrev('suggested')}
-                        disabled={currentSuggestedPage === 0}
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-gray-300 shadow-md hover:bg-gray-100 transition duration-300 disabled:opacity-50"
+                        onClick={() => handlePrev('bestSelling')}
+                        disabled={currentPage === 0}
+                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-gray-300 disabled:opacity-50 transition-transform duration-300 ease-in-out"
+                        style={{ transform: currentPage === 0 ? 'scale(0.9)' : 'scale(1)' }}
                     >
                         <FcPrevious className="text-xl" />
                     </button>
                     <button
-                        onClick={() => handleNext('suggested')}
+                        onClick={() => handleNext('bestSelling')}
                         disabled={
-                            (currentSuggestedPage + 1) * itemsPerPage >= suggestedProducts.length
+                            (currentPage + 1) * itemsPerPage >= currentBestSellingProducts.length
                         }
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-gray-300 shadow-md hover:bg-gray-100 transition duration-300 disabled:opacity-50"
+                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-gray-300 disabled:opacity-50 transition-transform duration-300 ease-in-out"
+                        style={{
+                            transform:
+                                (currentPage + 1) * itemsPerPage >=
+                                currentBestSellingProducts.length
+                                    ? 'scale(0.9)'
+                                    : 'scale(1)',
+                        }}
                     >
                         <FcNext className="text-xl" />
                     </button>

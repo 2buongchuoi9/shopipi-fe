@@ -9,15 +9,15 @@ const Footer = () => {
         <div className="footer">
             <div className="footer-content m-[3rem] ml-[20rem]">
                 <div className="footer-section">
-                    <h3>Get to Know Us</h3>
+                    <h3>Về Chúng Tôi</h3>
                     <ul>
-                        <li>Make Money with Us</li>
-                        <li>Amazon Payment</li>
-                        <li>Let Us Help You</li>
-                        <li>Amazon Payment</li>
-                        <li>Let Us Help You</li>
-                        <li>Amazon Payment</li>
-                        <li>Let Us Help You</li>
+                        <li>Kiếm Tiền Cùng Chúng Tôi</li>
+                        <li>Thanh Toán Amazon</li>
+                        <li>Hỗ Trợ Bạn</li>
+                        <li>Thanh Toán Amazon</li>
+                        <li>Hỗ Trợ Bạn</li>
+                        <li>Thanh Toán Amazon</li>
+                        <li>Hỗ Trợ Bạn</li>
                     </ul>
                 </div>
                 <div className="footer-section">
@@ -35,7 +35,7 @@ const Footer = () => {
                     </ul>
                 </div>
                 <div className="footer-section">
-                    <h3>Thông tin</h3>
+                    <h3>Thông Tin</h3>
                     <ul>
                         <li>Email: info@foodmap.asia</li>
                         <li>Hotline: 02877702614 (8h00 - 18h00)</li>
@@ -48,15 +48,15 @@ const Footer = () => {
                     </ul>
                 </div>
                 <div className="footer-section">
-                    <h3>Hỗ trợ</h3>
+                    <h3>Hỗ Trợ</h3>
                     <ul>
-                        <li>Phương thức thanh toán</li>
-                        <li>Vận chuyển và giao nhận</li>
-                        <li>Chính sách đổi trả và hoàn tiền</li>
-                        <li>Liên hệ</li>
-                        <li>Let Us Help You</li>
-                        <li>Amazon Payment</li>
-                        <li>Let Us Help You</li>
+                        <li>Phương Thức Thanh Toán</li>
+                        <li>Vận Chuyển và Giao Nhận</li>
+                        <li>Chính Sách Đổi Trả và Hoàn Tiền</li>
+                        <li>Liên Hệ</li>
+                        <li>Hỗ Trợ Bạn</li>
+                        <li>Thanh Toán Amazon</li>
+                        <li>Hỗ Trợ Bạn</li>
                     </ul>
                 </div>
             </div>
@@ -76,13 +76,13 @@ const Footer = () => {
                     <div className="border border-gray-300 rounded-md p-2 transition-colors duration-200">
                         <a className="flex gap-2 items-center">
                             <TbWorld className="text-blue-500" />
-                            <span>Ngôn ngữ</span>
+                            <span>Ngôn Ngữ</span>
                         </a>
                     </div>
                     <div className="border border-gray-300 rounded-md p-2 transition-colors duration-200">
                         <a className="flex gap-2 items-center">
                             <PiCurrencyDollarFill className="text-blue-500" />
-                            <span>VND: Việt nam đồng</span>
+                            <span>VND: Việt Nam Đồng</span>
                         </a>
                     </div>
                     <div className="border border-gray-300 rounded-md p-2 transition-colors duration-200">
@@ -98,7 +98,7 @@ const Footer = () => {
             </div>
             <hr />
             <div className="footer-bottom">
-                <p>&copy; 2023 | Developed by TungBach</p>
+                <p>&copy; 2023 | Phát Triển bởi TungBach</p>
             </div>
         </div>
     )
@@ -107,15 +107,15 @@ const Footer = () => {
 const Footer2 = () => (
     <div className="footer-content2">
         <div className="footer-section2">
-            <h3>Get to Know Us</h3>
+            <h3>Về Chúng Tôi</h3>
             <ul>
-                <li>Make Money with Us</li>
-                <li>Amazon Payment</li>
-                <li>Let Us Help You</li>
-                <li>Amazon Payment</li>
-                <li>Let Us Help You</li>
-                <li>Amazon Payment</li>
-                <li>Let Us Help You</li>
+                <li>Kiếm Tiền Cùng Chúng Tôi</li>
+                <li>Thanh Toán Amazon</li>
+                <li>Hỗ Trợ Bạn</li>
+                <li>Thanh Toán Amazon</li>
+                <li>Hỗ Trợ Bạn</li>
+                <li>Thanh Toán Amazon</li>
+                <li>Hỗ Trợ Bạn</li>
             </ul>
         </div>
         <div className="footer-section2">
@@ -133,9 +133,9 @@ const Footer2 = () => (
             </ul>
         </div>
         <div className="footer-section2">
-            <h3>Thông tin</h3>
+            <h3>Thông Tin</h3>
             <ul>
-                <li>Email: info@foodmap.asia</li>
+                <li>Email: info@tts.com</li>
                 <li>Hotline: 02877702614 (8h00 - 18h00)</li>
                 <li>
                     <a href="">
@@ -146,15 +146,15 @@ const Footer2 = () => (
             </ul>
         </div>
         <div className="footer-section2">
-            <h3>Hỗ trợ</h3>
+            <h3>Hỗ Trợ</h3>
             <ul>
                 <li>Foodmap CSR</li>
-                <li>Reload Your Balance</li>
-                <li>Returns & Replacements</li>
-                <li>Amazon Payment</li>
-                <li>Let Us Help You</li>
-                <li>Amazon Payment</li>
-                <li>Let Us Help You</li>
+                <li>Nạp Lại Số Dư</li>
+                <li>Trả Hàng & Hoàn Tiền</li>
+                <li>Thanh Toán Amazon</li>
+                <li>Hỗ Trợ Bạn</li>
+                <li>Thanh Toán Amazon</li>
+                <li>Hỗ Trợ Bạn</li>
             </ul>
         </div>
     </div>

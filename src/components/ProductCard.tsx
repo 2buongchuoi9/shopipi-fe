@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 
 type Props = CardProps & {
     type?: 'detail' | 'any' | 'newCards'
+    ratingFilter?: 'high' | 'low'
+    soldFilter?: 'high' | 'low'
 }
 
 type CardProps = {
@@ -16,19 +18,27 @@ const Card = ({ product }: CardProps) => {
     const { thumb, price, priceSale, name, slug, shop, discount, variants, ratingAvg } = product
 
     return (
-        <div className="border rounded-lg w-full h-full hover:shadow-xl transition-shadow duration-300 ease-in-out">
+        <div className="border rounded-lg w-full h-full hover:shadow-2xl transition-shadow duration-300 ease-in-out">
             <Link
                 to={`/product/${slug}`}
-                className="flex flex-col items-center text-sm font-normal p-2 bg-white rounded-lg hover:bg-gray-50"
+                className="flex flex-col items-center text-sm font-normal p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors duration-300"
             >
-                <img className="object-cover w-full h-48 rounded-sm" src={thumb} alt={name} />
+                <div className="relative overflow-hidden w-full h-48 rounded-sm">
+                    <img
+                        className="object-cover w-full h-full transition-transform duration-300 hover:scale-110"
+                        src={thumb}
+                        alt={name}
+                    />
+                </div>
                 <div className="mt-2 flex justify-center items-center w-full gap-2">
                     {price !== priceSale && (
-                        <span className="px-2 py-1 bg-red-500 text-white rounded-md text-xs">
+                        <span className="px-2 py-1 bg-red-500 text-white rounded-md text-xs transition-transform duration-300 hover:scale-105">
                             {discount}
                         </span>
                     )}
-                    <span className="px-2 py-1 text-xs bg-yellow-300 rounded-md">{badge}</span>
+                    <span className="px-2 py-1 text-xs bg-yellow-300 rounded-md transition-transform duration-300 hover:scale-105">
+                        {badge}
+                    </span>
                 </div>
                 <div className="flex mt-2 justify-center gap-3 w-full">
                     <span className="text-green-600 font-semibold">{priceSale?.vnd()}</span>
@@ -64,14 +74,20 @@ const CardNewSale = ({ product }: CardProps) => {
     const { thumb, priceSale, name, slug } = product
 
     return (
-        <div className="shadow-lg w-full h-full hover:shadow-xl transition-shadow duration-300 ease-in-out">
+        <div className="shadow-lg w-full h-full hover:shadow-2xl transition-shadow duration-300 ease-in-out">
             <Link
                 to={`/product/${slug}`}
-                className="flex flex-col items-center text-sm font-normal p-2 bg-white rounded-lg hover:bg-gray-50"
+                className="flex flex-col items-center text-sm font-normal p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors duration-300"
             >
-                <img className="object-cover w-full h-48 rounded-sm" src={thumb} alt={name} />
+                <div className="relative overflow-hidden w-full h-48 rounded-sm">
+                    <img
+                        className="object-cover w-full h-full transition-transform duration-300 hover:scale-110"
+                        src={thumb}
+                        alt={name}
+                    />
+                </div>
                 <div className="mt-2 flex justify-start font-roboto items-start w-full mb-5">
-                    <span className="inline-block min-w-0 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                    <span className="inline-block min-w-0 overflow-hidden overflow-ellipsis whitespace-nowrap text-gray-800 font-medium">
                         {name}
                     </span>
                 </div>
@@ -119,14 +135,23 @@ const Detail = ({ product }: CardProps) => {
     } = product
 
     return (
-        <div className="flex items-center text-sm font-normal p-4 bg-white shadow-lg rounded-lg">
-            <img className="object-cover w-2/5 h-80 rounded-lg" src={thumb} alt={name} />
+        <div className="flex items-center text-sm font-normal p-4 bg-white shadow-lg rounded-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
+            <div className="relative overflow-hidden w-2/5 h-80 rounded-lg">
+                <img
+                    className="object-cover w-full h-full transition-transform duration-300 hover:scale-110"
+                    src={thumb}
+                    alt={name}
+                />
+            </div>
             <div className="w-3/5 p-4 bg-gray-100 rounded-lg ml-4">
-                <div className="text-xl font-semibold mb-2">{name}</div>
+                <div className="text-xl font-semibold mb-2 text-gray-800">{name}</div>
                 <div className="text-lg text-red-500 mb-2">
                     Price: {priceSale ? priceSale : price}
                 </div>
-                <Link className="text-md text-gray-700 mb-2" to={`/shop/${shop.slug}`}>
+                <Link
+                    className="text-md text-gray-700 mb-2 hover:text-gray-900 transition-colors duration-300"
+                    to={`/shop/${shop.slug}`}
+                >
                     Shop: {shop.name}
                 </Link>
                 <div className="text-md text-gray-700 mb-4">Mã giảm giá: conc</div>
@@ -139,7 +164,7 @@ const Detail = ({ product }: CardProps) => {
                                     <Radio.Button
                                         key={v}
                                         value={v}
-                                        className="px-2 py-1 border rounded-lg"
+                                        className="px-2 py-1 border rounded-lg hover:bg-gray-200 transition-colors duration-300"
                                     >
                                         {v}
                                     </Radio.Button>
@@ -153,7 +178,32 @@ const Detail = ({ product }: CardProps) => {
     )
 }
 
-const ProductCard = ({ product, type = 'any' }: Props) => {
+const ProductCard = ({ product, type = 'any', ratingFilter, soldFilter }: Props) => {
+    const filterProductByRating = (product: Product) => {
+        if (ratingFilter === 'high') {
+            return product.ratingAvg >= 4
+        } else if (ratingFilter === 'low') {
+            return product.ratingAvg < 4
+        }
+        return true
+    }
+
+    const filterProductBySold = (product: Product) => {
+        const totalSold = product.variants
+            .map((v) => v.sold)
+            .reduce((sold, current) => sold + current, 0)
+        if (soldFilter === 'high') {
+            return totalSold >= 100 // Example threshold for high sales
+        } else if (soldFilter === 'low') {
+            return totalSold < 100 // Example threshold for low sales
+        }
+        return true
+    }
+
+    if (!filterProductByRating(product) || !filterProductBySold(product)) {
+        return null
+    }
+
     return (
         <div>
             {type === 'any' && <Card product={product} />}
