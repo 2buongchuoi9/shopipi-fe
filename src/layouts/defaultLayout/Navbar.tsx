@@ -162,8 +162,11 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
             </div>
             <div className="flex flex-wrap mt-4 bg-white text-black space-x-3 text-xs xl:text-sm ml-11 p-2 cursor-pointer px-5">
                 {categories.map((category) => (
-                    <div key={category.id} className="hover:text-sky-700">
+                    <div key={category.id} className="hover:text-sky-700 flex">
                         {category.name}
+                        <div className="ml-2">
+                            <img src={category.src} className="w-5" alt="" />
+                        </div>
                     </div>
                 ))}
             </div>
