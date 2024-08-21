@@ -1,3 +1,4 @@
+
 import { User } from './authApi'
 import http, { Page, ParamsRequest } from './http'
 
@@ -17,25 +18,6 @@ export type Online = {
     isOnline: boolean
     time: string
 }
-
-// export type Shop = {
-//     id: string
-//     name: string
-//     email: string
-//     image: string | null
-//     status: boolean
-//     verify: boolean
-//     authType: string
-//     roles: Role[]
-//     addressShipping: string | null
-//     createdAt: string // Consider using Date if possible
-//     oauth2Id: string | null
-//     slug: string
-
-//     followers: string[]
-//     address: Address[]
-//     phone: string
-// }
 
 const shopApi = {
     findShop: async (params: ParamsRequest) => await http.get<Page<User>>('/user', { params }),
@@ -64,23 +46,9 @@ const shopApi = {
     online: async (userId: string) => await http.get<Online>(`/user/online/${userId}`),
     onlineMany: async (ids: string[]) => {
         const params = new URLSearchParams()
-        ids.forEach((id) => params.append('ids', id))
-
-        // Gọi API với query parameters
-        return await http.get<Online[]>(`/user/online/many?${params.toString()}`)
+        ids.forEach(id => params.append('ids', id))
+        return await http.get<Online[]>(`/user/online-many`, { params })
     },
-
-    countProduct: async (ids: string[]) => {
-        const params = new URLSearchParams()
-        ids.forEach((id) => params.append('ids', id))
-        const res = await http.get<any>(`/user/many/count-product?ids=${params.toString()}`)
-        return new Map<string, number>(Object.entries(res))
-    },
-
-    changeStatus: async (id: string) => await http.post<boolean>(`/user/change-status/${id}`),
-
-    getUserFollow: async (id: string, params?: ParamsRequest) =>
-        await http.get<Page<User>>(`/user/follow/user/${id}`, { params }),
 }
 
 export default shopApi
