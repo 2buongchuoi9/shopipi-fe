@@ -1,8 +1,9 @@
+
 import { useMessage } from '@/hooks'
 import { Product, Variant } from '@/http'
 import ratingApi, { RatingRequest } from '@/http/ratingApi'
 import { ErrorInfoForm } from '@/types/customType'
-import { Button, Form, Input, Modal, Rate, Upload, UploadFile, UploadProps } from 'antd'
+import { Button, Form, Input, Modal, Rate, Upload, UploadFile, UploadProps, Tooltip, Spin } from 'antd'
 import { useState } from 'react'
 import { PiPlusSquare } from 'react-icons/pi'
 
@@ -15,10 +16,11 @@ type Props = {
 
 const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
-        {/* <PiPlusSquare /> */}
+        <PiPlusSquare style={{ fontSize: '24px', color: '#1890ff' }} />
         <div style={{ marginTop: 8 }}>Upload</div>
     </button>
 )
+
 const initialValues: RatingRequest = {
     comment: '',
     isComment: false,
@@ -29,144 +31,110 @@ const initialValues: RatingRequest = {
     variantId: '',
 }
 
+const ratingDescriptions = ['Very Bad', 'Bad', 'Okay', 'Good', 'Excellent']
+
 const ModalRatingProduct = ({ open, onCancel, product, variant }: Props) => {
     const [form] = Form.useForm<RatingRequest>()
-    const [fileList, setFileList] = useState<File[]>([])
-    const { loading, success } = useMessage()
+    const [fileList, setFileList] = useState<UploadFile[]>([])
+    const [loading, setLoading] = useState(false)
+    const [charCount, setCharCount] = useState(0)
 
-    const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-        console.log('newFileList', newFileList)
-        setFileList(newFileList.map((file) => file.originFileObj as File))
+    const handleCharCount = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setCharCount(e.target.value.length)
     }
 
-    const handleSubmit = async (values: any) => {
-        try {
-            loading('Đang cập nhật')
-            const formData = new FormData()
-            formData.append('productId', product.id)
-            formData.append('variantId', variant.id)
-            formData.append('value', values.value)
-            formData.append('comment', values.comment)
-            if (fileList.length > 0) {
-                fileList.forEach((file) => {
-                    formData.append('images', file)
-                })
+    const handleFinish = async (values: RatingRequest) => {
+        if (!values.comment) {
+            if (!window.confirm('Are you sure you want to give this rating?')) {
+                return
             }
-
-            const res = await ratingApi.addRatingWithFile(formData)
-            console.log(res)
-        } catch (e) {
-            console.log(e)
         }
-        success('Cập nhật thành công')
+        setLoading(true)
+        try {
+            // Submit the form here
+            await ratingApi.addRating(values)
+            form.resetFields()
+            setFileList([])
+            setCharCount(0)
+            onCancel()
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
     }
 
-    const onFinishFailed = (errorPassword: ErrorInfoForm) => {
-        const { errorFields } = errorPassword
-        form.scrollToField(errorFields[0].name[0], {
-            behavior: 'smooth',
-            block: 'center',
-            inline: 'center',
-            // offsetTop: 100,
-        })
-        // err(errorFields[0].errors[0])
+    const handleUpload: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+        setFileList(newFileList)
     }
 
     return (
-        <>
-            {/* <Button
-                type="primary"
-                className="mb-4"
-                onClick={async () => {
-                    const res = await ratingApi.addRating({
-                        comment:
-                            'Sản phẩm k giống hình, dáng quần thực sự quá xấu, k có túi bên, khoá giả, túm lại la thất vọng',
-                        isComment: false,
-                        images: [
-                            'http://res.cloudinary.com/anhdaden/image/upload/v1719726212/shopipi_fpt/mz8ipsummrpstz3rrmol.jpg',
-                        ],
-                        parentId: null,
-                        productId: '',
-                        value: 1,
-                        variantId: '',
-                    })
-                    console.log('Rating:', res)
-                    // success('Rating success')
-                }}
-            >
-                test rate
-            </Button> */}
-
-            <Modal
-                title="Đánh giá sản phẩm"
-                open={open}
-                onCancel={() => {
-                    form.resetFields()
-                    setFileList([])
-                    onCancel()
-                }}
-                onOk={form.submit}
-                okText="Gửi đánh giá"
-                okButtonProps={{ onClick: form.submit }}
-            >
-                <div className="flex items-center space-x-2 py-2">
-                    <img src={product.thumb} alt="" className="w-14 h-14 object-cover" />
-                    <div className="">
-                        <p>{product.name}</p>
-                        <p className="text-gray-500 text-sm">
-                            phân loại hàng: {variant.valueVariant.map((v) => v.value).join(' ')}
-                        </p>
-                        <span className="space-x-2">
-                            <span className="line-through text-gray-400">
-                                {variant.price?.vnd()}
-                            </span>
-                            <span className="text-green-600 font-semibold">
-                                {variant.priceSale?.vnd()}
-                            </span>
-                        </span>
-                    </div>
-                </div>
+        <Modal
+            open={open}
+            onCancel={onCancel}
+            footer={null}
+            title="Đánh giá sản phẩm"
+            bodyStyle={{ padding: '24px' }}
+            style={{ borderRadius: '8px', overflow: 'hidden' }}
+        >
+            <Spin spinning={loading}>
                 <Form
                     form={form}
                     initialValues={initialValues}
+                    onFinish={handleFinish}
                     layout="vertical"
-                    onFinish={handleSubmit}
-                    onFinishFailed={onFinishFailed}
                 >
-                    <Form.Item label="Đánh giá" name="value">
-                        <Rate />
-                    </Form.Item>
                     <Form.Item
-                        label="Nội dung"
-                        required
-                        name="comment"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Nội dung không được để trống',
-                            },
-                            {
-                                min: 10,
-                                message: 'Nội dung phải dài hơn 10 kí tự',
-                            },
-                        ]}
+                        name="value"
+                        label="Đánh giá"
+                        rules={[{ required: true, message: 'Please select a rating' }]}
                     >
-                        <Input.TextArea />
+                        <Rate
+                            tooltips={ratingDescriptions}
+                            style={{ fontSize: '24px' }}
+                        />
                     </Form.Item>
-                    <Form.Item label="Hình ảnh">
+
+                    <Form.Item
+                        name="comment"
+                        label="Nội dung"
+                        rules={[{ required: true, message: 'Please enter your comment' }]}
+                    >
+                        <Input.TextArea
+                            rows={4}
+                            onChange={handleCharCount}
+                            maxLength={500}
+                        />
+                    </Form.Item>
+                    <div style={{ textAlign: 'right', marginBottom: '16px', color: '#999' }}>
+                        {charCount}/500
+                    </div>
+
+                    <Form.Item
+                        name="images"
+                        label="Hình ảnh"
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => e.fileList}
+                    >
                         <Upload
                             listType="picture-card"
-                            accept="image/*"
-                            onChange={handleChange}
-                            beforeUpload={() => false}
-                            onPreview={() => {}}
+                            fileList={fileList}
+                            onChange={handleUpload}
+                            beforeUpload={() => false} // Disable automatic upload
                         >
-                            {fileList.length < 3 ? uploadButton : null}
+                            {fileList.length >= 8 ? null : uploadButton}
                         </Upload>
                     </Form.Item>
+
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit" block>
+                            Gửi đánh giá
+                        </Button>
+                    </Form.Item>
                 </Form>
-            </Modal>
-        </>
+            </Spin>
+        </Modal>
     )
 }
+
 export default ModalRatingProduct
