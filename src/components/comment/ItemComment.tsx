@@ -1,5 +1,4 @@
 import { Avatar, Badge, Rate, Tooltip } from 'antd'
-
 import { useState } from 'react'
 import { AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlineLike } from 'react-icons/ai'
 import { LuReply } from 'react-icons/lu'
@@ -8,6 +7,7 @@ import { useAuth, useMessage } from '@/hooks'
 import InputComment from './InputComment'
 import TimeComment from '../TimeCount'
 import ratingApi, { Rating } from '@/http/ratingApi'
+import commentApi from '@/http/commentApi';  // Đường dẫn này có thể thay đổi tùy thuộc vào cấu trúc dự án của bạn
 
 type Props = {
     comment: Rating
@@ -19,18 +19,16 @@ const ItemComment = ({ comment, handleReload }: Props) => {
     const { success, error } = useMessage()
     const [showReply, setShowReply] = useState(false)
     const [showInputComment, setShowInputComment] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
+    const [editContent, setEditContent] = useState(comment.comment)
 
     const { createdAt, variant } = comment
-
-    // console.log('comment', comment)
 
     const handleLikeComment = async () => {
         if (!isAuthenticated) {
             error('vui lòng đăng nhập để thích bình luận')
             return
         }
-        // console.log('comment', comment)
-        // console.log('user', user)
         try {
             const res = await ratingApi.like(comment.id)
             handleReload()
@@ -40,6 +38,32 @@ const ItemComment = ({ comment, handleReload }: Props) => {
             error('Like comment fail')
         }
     }
+
+    const handleEditComment = async () => {
+        try {
+            await commentApi.updateComment(comment.id, { content: editContent });
+            success('Comment updated successfully');
+            setIsEditing(false);
+            handleReload();
+        } catch (err) {
+            error('Failed to update comment');
+            console.log(err);
+        }
+    };
+    
+    const handleDeleteComment = async () => {
+        if (confirm('Are you sure you want to delete this comment?')) {
+            try {
+                await commentApi.deleteComment(comment.id);
+                success('Comment deleted successfully');
+                handleReload();
+            } catch (err) {
+                error('Failed to delete comment');
+                console.log(err);
+            }
+        }
+    };
+    
 
     return (
         <div>
@@ -74,7 +98,15 @@ const ItemComment = ({ comment, handleReload }: Props) => {
                         </div>
                         {/* content comment */}
                         <div className="">
-                            <span className="text-[#4f4f4f]">{comment.comment}</span>
+                            {isEditing ? (
+                                <textarea
+                                    value={editContent}
+                                    onChange={(e) => setEditContent(e.target.value)}
+                                    className="border rounded p-2 w-full"
+                                />
+                            ) : (
+                                <span className="text-[#4f4f4f]">{comment.comment}</span>
+                            )}
                         </div>
                         {/* images if has */}
                         <div className="flex">
@@ -145,7 +177,21 @@ const ItemComment = ({ comment, handleReload }: Props) => {
                                 </div>
                             </div>
                             <div>
-                                <TimeComment createdAt={comment?.createdAt} />
+                                {isAuthenticated && comment.user?.id === user?.id && (
+                                    <div className="flex space-x-2 mt-2">
+                                        {isEditing ? (
+                                            <>
+                                                <button onClick={handleEditComment} className="text-blue-500">Save</button>
+                                                <button onClick={() => setIsEditing(false)} className="text-red-500">Cancel</button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button onClick={() => setIsEditing(true)} className="text-blue-500">Edit</button>
+                                                <button onClick={handleDeleteComment} className="text-red-500">Delete</button>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         {/* show replies if exist */}

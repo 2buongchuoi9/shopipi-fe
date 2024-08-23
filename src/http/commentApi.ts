@@ -36,10 +36,15 @@ export type Comment = CommentRequest & {
 // "parentId": "string",
 // "content": "string"
 // }
+import axios from 'axios';
+
 const commentApi = {
-    get: async (params: ParamsRequest) => await http.get<Page<Comment>>('/comment', { params }),
+    updateComment: (commentId: string, data: { content: string }) => {
+        return axios.post(`/api/comments/${commentId}`, data);
+    },
+    deleteComment: (commentId: string) => {
+        return axios.delete(`/api/comments/${commentId}`);
+    },
+};
 
-    addComment: async (data: CommentRequest) => await http.post<Comment>('/comment', data),
-}
-
-export default commentApi
+export default commentApi;
