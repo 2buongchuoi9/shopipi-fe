@@ -26,20 +26,35 @@ const InputComment = ({ productId, comment = null, handleReload, ...rest }: Prop
         console.log('productId', productId)
         console.log('comment', comment)
 
+        // try {
+        //     const res = await ratingApi.addRating({
+        //         isComment: true,
+        //         productId,
+        //         parentId: comment?.id || null,
+        //         comment: value,
+        //     })
+        //     console.log('res', res)
+        //     handleReload()
+        //     success('Add Comment success')
+        // } catch (err) {
+        //     console.log(err)
+        //     error('Add Comment fail')
+        // }
         try {
             const res = await ratingApi.addRating({
                 isComment: true,
                 productId,
                 parentId: comment?.id || null,
                 comment: value,
-            })
-            console.log('res', res)
-            handleReload()
-            success('Add Comment success')
+            });
+            console.log('New comment added:', res);  // Kiểm tra dữ liệu của bình luận mới
+            handleReload();
+            success('Add Comment success');
         } catch (err) {
-            console.log(err)
-            error('Add Comment fail')
+            console.log(err);
+            error('Add Comment fail');
         }
+        
     }
 
     return (

@@ -15,24 +15,44 @@ const Comment = ({ product }: Props) => {
     const [ratingsCount, setRatingsCount] = useState<Record<number, number>>({})
     const { id: productId, totalRating, ratingAvg } = product
 
-    const fetchComment = async () => {
-        const res = await ratingApi.get({ productId })
-        // console.log('Comment:', res)
+    // const fetchComment = async () => {
+    //     const res = await ratingApi.get({ productId })
+    //     // console.log('Comment:', res)
 
+    //     const ratings = res.content.map((r) => ({
+    //         ...r,
+    //         variant: product.variants.find((v) => v.id === r.variantId),
+    //     }))
+
+    //     const ratingsCount = ratings.reduce((acc, rating) => {
+    //         acc[rating.value] = (acc[rating.value] || 0) + 1
+    //         return acc
+    //     }, {} as Record<number, number>)
+    //     setRatingsCount(ratingsCount)
+
+    //     setCountComments(res.totalElement)
+    //     setComments(buildRatingTree(ratings, null))
+    // }
+    const fetchComment = async () => {
+        const res = await ratingApi.get({ productId });
+        console.log('Fetched comments response:', res);  // Kiểm tra dữ liệu nhận được từ API
+    
         const ratings = res.content.map((r) => ({
             ...r,
             variant: product.variants.find((v) => v.id === r.variantId),
-        }))
-
+        }));
+    
         const ratingsCount = ratings.reduce((acc, rating) => {
-            acc[rating.value] = (acc[rating.value] || 0) + 1
-            return acc
-        }, {} as Record<number, number>)
-        setRatingsCount(ratingsCount)
-
-        setCountComments(res.totalElement)
-        setComments(buildRatingTree(ratings, null))
+            acc[rating.value] = (acc[rating.value] || 0) + 1;
+            return acc;
+        }, {} as Record<number, number>);
+        setRatingsCount(ratingsCount);
+    
+        setCountComments(res.totalElement);
+        setComments(buildRatingTree(ratings, null));
+        console.log('Updated comments state:', ratings);  // Kiểm tra state sau khi cập nhật
     }
+    
 
     useEffect(() => {
         ;(async () => {
@@ -41,8 +61,10 @@ const Comment = ({ product }: Props) => {
     }, [productId])
 
     const handleReload = async () => {
-        await fetchComment()
+        console.log('handleReload called');  // Kiểm tra khi hàm này được gọi
+        await fetchComment();
     }
+    
 
     return (
         <div className="mt-5 p-10 bg-white border border-gray-200 rounded-lg">
@@ -88,5 +110,6 @@ const Comment = ({ product }: Props) => {
             <InputComment productId={productId} handleReload={handleReload} className="mt-3" />
         </div>
     )
+    
 }
 export default Comment
