@@ -21,21 +21,6 @@ export type Comment = CommentRequest & {
     variant?: Variant
 }
 
-// export const buildCommentTree = (comments: Comment[], parentId: string | null): Comment[] => {
-//     const filteredComments = comments.filter((comment) => comment.parentId === parentId)
-
-//     const tree = filteredComments.map((comment) => {
-//         const replies = buildCommentTree(comments, comment.id)
-//         return replies.length > 0 ? { ...comment, replies } : { ...comment }
-//     })
-//     return tree
-// }
-
-// params: {
-// "productId": "string",
-// "parentId": "string",
-// "content": "string"
-// }
 import axios from 'axios';
 
 const commentApi = {
