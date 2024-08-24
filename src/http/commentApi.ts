@@ -28,8 +28,10 @@ const commentApi = {
         return axios.post(`/api/comments/${commentId}`, data);
     },
     deleteComment: (commentId: string) => {
+        console.log('Deleting comment with ID:', commentId, 'using endpoint:', `/api/comments/${commentId}`);
         return axios.delete(`/api/comments/${commentId}`);
     },
 };
+
 
 export default commentApi;

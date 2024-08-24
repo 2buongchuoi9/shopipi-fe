@@ -51,18 +51,20 @@ const ItemComment = ({ comment, handleReload }: Props) => {
         }
     };
     
-    const handleDeleteComment = async () => {
-        if (confirm('Are you sure you want to delete this comment?')) {
-            try {
-                await commentApi.deleteComment(comment.id);
-                success('Comment deleted successfully');
-                handleReload();
-            } catch (err) {
-                error('Failed to delete comment');
-                console.log(err);
+    const handleDelete = async (commentId: string) => {
+        console.log('Attempting to delete comment with ID:', commentId);
+        try {
+            const response = await commentApi.deleteComment(commentId);
+            console.log('Delete response:', response.data);
+            if (response.data) {
+                // Gọi hàm reload để cập nhật lại danh sách bình luận sau khi xóa thành công
+                await handleReload();
             }
+        } catch (error) {
+            console.error('Error deleting comment:', error);
         }
     };
+    
     
 
     return (
@@ -187,7 +189,8 @@ const ItemComment = ({ comment, handleReload }: Props) => {
                                         ) : (
                                             <>
                                                 <button onClick={() => setIsEditing(true)} className="text-blue-500">Edit</button>
-                                                <button onClick={handleDeleteComment} className="text-red-500">Delete</button>
+                                                <button onClick={() => handleDelete(comment?.id)} className="text-red-500">Delete</button>
+
                                             </>
                                         )}
                                     </div>

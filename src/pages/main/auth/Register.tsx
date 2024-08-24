@@ -6,7 +6,7 @@ import { accessToken, clientId, refreshTokenStorage } from '@/utils/localStorage
 import { Alert, Button, Form, Input } from 'antd'
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-
+import "../../../styles/Register.css";
 const Register = () => {
     const [searchParams] = useSearchParams()
     const redirect = searchParams.get('redirect') ?? '/'
@@ -71,68 +71,68 @@ const Register = () => {
                     onFinishFailed={onFinishFailed}
                     layout="vertical"
                 >
-                    <Form.Item
-                        name="email"
-                        label="Email"
-                        rules={[
-                            { required: true, message: 'Email không được trống' },
-                            {
-                                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                message: 'Email không đúng định dạng',
-                            },
-                        ]}
-                    >
-                        <Input size="large" placeholder="Email" />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="name"
-                        label="Name"
-                        rules={[{ required: true, message: 'Name không được trống' }]}
-                    >
-                        <Input size="large" placeholder="Name" />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="password"
-                        label="Password"
-                        required
-                        rules={[{ required: true, message: 'Mật khẩu không được trống' }]}
-                    >
-                        <Input.Password size="large" placeholder="Password" />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="confirmPassword"
-                        label="Confirm Password"
-                        dependencies={['password']}
-                        rules={[
-                            { required: true, message: 'Mật khẩu không được trống' },
-                            ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                    if (!value || getFieldValue('password') === value) {
-                                        return Promise.resolve()
-                                    }
-                                    return Promise.reject(
-                                        new Error(
-                                            'Mật khẩu không trùng khớp, vui lòng kiểm tra lại'
-                                        )
-                                    )
+                    <div className="form-group">
+                        <Form.Item
+                            name="email"
+                            label="Email"
+                            rules={[
+                                { required: true, message: 'Email không được trống' },
+                                {
+                                    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: 'Email không đúng định dạng',
                                 },
-                            }),
-                        ]}
-                    >
-                        <Input.Password size="large" placeholder="Confirm Password" />
-                    </Form.Item>
-
-                    {/* <Form.Item
-                        name="address"
-                        label="Address"
-                        rules={[{ required: true, message: 'Name không được trống' }]}
-                    >
-                        <Input size="large" placeholder="Email" />
-                    </Form.Item> */}
-
+                            ]}
+                        >
+                            <Input size="large" placeholder="Email" />
+                        </Form.Item>
+                    </div>
+    
+                    <div className="form-group">
+                        <Form.Item
+                            name="name"
+                            label="Name"
+                            rules={[{ required: true, message: 'Name không được trống' }]}
+                        >
+                            <Input size="large" placeholder="Name" />
+                        </Form.Item>
+                    </div>
+    
+                    <div className="form-group">
+                        <Form.Item
+                            name="password"
+                            label="Password"
+                            required
+                            rules={[{ required: true, message: 'Mật khẩu không được trống' }]}
+                        >
+                            <Input.Password size="large" placeholder="Password" />
+                        </Form.Item>
+                    </div>
+    
+                    <div className="form-group">
+                        <Form.Item
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            dependencies={['password']}
+                            rules={[
+                                { required: true, message: 'Mật khẩu không được trống' },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('password') === value) {
+                                            return Promise.resolve()
+                                        }
+                                        return Promise.reject(
+                                            new Error(
+                                                'Mật khẩu không trùng khớp, vui lòng kiểm tra lại'
+                                            )
+                                        )
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password size="large" placeholder="Confirm Password" />
+                        </Form.Item>
+                    </div>
+    
                     <div className="flex space-x-4 mt-6">
                         <Button
                             type="primary"
@@ -151,17 +151,17 @@ const Register = () => {
                             Đăng nhập
                         </Button>
                     </div>
-
-                    <div className="flex justify-between mt-6">
+    
+                    <div className="alternative-login flex justify-between mt-6">
                         <Link
                             to={google_url_login}
-                            className="w-1/2 mr-2 px-4 py-2 border border-gray-300 rounded-md text-center hover:bg-gray-100"
+                            className="google w-1/2 mr-2 px-4 py-2 border border-gray-300 rounded-md text-center hover:bg-gray-100"
                         >
                             Đăng nhập bằng Google
                         </Link>
                         <Link
                             to={facebook_url_login}
-                            className="w-1/2 ml-2 px-4 py-2 border border-gray-300 rounded-md text-center hover:bg-gray-100"
+                            className="facebook w-1/2 ml-2 px-4 py-2 border border-gray-300 rounded-md text-center hover:bg-gray-100"
                         >
                             Đăng nhập bằng Facebook
                         </Link>
@@ -170,6 +170,8 @@ const Register = () => {
             </div>
         </div>
     )
+    
+    
 }
 
 export default Register

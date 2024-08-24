@@ -63,6 +63,7 @@ const Comment = ({ product }: Props) => {
     const handleReload = async () => {
         console.log('handleReload called');  // Kiểm tra khi hàm này được gọi
         await fetchComment();
+        console.log('Comments state after reload:', comments);  // Kiểm tra state của comments sau khi reload
     }
     
 
