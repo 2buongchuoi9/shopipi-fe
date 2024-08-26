@@ -98,7 +98,7 @@ const Footer = () => {
             </div>
             <hr />
             <div className="footer-bottom">
-                <p>&copy; 2023 | Developed by TungBach</p>
+                <p>&copy; 2023 | Developed by Già Gân team</p>
             </div>
         </div>
     )

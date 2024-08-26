@@ -36,7 +36,7 @@
         /* Linting */
         "strict": true,
         "noFallthroughCasesInSwitch": true,
-        "noUnusedLocals": false, // Thay đổi dòng này
+        "noUnusedLocals": false,
         "noUnusedParameters": false,
 
         /* Type checking */

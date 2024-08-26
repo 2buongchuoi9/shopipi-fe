@@ -112,12 +112,8 @@ const Navbar = ({ ...rest }: HTMLAttributes<HTMLDivElement>) => {
                 {/* Left */}
                 <div className="flex items-center space-x-4 md:space-x-0 md:mx-4">
                     <Link to={'/'}>
-                        <img
-                            className="h-[35px] w-[100px]"
-                            src="https://salt.tikicdn.com/ts/upload/0e/07/78/ee828743c9afa9792cf20d75995e134e.png"
-                            alt="Amazon logo"
-                        />
-                        <span className="font-bold text-sm text-sky-800 ml-2">Tốt & Nhanh</span>
+                        <img className="h-[80px] " src="/logo.png" alt="Amazon logo" />
+                        {/* <span className="font-bold text-sm text-sky-800 ml-2">Tốt & Nhanh</span> */}
                     </Link>
                     <div className="hidden md:flex md:items-start mb-2">
                         <span className="ml-8 mt-4">

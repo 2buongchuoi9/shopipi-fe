@@ -74,13 +74,17 @@ const Item = ({ order }: { order: Order }) => {
                         />
 
                         <div className="flex items-center space-x-2">
-                            <img
-                                src={item.product.thumb}
-                                alt=""
-                                className="w-20 h-20 object-cover"
-                            />
+                            <Link to={`/product/${item.product.slug}`}>
+                                <img
+                                    src={item.product.thumb}
+                                    alt=""
+                                    className="w-20 h-20 object-cover"
+                                />
+                            </Link>
                             <div className="">
-                                <p>{item.product.name}</p>
+                                <Link to={`/product/${item.product.slug}`}>
+                                    <p>{item.product.name}</p>
+                                </Link>
                                 <p className="text-gray-500 text-sm">
                                     phân loại hàng:{' '}
                                     {item.variant.valueVariant.map((v) => v.value).join(' ')}

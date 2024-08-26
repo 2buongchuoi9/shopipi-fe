@@ -218,10 +218,6 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
     // theo dõi loại sản phẩm
     const [type, setType] = useState<ProductType>(productType[0])
 
-    // useEffect(() => {
-    //     console.log('variants', variants)
-    // }, [variants])
-
     useEffect(() => {
         if (!isAdd && slug) {
             ;(async () => {
@@ -259,7 +255,7 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
             return
         }
 
-        const variantError = variants.find(({ price }) => price <= 10000)
+        const variantError = variants.find(({ price }) => price < 10000)
         if (variantError) {
             const name = variantError.valueVariant.map((v) => v.key + ':' + v.value).join(', ')
             error(`Giá bán của phân loại ${name} không hợp lệ`)
@@ -388,7 +384,7 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
             }
             return Promise.resolve()
         },
-        variantValues: (name: (string | number)[], value: string) => {
+        variantValues: (name: any, value: string) => {
             value = value.trim()
             if (value.length < 1)
                 return Promise.reject(new Error('Các phân loại không được để trống'))
@@ -772,14 +768,14 @@ const DetailProduct = ({ isAdd = false }: { isAdd: boolean }) => {
                                                         show: true,
                                                         max: 14,
                                                     }}
-                                                    autoFocus={
-                                                        !form.getFieldValue([
-                                                            'attribute',
-                                                            'listVariant',
-                                                            name,
-                                                            'key',
-                                                        ])
-                                                    }
+                                                    // autoFocus={
+                                                    //     !form.getFieldValue([
+                                                    //         'attribute',
+                                                    //         'listVariant',
+                                                    //         name,
+                                                    //         'key',
+                                                    //     ])
+                                                    // }
                                                 />
                                             </Form.Item>
                                             <Form.List name={[name, 'values']}>

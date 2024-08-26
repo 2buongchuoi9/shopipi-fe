@@ -146,6 +146,7 @@ export type Product = {
 }
 
 export type ProductRequest = {
+    slug?: string | null
     id?: string
     attribute: Attribute
     type: ProductType | null

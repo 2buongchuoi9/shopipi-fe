@@ -63,8 +63,8 @@ const Login = () => {
             )}
 
             <div className="w-full max-w-md mx-auto bg-white p-8 shadow-lg rounded-lg">
-                <div className="text-center mb-10">
-                    <img src="/logo.png" className="h-12 mx-auto" alt="Logo" />
+                <div className="text-center ">
+                    <img src="/logo.png" className="h-36 mx-auto" alt="Logo" />
                 </div>
                 <Form
                     form={form}

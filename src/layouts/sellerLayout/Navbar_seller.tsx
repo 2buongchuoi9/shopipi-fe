@@ -30,7 +30,7 @@ const Navbar_seller = ({ ...rest }: Props) => {
                                             </Link>
                                         ),
                                     },
-                                    { key: 2, label: <Link to="/">home</Link> },
+                                    { key: 3, label: <Link to="/">home</Link> },
                                 ] as MenuProps['items'],
                             }}
                         >

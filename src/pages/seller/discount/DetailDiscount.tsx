@@ -123,7 +123,7 @@ const DetailDiscount = ({ isAdd = false }: { isAdd: boolean }) => {
         dateStart: (_: any, value: any) => {
             if (!value) return Promise.reject(new Error('Ô không được để trống'))
 
-            const dateEnd = form.getFieldValue('endDate')
+            const dateEnd = form.getFieldValue('dateEnd')
             if (dateEnd && value > dateEnd)
                 return Promise.reject(new Error('Ngày bắt đầu không được lớn hơn ngày kết thúc'))
 
@@ -133,7 +133,7 @@ const DetailDiscount = ({ isAdd = false }: { isAdd: boolean }) => {
         dateEnd: (_: any, value: any) => {
             if (!value) return Promise.reject(new Error('Ô không được để trống'))
 
-            const dateStart = form.getFieldValue('startDate')
+            const dateStart = form.getFieldValue('dateStart')
             if (dateStart && value < dateStart)
                 return Promise.reject(new Error('Ngày kết thúc không được nhỏ hơn ngày bắt đầu'))
 
